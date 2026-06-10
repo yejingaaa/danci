@@ -1070,7 +1070,7 @@ async function openBook(bookId) {
   const book = await appDB.getBook(bookId);
   document.getElementById('current-book-name').textContent = book ? book.name : '词本';
   document.getElementById('books-view').style.display = 'none';
-  document.getElementById('words-view').style.display = 'block';
+  document.getElementById('words-view').style.display = 'flex';
   refreshWordList(bookId);
 }
 

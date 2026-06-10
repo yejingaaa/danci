@@ -12,6 +12,9 @@ let showingAnswer = false;
 let algorithmName = 'three_state';
 let customIntervals = null;
 let isNightMode = false;
+let dailyGoal = 10;
+let learningDate = '';
+let dailyNewCount = 0;
 
 // ============== 页面管理 ==============
 // ============== 导航系统 ==============
@@ -80,18 +83,91 @@ function goHome() {
 
 // ============== 首页 ==============
 async function refreshHome() {
-  document.getElementById('stat-total').textContent = await appDB.getTotalWordCount();
-  document.getElementById('stat-due').textContent = await appDB.getDueCount();
+  const total = await appDB.getTotalWordCount();
+  document.getElementById('stat-total').textContent = total;
+  const due = await appDB.getDueCount();
+  document.getElementById('stat-due').textContent = due;
   document.getElementById('stat-mastered').textContent = await appDB.getMasteredCount();
 
-  const total = await appDB.getTotalWordCount();
-  document.getElementById('home-hint').textContent =
-    total === 0 ? '现在还没有单词 📭' : `共 ${total} 个单词`;
+  // 每日进度
+  const remain = Math.max(0, dailyGoal - dailyNewCount);
+  const remainingNew = total > 0 ? await getRemainingNewWords() : 0;
+  const newToday = Math.min(remain, remainingNew);
+  const hint = document.getElementById('home-hint');
+  if (total === 0) {
+    hint.innerHTML = '现在还没有单词 📭';
+    document.getElementById('start-daily-btn').style.display = 'none';
+  } else {
+    hint.innerHTML = `📅 今日任务：新词 <strong>${dailyNewCount}/${dailyGoal}</strong> · 复习 <strong>${due}</strong> 个`;
+    document.getElementById('start-daily-btn').style.display = 'block';
+  }
+}
+
+async function getRemainingNewWords() {
+  const books = await appDB.getAllBooks();
+  let count = 0;
+  for (const b of books) {
+    const words = await appDB.getWordsByBook(b.id);
+    count += words.filter(w => (w.progressScore || 0) === 0).length;
+  }
+  return count;
 }
 
 function startStudy(mode) {
   studyMode = mode;
-  intensiveMode = false; // 普通学习模式不使用密集复习逻辑
+  intensiveMode = false;
+  showFullscreenPage('study');
+}
+
+// 今日学习：自动混合新词+复习
+async function startDailyStudy() {
+  const books = await appDB.getAllBooks();
+  let newWords = [], dueWords = [];
+  for (const b of books) {
+    const words = await appDB.getWordsByBook(b.id);
+    for (const w of words) {
+      if ((w.progressScore || 0) === 0) newWords.push(w);
+      else if (w.nextReview && w.nextReview.substring(0, 10) <= new Date().toISOString().substring(0, 10)) {
+        dueWords.push(w);
+      }
+    }
+  }
+  // 去重（按 word.id）
+  const seen = new Set();
+  newWords = newWords.filter(w => { if (seen.has(w.id)) return false; seen.add(w.id); return true; });
+  dueWords = dueWords.filter(w => { if (seen.has(w.id)) return false; seen.add(w.id); return true; });
+
+  // 限制新词数（不超过每日剩余额度）
+  const remain = Math.max(0, dailyGoal - dailyNewCount);
+  if (remain <= 0) { showToast('今日新词已完成！🎉'); return; }
+  newWords = newWords.slice(0, remain);
+
+  if (newWords.length === 0 && dueWords.length === 0) {
+    showToast('没有待学习的单词 📭');
+    return;
+  }
+
+  // 混合排列：5新词 + 5复习 交替
+  const queue = [];
+  let ni = 0, di = 0;
+  while (ni < newWords.length || di < dueWords.length) {
+    for (let i = 0; i < 5 && ni < newWords.length; i++) {
+      queue.push({ word: newWords[ni++], type: 'new' });
+    }
+    for (let i = 0; i < 5 && di < dueWords.length; i++) {
+      queue.push({ word: dueWords[di++], type: 'review' });
+    }
+  }
+
+  // 更新每日计数
+  dailyNewCount += newWords.length;
+  await appDB.setSetting('dailyNewCount', dailyNewCount);
+
+  wordQueue = queue;
+  currentWordIndex = 0;
+  showingAnswer = false;
+  studyMode = 'daily';
+  sessionStats = { total: 0, mastered: 0, struggled: 0, forgot: 0 };
   showFullscreenPage('study');
 }
 
@@ -105,6 +181,13 @@ function refreshSettings() {
   });
   document.getElementById('custom-interval-area').style.display =
     algorithmName === 'fixed' ? 'block' : 'none';
+}
+
+async function setDailyGoal(val) {
+  dailyGoal = parseInt(val) || 10;
+  await appDB.setSetting('dailyGoal', dailyGoal);
+  refreshHome();
+  showToast(`每日新词数已设为 ${dailyGoal}`);
 }
 
 async function setDirection(dir) {
@@ -163,6 +246,20 @@ async function loadSettings() {
     const el = document.getElementById('custom-intervals');
     if (el) el.value = saved.join(',');
   }
+  dailyGoal = await appDB.getSetting('dailyGoal') || 10;
+  // 重置每日计数（跨天）
+  learningDate = await appDB.getSetting('learningDate') || '';
+  const today = new Date().toISOString().substring(0, 10);
+  if (learningDate !== today) {
+    dailyNewCount = 0;
+    learningDate = today;
+    await appDB.setSetting('learningDate', today);
+    await appDB.setSetting('dailyNewCount', 0);
+  } else {
+    dailyNewCount = await appDB.getSetting('dailyNewCount') || 0;
+  }
+  const goalSel = document.getElementById('daily-goal-select');
+  if (goalSel) goalSel.value = dailyGoal;
 }
 
 // ============== 学习页面 ==============
@@ -177,7 +274,10 @@ function renderCurrentWord() {
     return;
   }
 
-  const word = wordQueue[currentWordIndex];
+  const item = wordQueue[currentWordIndex];
+  // 支持 daily 模式：{word, type}，普通模式：直接是 word 对象
+  const word = item.word || item;
+  const isReview = item.type === 'review';
   const display = document.getElementById('word-display');
   const actions = document.getElementById('study-actions');
   const spellArea = document.getElementById('spell-area');
@@ -193,11 +293,12 @@ function renderCurrentWord() {
   const spellInput = document.getElementById('spell-input');
   if (spellInput) { spellInput.value = ''; spellInput.className = 'spell-input'; spellInput.disabled = false; }
 
-  const modeLabelMap = { learn: '学习', spell: '拼写', recall: '复习' };
+  const effectiveMode = studyMode === 'daily' ? (isReview ? 'recall' : 'learn') : studyMode;
+  const modeLabelMap = { learn: '学习', spell: '拼写', recall: '复习', daily: isReview ? '复习' : '新词' };
   const dirLabel = studyDirection === 'en2cn' ? '英→中' : '中→英';
   document.getElementById('study-mode-label').textContent = `${modeLabelMap[studyMode] || ''} · ${dirLabel}${intensiveMode ? ' 🔥密集' : ''}`;
 
-  if (studyMode === 'learn') {
+  if (studyMode === 'learn' || (studyMode === 'daily' && !isReview)) {
     display.style.display = 'block';
     actions.style.display = 'flex';
     spellArea.style.display = 'none';
@@ -227,7 +328,7 @@ function renderCurrentWord() {
       document.getElementById('spell-input').placeholder = '输入对应的中文释义...';
     }
     setupSpellInputListener();
-  } else if (studyMode === 'recall') {
+  } else if (studyMode === 'recall' || (studyMode === 'daily' && isReview)) {
     display.style.display = 'block';
     actions.style.display = 'flex';
     spellArea.style.display = 'none';
@@ -406,32 +507,59 @@ function handleSwipeLeft() {
 
 // ============== TTS ==============
 function speak(text, lang = 'en') {
-  if (!('speechSynthesis' in window)) return;
-  // 取消正在播放的语音，避免重叠
+  if (!('speechSynthesis' in window)) {
+    // speechSynthesis 不支持，降级到 Google TTS
+    return speakGoogleTTS(text, lang);
+  }
   speechSynthesis.cancel();
 
   const utterance = new SpeechSynthesisUtterance(text);
   utterance.lang = lang === 'en' ? 'en-US' : 'zh-CN';
   utterance.rate = 0.85;
 
-  // 等待语音加载完成再播放（移动端需要）
+  // 播放成功标记
+  let played = false;
+
+  utterance.onend = () => { played = true; };
+  utterance.onerror = () => {
+    // speechSynthesis 失败，降级到 Google TTS
+    if (!played) speakGoogleTTS(text, lang);
+  };
+
   if (speechSynthesis.getVoices().length > 0) {
-    // 选择最优语音
     const voices = speechSynthesis.getVoices();
     const preferred = voices.find(v => v.lang.startsWith(lang === 'en' ? 'en-US' : 'zh'));
     if (preferred) utterance.voice = preferred;
     speechSynthesis.speak(utterance);
+    // 某些浏览器 silent 失败时不触发 onerror，用超时检测
+    setTimeout(() => {
+      if (!played && speechSynthesis.speaking === false) speakGoogleTTS(text, lang);
+    }, 500);
   } else {
-    // 首次加载，等 voices 就绪
     speechSynthesis.addEventListener('voiceschanged', () => {
       const voices = speechSynthesis.getVoices();
       const preferred = voices.find(v => v.lang.startsWith(lang === 'en' ? 'en-US' : 'zh'));
       if (preferred) utterance.voice = preferred;
       speechSynthesis.speak(utterance);
     }, { once: true });
-    // 兜底：直接播
     speechSynthesis.speak(utterance);
+    setTimeout(() => {
+      if (!played && speechSynthesis.speaking === false) speakGoogleTTS(text, lang);
+    }, 500);
   }
+}
+
+// Google TTS 降级方案：使用 translate.google.com 的语音接口
+function speakGoogleTTS(text, lang) {
+  try {
+    const langCode = lang === 'en' ? 'en' : 'zh-CN';
+    const url = 'https://translate.google.com/translate_tts?ie=UTF-8&q='
+      + encodeURIComponent(text.substring(0, 200)) // 限制长度
+      + '&tl=' + langCode + '&client=tw-ob';
+    const audio = new Audio(url);
+    audio.volume = 1.0;
+    audio.play().catch(() => {});
+  } catch(_) {}
 }
 
 function speakCurrentWord() {
@@ -1113,6 +1241,8 @@ const BUILTIN_BOOKS = [
   { file: 'wordbooks/elementary.json', name: '小学词汇 (~1170词)', level: '小学' },
   { file: 'wordbooks/middle.json', name: '初中词汇 (~1340词)', level: '初中' },
   { file: 'wordbooks/high.json', name: '高中词汇 (~2330词)', level: '高中' },
+  { file: 'wordbooks/cet4.json', name: '四级词汇 (~1750词)', level: '四级' },
+  { file: 'wordbooks/cet6.json', name: '六级词汇 (~1110词)', level: '六级' },
 ];
 
 function showBuiltinBooks() {

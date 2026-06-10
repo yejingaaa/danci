@@ -1,0 +1,4458 @@
+[
+  {
+    "english": "abbreviation",
+    "chinese": "缩写"
+  },
+  {
+    "english": "abide",
+    "chinese": "遵守"
+  },
+  {
+    "english": "abolish",
+    "chinese": "废除"
+  },
+  {
+    "english": "abortion",
+    "chinese": "流产"
+  },
+  {
+    "english": "abrupt",
+    "chinese": "突然的"
+  },
+  {
+    "english": "absurd",
+    "chinese": "荒谬的"
+  },
+  {
+    "english": "abundance",
+    "chinese": "丰富"
+  },
+  {
+    "english": "accessory",
+    "chinese": "附件"
+  },
+  {
+    "english": "acclaim",
+    "chinese": "欢呼"
+  },
+  {
+    "english": "accountable",
+    "chinese": "负责的"
+  },
+  {
+    "english": "accumulate",
+    "chinese": "积累"
+  },
+  {
+    "english": "acquaint",
+    "chinese": "使认识"
+  },
+  {
+    "english": "activate",
+    "chinese": "激活"
+  },
+  {
+    "english": "addict",
+    "chinese": "使沉溺"
+  },
+  {
+    "english": "adhere",
+    "chinese": "粘附"
+  },
+  {
+    "english": "adjacent",
+    "chinese": "邻近的"
+  },
+  {
+    "english": "administer",
+    "chinese": "管理"
+  },
+  {
+    "english": "adolescent",
+    "chinese": "青少年"
+  },
+  {
+    "english": "adore",
+    "chinese": "爱慕"
+  },
+  {
+    "english": "advent",
+    "chinese": "出现"
+  },
+  {
+    "english": "adverse",
+    "chinese": "不利的"
+  },
+  {
+    "english": "advocate",
+    "chinese": "提倡"
+  },
+  {
+    "english": "aerial",
+    "chinese": "空中的"
+  },
+  {
+    "english": "aesthetic",
+    "chinese": "审美的"
+  },
+  {
+    "english": "affiliate",
+    "chinese": "使隶属"
+  },
+  {
+    "english": "affirm",
+    "chinese": "断言"
+  },
+  {
+    "english": "afflict",
+    "chinese": "使痛苦"
+  },
+  {
+    "english": "aggregate",
+    "chinese": "总计"
+  },
+  {
+    "english": "agitate",
+    "chinese": "鼓动"
+  },
+  {
+    "english": "agony",
+    "chinese": "痛苦"
+  },
+  {
+    "english": "agreeable",
+    "chinese": "令人愉快的"
+  },
+  {
+    "english": "allege",
+    "chinese": "声称"
+  },
+  {
+    "english": "alleviate",
+    "chinese": "缓解"
+  },
+  {
+    "english": "allocate",
+    "chinese": "分配"
+  },
+  {
+    "english": "alloy",
+    "chinese": "合金"
+  },
+  {
+    "english": "allure",
+    "chinese": "诱惑"
+  },
+  {
+    "english": "alternate",
+    "chinese": "交替的"
+  },
+  {
+    "english": "ambiguous",
+    "chinese": "模棱两可的"
+  },
+  {
+    "english": "amend",
+    "chinese": "修正"
+  },
+  {
+    "english": "ample",
+    "chinese": "充足的"
+  },
+  {
+    "english": "analogy",
+    "chinese": "类比"
+  },
+  {
+    "english": "analytic",
+    "chinese": "分析的"
+  },
+  {
+    "english": "angel",
+    "chinese": "天使"
+  },
+  {
+    "english": "animate",
+    "chinese": "有生命的"
+  },
+  {
+    "english": "anonymous",
+    "chinese": "匿名的"
+  },
+  {
+    "english": "antarctic",
+    "chinese": "南极的"
+  },
+  {
+    "english": "antenna",
+    "chinese": "天线"
+  },
+  {
+    "english": "anthropologist",
+    "chinese": "人类学家"
+  },
+  {
+    "english": "apparatus",
+    "chinese": "器械"
+  },
+  {
+    "english": "appendix",
+    "chinese": "附录"
+  },
+  {
+    "english": "applaud",
+    "chinese": "鼓掌"
+  },
+  {
+    "english": "appraisal",
+    "chinese": "评价"
+  },
+  {
+    "english": "appreciable",
+    "chinese": "可察觉的"
+  },
+  {
+    "english": "apprehend",
+    "chinese": "逮捕"
+  },
+  {
+    "english": "apprentice",
+    "chinese": "学徒"
+  },
+  {
+    "english": "apt",
+    "chinese": "恰当的"
+  },
+  {
+    "english": "arc",
+    "chinese": "弧"
+  },
+  {
+    "english": "arch",
+    "chinese": "拱门"
+  },
+  {
+    "english": "archaeology",
+    "chinese": "考古学"
+  },
+  {
+    "english": "ardent",
+    "chinese": "热情的"
+  },
+  {
+    "english": "arena",
+    "chinese": "竞技场"
+  },
+  {
+    "english": "arid",
+    "chinese": "干旱的"
+  },
+  {
+    "english": "aristocrat",
+    "chinese": "贵族"
+  },
+  {
+    "english": "armor",
+    "chinese": "盔甲"
+  },
+  {
+    "english": "array",
+    "chinese": "排列"
+  },
+  {
+    "english": "arrogant",
+    "chinese": "傲慢的"
+  },
+  {
+    "english": "arson",
+    "chinese": "纵火"
+  },
+  {
+    "english": "articulate",
+    "chinese": "清晰表达"
+  },
+  {
+    "english": "artifact",
+    "chinese": "手工艺品"
+  },
+  {
+    "english": "artillery",
+    "chinese": "大炮"
+  },
+  {
+    "english": "ascend",
+    "chinese": "上升"
+  },
+  {
+    "english": "ascertain",
+    "chinese": "查明"
+  },
+  {
+    "english": "ascribe",
+    "chinese": "归因于"
+  },
+  {
+    "english": "assassination",
+    "chinese": "暗杀"
+  },
+  {
+    "english": "assault",
+    "chinese": "攻击"
+  },
+  {
+    "english": "assemble",
+    "chinese": "集合"
+  },
+  {
+    "english": "assert",
+    "chinese": "断言"
+  },
+  {
+    "english": "assimilate",
+    "chinese": "吸收"
+  },
+  {
+    "english": "astronomy",
+    "chinese": "天文学"
+  },
+  {
+    "english": "asylum",
+    "chinese": "庇护"
+  },
+  {
+    "english": "atlas",
+    "chinese": "地图集"
+  },
+  {
+    "english": "atrocity",
+    "chinese": "暴行"
+  },
+  {
+    "english": "attendant",
+    "chinese": "服务员"
+  },
+  {
+    "english": "attic",
+    "chinese": "阁楼"
+  },
+  {
+    "english": "auction",
+    "chinese": "拍卖"
+  },
+  {
+    "english": "audit",
+    "chinese": "审计"
+  },
+  {
+    "english": "auditorium",
+    "chinese": "礼堂"
+  },
+  {
+    "english": "authentic",
+    "chinese": "真正的"
+  },
+  {
+    "english": "authorize",
+    "chinese": "授权"
+  },
+  {
+    "english": "autonomous",
+    "chinese": "自治的"
+  },
+  {
+    "english": "avalanche",
+    "chinese": "雪崩"
+  },
+  {
+    "english": "averse",
+    "chinese": "反对的"
+  },
+  {
+    "english": "aviation",
+    "chinese": "航空"
+  },
+  {
+    "english": "awe",
+    "chinese": "敬畏"
+  },
+  {
+    "english": "axis",
+    "chinese": "轴"
+  },
+  {
+    "english": "bachelor",
+    "chinese": "学士"
+  },
+  {
+    "english": "bacon",
+    "chinese": "培根"
+  },
+  {
+    "english": "bacterium",
+    "chinese": "细菌"
+  },
+  {
+    "english": "badge",
+    "chinese": "徽章"
+  },
+  {
+    "english": "baffle",
+    "chinese": "使困惑"
+  },
+  {
+    "english": "bail",
+    "chinese": "保释"
+  },
+  {
+    "english": "balcony",
+    "chinese": "阳台"
+  },
+  {
+    "english": "bald",
+    "chinese": "秃头的"
+  },
+  {
+    "english": "ballet",
+    "chinese": "芭蕾"
+  },
+  {
+    "english": "ballot",
+    "chinese": "选票"
+  },
+  {
+    "english": "bamboo",
+    "chinese": "竹子"
+  },
+  {
+    "english": "bandage",
+    "chinese": "绷带"
+  },
+  {
+    "english": "bandit",
+    "chinese": "土匪"
+  },
+  {
+    "english": "bankruptcy",
+    "chinese": "破产"
+  },
+  {
+    "english": "banquet",
+    "chinese": "宴会"
+  },
+  {
+    "english": "barbecue",
+    "chinese": "烧烤"
+  },
+  {
+    "english": "barge",
+    "chinese": "驳船"
+  },
+  {
+    "english": "barn",
+    "chinese": "谷仓"
+  },
+  {
+    "english": "barometer",
+    "chinese": "气压计"
+  },
+  {
+    "english": "barren",
+    "chinese": "贫瘠的"
+  },
+  {
+    "english": "batch",
+    "chinese": "一批"
+  },
+  {
+    "english": "bazaar",
+    "chinese": "集市"
+  },
+  {
+    "english": "beacon",
+    "chinese": "灯塔"
+  },
+  {
+    "english": "bead",
+    "chinese": "珠子"
+  },
+  {
+    "english": "beak",
+    "chinese": "鸟嘴"
+  },
+  {
+    "english": "beckon",
+    "chinese": "召唤"
+  },
+  {
+    "english": "beetle",
+    "chinese": "甲虫"
+  },
+  {
+    "english": "bellow",
+    "chinese": "吼叫"
+  },
+  {
+    "english": "belly",
+    "chinese": "肚子"
+  },
+  {
+    "english": "benchmark",
+    "chinese": "基准"
+  },
+  {
+    "english": "beverage",
+    "chinese": "饮料"
+  },
+  {
+    "english": "bewilder",
+    "chinese": "使迷惑"
+  },
+  {
+    "english": "bias",
+    "chinese": "偏见"
+  },
+  {
+    "english": "bilateral",
+    "chinese": "双边的"
+  },
+  {
+    "english": "bilingual",
+    "chinese": "双语的"
+  },
+  {
+    "english": "billow",
+    "chinese": "巨浪"
+  },
+  {
+    "english": "bin",
+    "chinese": "箱子"
+  },
+  {
+    "english": "binoculars",
+    "chinese": "双筒望远镜"
+  },
+  {
+    "english": "biography",
+    "chinese": "传记"
+  },
+  {
+    "english": "bizarre",
+    "chinese": "怪诞的"
+  },
+  {
+    "english": "blackmail",
+    "chinese": "敲诈"
+  },
+  {
+    "english": "bladder",
+    "chinese": "膀胱"
+  },
+  {
+    "english": "bland",
+    "chinese": "平淡的"
+  },
+  {
+    "english": "blaze",
+    "chinese": "火焰"
+  },
+  {
+    "english": "bleak",
+    "chinese": "荒凉的"
+  },
+  {
+    "english": "blemish",
+    "chinese": "瑕疵"
+  },
+  {
+    "english": "blend",
+    "chinese": "混合"
+  },
+  {
+    "english": "blight",
+    "chinese": "枯萎"
+  },
+  {
+    "english": "blink",
+    "chinese": "眨眼"
+  },
+  {
+    "english": "bliss",
+    "chinese": "极乐"
+  },
+  {
+    "english": "blister",
+    "chinese": "水泡"
+  },
+  {
+    "english": "blonde",
+    "chinese": "金发的"
+  },
+  {
+    "english": "blossom",
+    "chinese": "花"
+  },
+  {
+    "english": "blueprint",
+    "chinese": "蓝图"
+  },
+  {
+    "english": "bluff",
+    "chinese": "虚张声势"
+  },
+  {
+    "english": "blunder",
+    "chinese": "大错"
+  },
+  {
+    "english": "blunt",
+    "chinese": "钝的"
+  },
+  {
+    "english": "blur",
+    "chinese": "模糊"
+  },
+  {
+    "english": "blurt",
+    "chinese": "脱口而出"
+  },
+  {
+    "english": "bog",
+    "chinese": "沼泽"
+  },
+  {
+    "english": "bondage",
+    "chinese": "奴役"
+  },
+  {
+    "english": "bonus",
+    "chinese": "奖金"
+  },
+  {
+    "english": "booklet",
+    "chinese": "小册子"
+  },
+  {
+    "english": "booth",
+    "chinese": "货摊"
+  },
+  {
+    "english": "borough",
+    "chinese": "行政区"
+  },
+  {
+    "english": "bosom",
+    "chinese": "胸怀"
+  },
+  {
+    "english": "botanical",
+    "chinese": "植物的"
+  },
+  {
+    "english": "boulder",
+    "chinese": "巨石"
+  },
+  {
+    "english": "boulevard",
+    "chinese": "林荫大道"
+  },
+  {
+    "english": "bounce",
+    "chinese": "弹跳"
+  },
+  {
+    "english": "bounty",
+    "chinese": "赏金"
+  },
+  {
+    "english": "bouquet",
+    "chinese": "花束"
+  },
+  {
+    "english": "bourgeois",
+    "chinese": "资产阶级的"
+  },
+  {
+    "english": "bout",
+    "chinese": "回合"
+  },
+  {
+    "english": "bowel",
+    "chinese": "肠"
+  },
+  {
+    "english": "boycott",
+    "chinese": "抵制"
+  },
+  {
+    "english": "brace",
+    "chinese": "支撑"
+  },
+  {
+    "english": "bracelet",
+    "chinese": "手镯"
+  },
+  {
+    "english": "bracket",
+    "chinese": "支架"
+  },
+  {
+    "english": "brandy",
+    "chinese": "白兰地"
+  },
+  {
+    "english": "brass",
+    "chinese": "黄铜"
+  },
+  {
+    "english": "brawl",
+    "chinese": "争吵"
+  },
+  {
+    "english": "breach",
+    "chinese": "违反"
+  },
+  {
+    "english": "breakdown",
+    "chinese": "故障"
+  },
+  {
+    "english": "breakthrough",
+    "chinese": "突破"
+  },
+  {
+    "english": "brink",
+    "chinese": "边缘"
+  },
+  {
+    "english": "bristle",
+    "chinese": "硬毛"
+  },
+  {
+    "english": "brochure",
+    "chinese": "小册子"
+  },
+  {
+    "english": "bronze",
+    "chinese": "青铜"
+  },
+  {
+    "english": "brood",
+    "chinese": "一窝"
+  },
+  {
+    "english": "browse",
+    "chinese": "浏览"
+  },
+  {
+    "english": "bruise",
+    "chinese": "瘀伤"
+  },
+  {
+    "english": "brutal",
+    "chinese": "残忍的"
+  },
+  {
+    "english": "buckle",
+    "chinese": "扣子"
+  },
+  {
+    "english": "Buddhism",
+    "chinese": "佛教"
+  },
+  {
+    "english": "buffer",
+    "chinese": "缓冲"
+  },
+  {
+    "english": "buffet",
+    "chinese": "自助餐"
+  },
+  {
+    "english": "bug",
+    "chinese": "臭虫"
+  },
+  {
+    "english": "bulge",
+    "chinese": "膨胀"
+  },
+  {
+    "english": "bulletin",
+    "chinese": "公告"
+  },
+  {
+    "english": "bully",
+    "chinese": "欺凌"
+  },
+  {
+    "english": "bumper",
+    "chinese": "保险杠"
+  },
+  {
+    "english": "bun",
+    "chinese": "小圆面包"
+  },
+  {
+    "english": "bureaucracy",
+    "chinese": "官僚"
+  },
+  {
+    "english": "burglar",
+    "chinese": "窃贼"
+  },
+  {
+    "english": "burial",
+    "chinese": "埋葬"
+  },
+  {
+    "english": "bust",
+    "chinese": "半身像"
+  },
+  {
+    "english": "bustle",
+    "chinese": "喧闹"
+  },
+  {
+    "english": "buzz",
+    "chinese": "嗡嗡声"
+  },
+  {
+    "english": "bypass",
+    "chinese": "绕过"
+  },
+  {
+    "english": "cafeteria",
+    "chinese": "自助餐厅"
+  },
+  {
+    "english": "calamity",
+    "chinese": "灾难"
+  },
+  {
+    "english": "calcium",
+    "chinese": "钙"
+  },
+  {
+    "english": "calf",
+    "chinese": "小牛"
+  },
+  {
+    "english": "calorie",
+    "chinese": "卡路里"
+  },
+  {
+    "english": "cane",
+    "chinese": "手杖"
+  },
+  {
+    "english": "cannon",
+    "chinese": "大炮"
+  },
+  {
+    "english": "canoe",
+    "chinese": "独木舟"
+  },
+  {
+    "english": "canyon",
+    "chinese": "峡谷"
+  },
+  {
+    "english": "cape",
+    "chinese": "海角"
+  },
+  {
+    "english": "capitalism",
+    "chinese": "资本主义"
+  },
+  {
+    "english": "capsule",
+    "chinese": "胶囊"
+  },
+  {
+    "english": "caption",
+    "chinese": "标题"
+  },
+  {
+    "english": "captive",
+    "chinese": "俘虏"
+  },
+  {
+    "english": "caravan",
+    "chinese": "大篷车"
+  },
+  {
+    "english": "carbohydrate",
+    "chinese": "碳水化合物"
+  },
+  {
+    "english": "carcass",
+    "chinese": "尸体"
+  },
+  {
+    "english": "cardinal",
+    "chinese": "基本的"
+  },
+  {
+    "english": "caress",
+    "chinese": "爱抚"
+  },
+  {
+    "english": "carnival",
+    "chinese": "狂欢节"
+  },
+  {
+    "english": "carpenter",
+    "chinese": "木匠"
+  },
+  {
+    "english": "carriage",
+    "chinese": "马车"
+  },
+  {
+    "english": "carton",
+    "chinese": "纸板箱"
+  },
+  {
+    "english": "cartridge",
+    "chinese": "弹药筒"
+  },
+  {
+    "english": "cascade",
+    "chinese": "瀑布"
+  },
+  {
+    "english": "cassette",
+    "chinese": "盒式磁带"
+  },
+  {
+    "english": "casualty",
+    "chinese": "伤亡"
+  },
+  {
+    "english": "catalog",
+    "chinese": "目录"
+  },
+  {
+    "english": "catastrophe",
+    "chinese": "灾难"
+  },
+  {
+    "english": "cater",
+    "chinese": "迎合"
+  },
+  {
+    "english": "cathedral",
+    "chinese": "大教堂"
+  },
+  {
+    "english": "Catholic",
+    "chinese": "天主教的"
+  },
+  {
+    "english": "cauliflower",
+    "chinese": "花椰菜"
+  },
+  {
+    "english": "cavern",
+    "chinese": "洞穴"
+  },
+  {
+    "english": "cavity",
+    "chinese": "洞"
+  },
+  {
+    "english": "cedar",
+    "chinese": "雪松"
+  },
+  {
+    "english": "celebrity",
+    "chinese": "名人"
+  },
+  {
+    "english": "cellar",
+    "chinese": "地窖"
+  },
+  {
+    "english": "cemetery",
+    "chinese": "墓地"
+  },
+  {
+    "english": "census",
+    "chinese": "普查"
+  },
+  {
+    "english": "ceramic",
+    "chinese": "陶瓷的"
+  },
+  {
+    "english": "cereal",
+    "chinese": "谷物"
+  },
+  {
+    "english": "champagne",
+    "chinese": "香槟"
+  },
+  {
+    "english": "chant",
+    "chinese": "圣歌"
+  },
+  {
+    "english": "chapel",
+    "chinese": "小教堂"
+  },
+  {
+    "english": "charcoal",
+    "chinese": "木炭"
+  },
+  {
+    "english": "charter",
+    "chinese": "宪章"
+  },
+  {
+    "english": "chasm",
+    "chinese": "裂缝"
+  },
+  {
+    "english": "cherish",
+    "chinese": "珍爱"
+  },
+  {
+    "english": "chestnut",
+    "chinese": "栗子"
+  },
+  {
+    "english": "cholesterol",
+    "chinese": "胆固醇"
+  },
+  {
+    "english": "chord",
+    "chinese": "和弦"
+  },
+  {
+    "english": "chore",
+    "chinese": "杂务"
+  },
+  {
+    "english": "chorus",
+    "chinese": "合唱"
+  },
+  {
+    "english": "chronic",
+    "chinese": "慢性的"
+  },
+  {
+    "english": "chuckle",
+    "chinese": "轻笑"
+  },
+  {
+    "english": "chunk",
+    "chinese": "大块"
+  },
+  {
+    "english": "civic",
+    "chinese": "公民的"
+  },
+  {
+    "english": "clamp",
+    "chinese": "夹子"
+  },
+  {
+    "english": "clan",
+    "chinese": "宗族"
+  },
+  {
+    "english": "clap",
+    "chinese": "鼓掌"
+  },
+  {
+    "english": "clasp",
+    "chinese": "扣子"
+  },
+  {
+    "english": "clatter",
+    "chinese": "喧闹声"
+  },
+  {
+    "english": "cleanse",
+    "chinese": "清洗"
+  },
+  {
+    "english": "clearance",
+    "chinese": "清理"
+  },
+  {
+    "english": "clench",
+    "chinese": "握紧"
+  },
+  {
+    "english": "clergy",
+    "chinese": "神职人员"
+  },
+  {
+    "english": "cliche",
+    "chinese": "陈词滥调"
+  },
+  {
+    "english": "cling",
+    "chinese": "紧抓"
+  },
+  {
+    "english": "clip",
+    "chinese": "夹子"
+  },
+  {
+    "english": "cloak",
+    "chinese": "斗篷"
+  },
+  {
+    "english": "clockwise",
+    "chinese": "顺时针"
+  },
+  {
+    "english": "clone",
+    "chinese": "克隆"
+  },
+  {
+    "english": "closet",
+    "chinese": "壁橱"
+  },
+  {
+    "english": "cluster",
+    "chinese": "群"
+  },
+  {
+    "english": "clutch",
+    "chinese": "抓住"
+  },
+  {
+    "english": "coalition",
+    "chinese": "联盟"
+  },
+  {
+    "english": "coax",
+    "chinese": "哄骗"
+  },
+  {
+    "english": "cocaine",
+    "chinese": "可卡因"
+  },
+  {
+    "english": "cockpit",
+    "chinese": "驾驶舱"
+  },
+  {
+    "english": "cocktail",
+    "chinese": "鸡尾酒"
+  },
+  {
+    "english": "coconut",
+    "chinese": "椰子"
+  },
+  {
+    "english": "coerce",
+    "chinese": "强迫"
+  },
+  {
+    "english": "coffin",
+    "chinese": "棺材"
+  },
+  {
+    "english": "cognition",
+    "chinese": "认知"
+  },
+  {
+    "english": "coherent",
+    "chinese": "连贯的"
+  },
+  {
+    "english": "coincide",
+    "chinese": "同时发生"
+  },
+  {
+    "english": "collaborate",
+    "chinese": "合作"
+  },
+  {
+    "english": "collide",
+    "chinese": "碰撞"
+  },
+  {
+    "english": "colloquial",
+    "chinese": "口语的"
+  },
+  {
+    "english": "colonel",
+    "chinese": "上校"
+  },
+  {
+    "english": "colonial",
+    "chinese": "殖民的"
+  },
+  {
+    "english": "colossal",
+    "chinese": "巨大的"
+  },
+  {
+    "english": "columnist",
+    "chinese": "专栏作家"
+  },
+  {
+    "english": "comet",
+    "chinese": "彗星"
+  },
+  {
+    "english": "commemorate",
+    "chinese": "纪念"
+  },
+  {
+    "english": "commence",
+    "chinese": "开始"
+  },
+  {
+    "english": "commend",
+    "chinese": "称赞"
+  },
+  {
+    "english": "commentary",
+    "chinese": "评论"
+  },
+  {
+    "english": "commodity",
+    "chinese": "商品"
+  },
+  {
+    "english": "commonplace",
+    "chinese": "平凡的"
+  },
+  {
+    "english": "communal",
+    "chinese": "公共的"
+  },
+  {
+    "english": "compact",
+    "chinese": "紧凑的"
+  },
+  {
+    "english": "compassion",
+    "chinese": "同情"
+  },
+  {
+    "english": "compatible",
+    "chinese": "兼容的"
+  },
+  {
+    "english": "compel",
+    "chinese": "强迫"
+  },
+  {
+    "english": "compensate",
+    "chinese": "补偿"
+  },
+  {
+    "english": "competence",
+    "chinese": "能力"
+  },
+  {
+    "english": "compile",
+    "chinese": "汇编"
+  },
+  {
+    "english": "complement",
+    "chinese": "补充"
+  },
+  {
+    "english": "complexion",
+    "chinese": "肤色"
+  },
+  {
+    "english": "complicate",
+    "chinese": "使复杂"
+  },
+  {
+    "english": "compliment",
+    "chinese": "赞美"
+  },
+  {
+    "english": "comply",
+    "chinese": "遵守"
+  },
+  {
+    "english": "composite",
+    "chinese": "复合的"
+  },
+  {
+    "english": "compost",
+    "chinese": "堆肥"
+  },
+  {
+    "english": "comprehend",
+    "chinese": "理解"
+  },
+  {
+    "english": "compulsory",
+    "chinese": "强制性的"
+  },
+  {
+    "english": "conceal",
+    "chinese": "隐藏"
+  },
+  {
+    "english": "concede",
+    "chinese": "承认"
+  },
+  {
+    "english": "conceive",
+    "chinese": "构想"
+  },
+  {
+    "english": "conception",
+    "chinese": "概念"
+  },
+  {
+    "english": "concise",
+    "chinese": "简明的"
+  },
+  {
+    "english": "condemn",
+    "chinese": "谴责"
+  },
+  {
+    "english": "condense",
+    "chinese": "浓缩"
+  },
+  {
+    "english": "confer",
+    "chinese": "授予"
+  },
+  {
+    "english": "confiscate",
+    "chinese": "没收"
+  },
+  {
+    "english": "conform",
+    "chinese": "遵守"
+  },
+  {
+    "english": "confront",
+    "chinese": "面对"
+  },
+  {
+    "english": "congregate",
+    "chinese": "聚集"
+  },
+  {
+    "english": "conjure",
+    "chinese": "变魔术"
+  },
+  {
+    "english": "conscientious",
+    "chinese": "认真的"
+  },
+  {
+    "english": "consecutive",
+    "chinese": "连续的"
+  },
+  {
+    "english": "consensus",
+    "chinese": "共识"
+  },
+  {
+    "english": "consent",
+    "chinese": "同意"
+  },
+  {
+    "english": "conserve",
+    "chinese": "保存"
+  },
+  {
+    "english": "consolidate",
+    "chinese": "巩固"
+  },
+  {
+    "english": "conspicuous",
+    "chinese": "显眼的"
+  },
+  {
+    "english": "conspiracy",
+    "chinese": "阴谋"
+  },
+  {
+    "english": "constituent",
+    "chinese": "成分"
+  },
+  {
+    "english": "constrain",
+    "chinese": "约束"
+  },
+  {
+    "english": "construct",
+    "chinese": "建造"
+  },
+  {
+    "english": "consul",
+    "chinese": "领事"
+  },
+  {
+    "english": "consulate",
+    "chinese": "领事馆"
+  },
+  {
+    "english": "contagious",
+    "chinese": "传染的"
+  },
+  {
+    "english": "contemplate",
+    "chinese": "沉思"
+  },
+  {
+    "english": "contempt",
+    "chinese": "轻视"
+  },
+  {
+    "english": "contend",
+    "chinese": "竞争"
+  },
+  {
+    "english": "contention",
+    "chinese": "论点"
+  },
+  {
+    "english": "contestant",
+    "chinese": "参赛者"
+  },
+  {
+    "english": "contingent",
+    "chinese": "偶然的"
+  },
+  {
+    "english": "contradict",
+    "chinese": "矛盾"
+  },
+  {
+    "english": "contrive",
+    "chinese": "策划"
+  },
+  {
+    "english": "controversy",
+    "chinese": "争议"
+  },
+  {
+    "english": "convene",
+    "chinese": "召集"
+  },
+  {
+    "english": "converge",
+    "chinese": "汇聚"
+  },
+  {
+    "english": "conversion",
+    "chinese": "转变"
+  },
+  {
+    "english": "convict",
+    "chinese": "定罪"
+  },
+  {
+    "english": "conviction",
+    "chinese": "信念"
+  },
+  {
+    "english": "cooperative",
+    "chinese": "合作的"
+  },
+  {
+    "english": "coral",
+    "chinese": "珊瑚"
+  },
+  {
+    "english": "cordial",
+    "chinese": "热诚的"
+  },
+  {
+    "english": "cork",
+    "chinese": "软木塞"
+  },
+  {
+    "english": "corporate",
+    "chinese": "公司的"
+  },
+  {
+    "english": "corps",
+    "chinese": "军团"
+  },
+  {
+    "english": "corpse",
+    "chinese": "尸体"
+  },
+  {
+    "english": "correlate",
+    "chinese": "相关"
+  },
+  {
+    "english": "corrode",
+    "chinese": "腐蚀"
+  },
+  {
+    "english": "corrupt",
+    "chinese": "腐败的"
+  },
+  {
+    "english": "cosmetic",
+    "chinese": "化妆品"
+  },
+  {
+    "english": "cosmic",
+    "chinese": "宇宙的"
+  },
+  {
+    "english": "costume",
+    "chinese": "服装"
+  },
+  {
+    "english": "cosy",
+    "chinese": "舒适的"
+  },
+  {
+    "english": "counselor",
+    "chinese": "顾问"
+  },
+  {
+    "english": "counterpart",
+    "chinese": "对应的人"
+  },
+  {
+    "english": "coup",
+    "chinese": "政变"
+  },
+  {
+    "english": "courteous",
+    "chinese": "有礼貌的"
+  },
+  {
+    "english": "courtship",
+    "chinese": "求爱"
+  },
+  {
+    "english": "covenant",
+    "chinese": "契约"
+  },
+  {
+    "english": "coverage",
+    "chinese": "覆盖范围"
+  },
+  {
+    "english": "covert",
+    "chinese": "隐蔽的"
+  },
+  {
+    "english": "covet",
+    "chinese": "垂涎"
+  },
+  {
+    "english": "coward",
+    "chinese": "懦夫"
+  },
+  {
+    "english": "cozy",
+    "chinese": "舒适的"
+  },
+  {
+    "english": "crab",
+    "chinese": "螃蟹"
+  },
+  {
+    "english": "cracker",
+    "chinese": "饼干"
+  },
+  {
+    "english": "cradle",
+    "chinese": "摇篮"
+  },
+  {
+    "english": "cram",
+    "chinese": "塞满"
+  },
+  {
+    "english": "cramp",
+    "chinese": "痉挛"
+  },
+  {
+    "english": "crane",
+    "chinese": "鹤"
+  },
+  {
+    "english": "crank",
+    "chinese": "曲柄"
+  },
+  {
+    "english": "crater",
+    "chinese": "火山口"
+  },
+  {
+    "english": "crave",
+    "chinese": "渴望"
+  },
+  {
+    "english": "creak",
+    "chinese": "吱吱响"
+  },
+  {
+    "english": "crease",
+    "chinese": "折痕"
+  },
+  {
+    "english": "credentials",
+    "chinese": "凭证"
+  },
+  {
+    "english": "creed",
+    "chinese": "信条"
+  },
+  {
+    "english": "creek",
+    "chinese": "小溪"
+  },
+  {
+    "english": "crest",
+    "chinese": "冠"
+  },
+  {
+    "english": "crib",
+    "chinese": "抄袭"
+  },
+  {
+    "english": "cricket",
+    "chinese": "板球"
+  },
+  {
+    "english": "crimson",
+    "chinese": "深红色"
+  },
+  {
+    "english": "cripple",
+    "chinese": "跛子"
+  },
+  {
+    "english": "crisp",
+    "chinese": "脆的"
+  },
+  {
+    "english": "criterion",
+    "chinese": "标准"
+  },
+  {
+    "english": "crooked",
+    "chinese": "弯曲的"
+  },
+  {
+    "english": "crucify",
+    "chinese": "折磨"
+  },
+  {
+    "english": "crumb",
+    "chinese": "面包屑"
+  },
+  {
+    "english": "crumble",
+    "chinese": "崩溃"
+  },
+  {
+    "english": "crumple",
+    "chinese": "弄皱"
+  },
+  {
+    "english": "crunch",
+    "chinese": "嘎吱声"
+  },
+  {
+    "english": "crutch",
+    "chinese": "拐杖"
+  },
+  {
+    "english": "cub",
+    "chinese": "幼兽"
+  },
+  {
+    "english": "cuddle",
+    "chinese": "拥抱"
+  },
+  {
+    "english": "cuisine",
+    "chinese": "烹饪"
+  },
+  {
+    "english": "culminate",
+    "chinese": "达到顶点"
+  },
+  {
+    "english": "cumulative",
+    "chinese": "累积的"
+  },
+  {
+    "english": "cunning",
+    "chinese": "狡猾的"
+  },
+  {
+    "english": "curb",
+    "chinese": "抑制"
+  },
+  {
+    "english": "curtail",
+    "chinese": "削减"
+  },
+  {
+    "english": "custody",
+    "chinese": "监护"
+  },
+  {
+    "english": "customary",
+    "chinese": "习惯的"
+  },
+  {
+    "english": "cylinder",
+    "chinese": "圆柱体"
+  },
+  {
+    "english": "cynical",
+    "chinese": "愤世嫉俗的"
+  },
+  {
+    "english": "dagger",
+    "chinese": "匕首"
+  },
+  {
+    "english": "dainty",
+    "chinese": "精致的"
+  },
+  {
+    "english": "dandelion",
+    "chinese": "蒲公英"
+  },
+  {
+    "english": "dangle",
+    "chinese": "悬挂"
+  },
+  {
+    "english": "dart",
+    "chinese": "标枪"
+  },
+  {
+    "english": "database",
+    "chinese": "数据库"
+  },
+  {
+    "english": "dazzle",
+    "chinese": "使目眩"
+  },
+  {
+    "english": "deadlock",
+    "chinese": "僵局"
+  },
+  {
+    "english": "dealer",
+    "chinese": "经销商"
+  },
+  {
+    "english": "debris",
+    "chinese": "碎片"
+  },
+  {
+    "english": "debut",
+    "chinese": "首次露面"
+  },
+  {
+    "english": "decadence",
+    "chinese": "颓废"
+  },
+  {
+    "english": "decipher",
+    "chinese": "破译"
+  },
+  {
+    "english": "decisive",
+    "chinese": "决定性的"
+  },
+  {
+    "english": "decree",
+    "chinese": "法令"
+  },
+  {
+    "english": "dedicate",
+    "chinese": "奉献"
+  },
+  {
+    "english": "deem",
+    "chinese": "认为"
+  },
+  {
+    "english": "default",
+    "chinese": "默认"
+  },
+  {
+    "english": "defect",
+    "chinese": "缺点"
+  },
+  {
+    "english": "defendant",
+    "chinese": "被告"
+  },
+  {
+    "english": "defer",
+    "chinese": "推迟"
+  },
+  {
+    "english": "deficient",
+    "chinese": "缺乏的"
+  },
+  {
+    "english": "deficit",
+    "chinese": "赤字"
+  },
+  {
+    "english": "deflect",
+    "chinese": "使偏斜"
+  },
+  {
+    "english": "deforest",
+    "chinese": "砍伐森林"
+  },
+  {
+    "english": "defy",
+    "chinese": "违抗"
+  },
+  {
+    "english": "degenerate",
+    "chinese": "堕落"
+  },
+  {
+    "english": "degrade",
+    "chinese": "降级"
+  },
+  {
+    "english": "delicacy",
+    "chinese": "精致"
+  },
+  {
+    "english": "delinquent",
+    "chinese": "失职的"
+  },
+  {
+    "english": "delusion",
+    "chinese": "错觉"
+  },
+  {
+    "english": "demolish",
+    "chinese": "拆除"
+  },
+  {
+    "english": "denial",
+    "chinese": "否认"
+  },
+  {
+    "english": "denounce",
+    "chinese": "谴责"
+  },
+  {
+    "english": "depict",
+    "chinese": "描绘"
+  },
+  {
+    "english": "deploy",
+    "chinese": "部署"
+  },
+  {
+    "english": "depot",
+    "chinese": "仓库"
+  },
+  {
+    "english": "depreciation",
+    "chinese": "贬值"
+  },
+  {
+    "english": "deputy",
+    "chinese": "副职"
+  },
+  {
+    "english": "derelict",
+    "chinese": "遗弃的"
+  },
+  {
+    "english": "descend",
+    "chinese": "下降"
+  },
+  {
+    "english": "designate",
+    "chinese": "指定"
+  },
+  {
+    "english": "desolate",
+    "chinese": "荒凉的"
+  },
+  {
+    "english": "despise",
+    "chinese": "鄙视"
+  },
+  {
+    "english": "destine",
+    "chinese": "注定"
+  },
+  {
+    "english": "destiny",
+    "chinese": "命运"
+  },
+  {
+    "english": "destitute",
+    "chinese": "贫困的"
+  },
+  {
+    "english": "detach",
+    "chinese": "分离"
+  },
+  {
+    "english": "detain",
+    "chinese": "拘留"
+  },
+  {
+    "english": "deter",
+    "chinese": "阻止"
+  },
+  {
+    "english": "deteriorate",
+    "chinese": "恶化"
+  },
+  {
+    "english": "detest",
+    "chinese": "厌恶"
+  },
+  {
+    "english": "detour",
+    "chinese": "绕行"
+  },
+  {
+    "english": "detrimental",
+    "chinese": "有害的"
+  },
+  {
+    "english": "devastate",
+    "chinese": "毁坏"
+  },
+  {
+    "english": "deviate",
+    "chinese": "偏离"
+  },
+  {
+    "english": "devour",
+    "chinese": "吞噬"
+  },
+  {
+    "english": "diagnosis",
+    "chinese": "诊断"
+  },
+  {
+    "english": "dictator",
+    "chinese": "独裁者"
+  },
+  {
+    "english": "diesel",
+    "chinese": "柴油"
+  },
+  {
+    "english": "differentiate",
+    "chinese": "区分"
+  },
+  {
+    "english": "diffuse",
+    "chinese": "扩散"
+  },
+  {
+    "english": "dignify",
+    "chinese": "使高贵"
+  },
+  {
+    "english": "dilute",
+    "chinese": "稀释"
+  },
+  {
+    "english": "dim",
+    "chinese": "昏暗的"
+  },
+  {
+    "english": "dinosaur",
+    "chinese": "恐龙"
+  },
+  {
+    "english": "diplomacy",
+    "chinese": "外交"
+  },
+  {
+    "english": "directory",
+    "chinese": "目录"
+  },
+  {
+    "english": "disability",
+    "chinese": "残疾"
+  },
+  {
+    "english": "disarm",
+    "chinese": "裁军"
+  },
+  {
+    "english": "discern",
+    "chinese": "识别"
+  },
+  {
+    "english": "disciple",
+    "chinese": "门徒"
+  },
+  {
+    "english": "discipline",
+    "chinese": "纪律"
+  },
+  {
+    "english": "disclose",
+    "chinese": "揭露"
+  },
+  {
+    "english": "discontent",
+    "chinese": "不满"
+  },
+  {
+    "english": "discord",
+    "chinese": "不和"
+  },
+  {
+    "english": "discourse",
+    "chinese": "演讲"
+  },
+  {
+    "english": "discreet",
+    "chinese": "谨慎的"
+  },
+  {
+    "english": "discrepancy",
+    "chinese": "差异"
+  },
+  {
+    "english": "discretion",
+    "chinese": "判断力"
+  },
+  {
+    "english": "discriminate",
+    "chinese": "歧视"
+  },
+  {
+    "english": "disdain",
+    "chinese": "鄙视"
+  },
+  {
+    "english": "disgrace",
+    "chinese": "耻辱"
+  },
+  {
+    "english": "disguise",
+    "chinese": "伪装"
+  },
+  {
+    "english": "disillusion",
+    "chinese": "使醒悟"
+  },
+  {
+    "english": "disinfect",
+    "chinese": "消毒"
+  },
+  {
+    "english": "disintegrate",
+    "chinese": "瓦解"
+  },
+  {
+    "english": "dismal",
+    "chinese": "阴沉的"
+  },
+  {
+    "english": "dismantle",
+    "chinese": "拆除"
+  },
+  {
+    "english": "dismay",
+    "chinese": "沮丧"
+  },
+  {
+    "english": "dispatch",
+    "chinese": "派遣"
+  },
+  {
+    "english": "disperse",
+    "chinese": "分散"
+  },
+  {
+    "english": "displace",
+    "chinese": "取代"
+  },
+  {
+    "english": "disposition",
+    "chinese": "性情"
+  },
+  {
+    "english": "disregard",
+    "chinese": "忽视"
+  },
+  {
+    "english": "disrupt",
+    "chinese": "扰乱"
+  },
+  {
+    "english": "disseminate",
+    "chinese": "传播"
+  },
+  {
+    "english": "dissent",
+    "chinese": "异议"
+  },
+  {
+    "english": "dissertation",
+    "chinese": "论文"
+  },
+  {
+    "english": "distil",
+    "chinese": "蒸馏"
+  },
+  {
+    "english": "distort",
+    "chinese": "歪曲"
+  },
+  {
+    "english": "distract",
+    "chinese": "分心"
+  },
+  {
+    "english": "disturbance",
+    "chinese": "打扰"
+  },
+  {
+    "english": "diverge",
+    "chinese": "分歧"
+  },
+  {
+    "english": "diversion",
+    "chinese": "转移"
+  },
+  {
+    "english": "divert",
+    "chinese": "转移"
+  },
+  {
+    "english": "dividend",
+    "chinese": "股息"
+  },
+  {
+    "english": "divine",
+    "chinese": "神圣的"
+  },
+  {
+    "english": "divulge",
+    "chinese": "泄露"
+  },
+  {
+    "english": "dock",
+    "chinese": "码头"
+  },
+  {
+    "english": "doctrine",
+    "chinese": "教义"
+  },
+  {
+    "english": "documentary",
+    "chinese": "纪录片"
+  },
+  {
+    "english": "dodge",
+    "chinese": "躲避"
+  },
+  {
+    "english": "dogma",
+    "chinese": "教条"
+  },
+  {
+    "english": "dole",
+    "chinese": "救济"
+  },
+  {
+    "english": "dolphin",
+    "chinese": "海豚"
+  },
+  {
+    "english": "dome",
+    "chinese": "圆顶"
+  },
+  {
+    "english": "domesticate",
+    "chinese": "驯养"
+  },
+  {
+    "english": "donor",
+    "chinese": "捐赠者"
+  },
+  {
+    "english": "doom",
+    "chinese": "厄运"
+  },
+  {
+    "english": "dormant",
+    "chinese": "休眠的"
+  },
+  {
+    "english": "dosage",
+    "chinese": "剂量"
+  },
+  {
+    "english": "dough",
+    "chinese": "面团"
+  },
+  {
+    "english": "dove",
+    "chinese": "鸽子"
+  },
+  {
+    "english": "downfall",
+    "chinese": "垮台"
+  },
+  {
+    "english": "downgrade",
+    "chinese": "降级"
+  },
+  {
+    "english": "doze",
+    "chinese": "打瞌睡"
+  },
+  {
+    "english": "drainage",
+    "chinese": "排水"
+  },
+  {
+    "english": "drastic",
+    "chinese": "激烈的"
+  },
+  {
+    "english": "drawback",
+    "chinese": "缺点"
+  },
+  {
+    "english": "dread",
+    "chinese": "恐惧"
+  },
+  {
+    "english": "dreary",
+    "chinese": "沉闷的"
+  },
+  {
+    "english": "drench",
+    "chinese": "浸透"
+  },
+  {
+    "english": "drizzle",
+    "chinese": "毛毛雨"
+  },
+  {
+    "english": "dual",
+    "chinese": "双的"
+  },
+  {
+    "english": "dubious",
+    "chinese": "可疑的"
+  },
+  {
+    "english": "duke",
+    "chinese": "公爵"
+  },
+  {
+    "english": "dump",
+    "chinese": "倾倒"
+  },
+  {
+    "english": "duplicate",
+    "chinese": "复制"
+  },
+  {
+    "english": "dusk",
+    "chinese": "黄昏"
+  },
+  {
+    "english": "dwell",
+    "chinese": "居住"
+  },
+  {
+    "english": "dwindle",
+    "chinese": "减少"
+  },
+  {
+    "english": "dynamic",
+    "chinese": "动态的"
+  },
+  {
+    "english": "dynasty",
+    "chinese": "王朝"
+  },
+  {
+    "english": "ebb",
+    "chinese": "退潮"
+  },
+  {
+    "english": "eccentric",
+    "chinese": "古怪的"
+  },
+  {
+    "english": "eclipse",
+    "chinese": "日食"
+  },
+  {
+    "english": "ecology",
+    "chinese": "生态学"
+  },
+  {
+    "english": "ecstasy",
+    "chinese": "狂喜"
+  },
+  {
+    "english": "edible",
+    "chinese": "可食用的"
+  },
+  {
+    "english": "edifice",
+    "chinese": "大厦"
+  },
+  {
+    "english": "editorial",
+    "chinese": "社论"
+  },
+  {
+    "english": "eerie",
+    "chinese": "可怕的"
+  },
+  {
+    "english": "effectiveness",
+    "chinese": "有效性"
+  },
+  {
+    "english": "efficiency",
+    "chinese": "效率"
+  },
+  {
+    "english": "effluent",
+    "chinese": "废水"
+  },
+  {
+    "english": "ego",
+    "chinese": "自我"
+  },
+  {
+    "english": "eject",
+    "chinese": "驱逐"
+  },
+  {
+    "english": "elapse",
+    "chinese": "消逝"
+  },
+  {
+    "english": "elation",
+    "chinese": "兴高采烈"
+  },
+  {
+    "english": "elbow",
+    "chinese": "肘"
+  },
+  {
+    "english": "electorate",
+    "chinese": "选民"
+  },
+  {
+    "english": "electrician",
+    "chinese": "电工"
+  },
+  {
+    "english": "elegance",
+    "chinese": "优雅"
+  },
+  {
+    "english": "elevate",
+    "chinese": "提高"
+  },
+  {
+    "english": "elicit",
+    "chinese": "引出"
+  },
+  {
+    "english": "eligible",
+    "chinese": "合格的"
+  },
+  {
+    "english": "elite",
+    "chinese": "精英"
+  },
+  {
+    "english": "elm",
+    "chinese": "榆树"
+  },
+  {
+    "english": "eloquent",
+    "chinese": "雄辩的"
+  },
+  {
+    "english": "elusive",
+    "chinese": "难以捉摸的"
+  },
+  {
+    "english": "embargo",
+    "chinese": "禁运"
+  },
+  {
+    "english": "embark",
+    "chinese": "登船"
+  },
+  {
+    "english": "embed",
+    "chinese": "嵌入"
+  },
+  {
+    "english": "embellish",
+    "chinese": "装饰"
+  },
+  {
+    "english": "embezzle",
+    "chinese": "挪用"
+  },
+  {
+    "english": "embody",
+    "chinese": "体现"
+  },
+  {
+    "english": "embroidery",
+    "chinese": "刺绣"
+  },
+  {
+    "english": "embryo",
+    "chinese": "胚胎"
+  },
+  {
+    "english": "emerald",
+    "chinese": "翡翠"
+  },
+  {
+    "english": "emigrate",
+    "chinese": "移民"
+  },
+  {
+    "english": "eminent",
+    "chinese": "著名的"
+  },
+  {
+    "english": "emission",
+    "chinese": "排放"
+  },
+  {
+    "english": "empirical",
+    "chinese": "经验的"
+  },
+  {
+    "english": "emulate",
+    "chinese": "模仿"
+  },
+  {
+    "english": "enact",
+    "chinese": "制定"
+  },
+  {
+    "english": "enamel",
+    "chinese": "搪瓷"
+  },
+  {
+    "english": "enchant",
+    "chinese": "使着迷"
+  },
+  {
+    "english": "encode",
+    "chinese": "编码"
+  },
+  {
+    "english": "encompass",
+    "chinese": "包含"
+  },
+  {
+    "english": "encyclopedia",
+    "chinese": "百科全书"
+  },
+  {
+    "english": "endeavor",
+    "chinese": "努力"
+  },
+  {
+    "english": "endorse",
+    "chinese": "赞同"
+  },
+  {
+    "english": "endow",
+    "chinese": "捐赠"
+  },
+  {
+    "english": "endurance",
+    "chinese": "耐力"
+  },
+  {
+    "english": "energize",
+    "chinese": "激励"
+  },
+  {
+    "english": "enforcement",
+    "chinese": "执行"
+  },
+  {
+    "english": "engagement",
+    "chinese": "订婚"
+  },
+  {
+    "english": "engrave",
+    "chinese": "雕刻"
+  },
+  {
+    "english": "engross",
+    "chinese": "使全神贯注"
+  },
+  {
+    "english": "enhance",
+    "chinese": "提高"
+  },
+  {
+    "english": "enigma",
+    "chinese": "谜"
+  },
+  {
+    "english": "enlighten",
+    "chinese": "启蒙"
+  },
+  {
+    "english": "enlist",
+    "chinese": "征募"
+  },
+  {
+    "english": "enrich",
+    "chinese": "丰富"
+  },
+  {
+    "english": "enroll",
+    "chinese": "登记"
+  },
+  {
+    "english": "ensemble",
+    "chinese": "合奏"
+  },
+  {
+    "english": "ensue",
+    "chinese": "接着发生"
+  },
+  {
+    "english": "entail",
+    "chinese": "需要"
+  },
+  {
+    "english": "entrepreneur",
+    "chinese": "企业家"
+  },
+  {
+    "english": "enumerate",
+    "chinese": "列举"
+  },
+  {
+    "english": "enzyme",
+    "chinese": "酶"
+  },
+  {
+    "english": "epic",
+    "chinese": "史诗"
+  },
+  {
+    "english": "epoch",
+    "chinese": "时代"
+  },
+  {
+    "english": "equate",
+    "chinese": "等同"
+  },
+  {
+    "english": "equator",
+    "chinese": "赤道"
+  },
+  {
+    "english": "equilibrium",
+    "chinese": "平衡"
+  },
+  {
+    "english": "equity",
+    "chinese": "公平"
+  },
+  {
+    "english": "equivalent",
+    "chinese": "等价的"
+  },
+  {
+    "english": "eradicate",
+    "chinese": "根除"
+  },
+  {
+    "english": "erase",
+    "chinese": "擦除"
+  },
+  {
+    "english": "erode",
+    "chinese": "侵蚀"
+  },
+  {
+    "english": "errand",
+    "chinese": "差事"
+  },
+  {
+    "english": "erratic",
+    "chinese": "不稳定的"
+  },
+  {
+    "english": "erroneous",
+    "chinese": "错误的"
+  },
+  {
+    "english": "erupt",
+    "chinese": "爆发"
+  },
+  {
+    "english": "escalate",
+    "chinese": "升级"
+  },
+  {
+    "english": "escort",
+    "chinese": "护送"
+  },
+  {
+    "english": "essence",
+    "chinese": "本质"
+  },
+  {
+    "english": "esteem",
+    "chinese": "尊重"
+  },
+  {
+    "english": "eternal",
+    "chinese": "永恒的"
+  },
+  {
+    "english": "ethic",
+    "chinese": "伦理"
+  },
+  {
+    "english": "ethnic",
+    "chinese": "民族的"
+  },
+  {
+    "english": "etiquette",
+    "chinese": "礼节"
+  },
+  {
+    "english": "evacuate",
+    "chinese": "疏散"
+  },
+  {
+    "english": "evade",
+    "chinese": "逃避"
+  },
+  {
+    "english": "evaporate",
+    "chinese": "蒸发"
+  },
+  {
+    "english": "eventual",
+    "chinese": "最终的"
+  },
+  {
+    "english": "evergreen",
+    "chinese": "常绿的"
+  },
+  {
+    "english": "evoke",
+    "chinese": "唤起"
+  },
+  {
+    "english": "evolution",
+    "chinese": "进化"
+  },
+  {
+    "english": "exalt",
+    "chinese": "赞扬"
+  },
+  {
+    "english": "excavate",
+    "chinese": "挖掘"
+  },
+  {
+    "english": "excerpt",
+    "chinese": "摘录"
+  },
+  {
+    "english": "exemplary",
+    "chinese": "模范的"
+  },
+  {
+    "english": "exemplify",
+    "chinese": "例证"
+  },
+  {
+    "english": "exempt",
+    "chinese": "免除"
+  },
+  {
+    "english": "exile",
+    "chinese": "流放"
+  },
+  {
+    "english": "exotic",
+    "chinese": "异国的"
+  },
+  {
+    "english": "expedition",
+    "chinese": "探险"
+  },
+  {
+    "english": "expel",
+    "chinese": "驱逐"
+  },
+  {
+    "english": "expend",
+    "chinese": "花费"
+  },
+  {
+    "english": "expertise",
+    "chinese": "专长"
+  },
+  {
+    "english": "expire",
+    "chinese": "期满"
+  },
+  {
+    "english": "explicit",
+    "chinese": "明确的"
+  },
+  {
+    "english": "exponent",
+    "chinese": "倡导者"
+  },
+  {
+    "english": "exposition",
+    "chinese": "展览"
+  },
+  {
+    "english": "exquisite",
+    "chinese": "精致的"
+  },
+  {
+    "english": "extinct",
+    "chinese": "灭绝的"
+  },
+  {
+    "english": "extinguish",
+    "chinese": "熄灭"
+  },
+  {
+    "english": "extract",
+    "chinese": "提取"
+  },
+  {
+    "english": "extravagant",
+    "chinese": "奢侈的"
+  },
+  {
+    "english": "exuberant",
+    "chinese": "充满活力的"
+  },
+  {
+    "english": "fable",
+    "chinese": "寓言"
+  },
+  {
+    "english": "fabric",
+    "chinese": "织物"
+  },
+  {
+    "english": "fabricate",
+    "chinese": "制造"
+  },
+  {
+    "english": "facade",
+    "chinese": "正面"
+  },
+  {
+    "english": "facet",
+    "chinese": "方面"
+  },
+  {
+    "english": "facilitate",
+    "chinese": "促进"
+  },
+  {
+    "english": "faction",
+    "chinese": "派系"
+  },
+  {
+    "english": "fairy",
+    "chinese": "仙女"
+  },
+  {
+    "english": "falsify",
+    "chinese": "伪造"
+  },
+  {
+    "english": "falter",
+    "chinese": "蹒跚"
+  },
+  {
+    "english": "fanatic",
+    "chinese": "狂热的"
+  },
+  {
+    "english": "fancy",
+    "chinese": "想象"
+  },
+  {
+    "english": "farewell",
+    "chinese": "告别"
+  },
+  {
+    "english": "fascinate",
+    "chinese": "迷住"
+  },
+  {
+    "english": "fathom",
+    "chinese": "测深"
+  },
+  {
+    "english": "fatten",
+    "chinese": "养肥"
+  },
+  {
+    "english": "faulty",
+    "chinese": "有缺陷的"
+  },
+  {
+    "english": "feast",
+    "chinese": "盛宴"
+  },
+  {
+    "english": "feat",
+    "chinese": "功绩"
+  },
+  {
+    "english": "federation",
+    "chinese": "联邦"
+  },
+  {
+    "english": "feeble",
+    "chinese": "虚弱的"
+  },
+  {
+    "english": "fellowship",
+    "chinese": "友谊"
+  },
+  {
+    "english": "feminine",
+    "chinese": "女性的"
+  },
+  {
+    "english": "ferment",
+    "chinese": "发酵"
+  },
+  {
+    "english": "ferocious",
+    "chinese": "凶猛的"
+  },
+  {
+    "english": "ferry",
+    "chinese": "渡船"
+  },
+  {
+    "english": "fervent",
+    "chinese": "热心的"
+  },
+  {
+    "english": "fetus",
+    "chinese": "胎儿"
+  },
+  {
+    "english": "feud",
+    "chinese": "世仇"
+  },
+  {
+    "english": "fiasco",
+    "chinese": "惨败"
+  },
+  {
+    "english": "fiber",
+    "chinese": "纤维"
+  },
+  {
+    "english": "fierce",
+    "chinese": "凶猛的"
+  },
+  {
+    "english": "fiery",
+    "chinese": "暴躁的"
+  },
+  {
+    "english": "figurative",
+    "chinese": "比喻的"
+  },
+  {
+    "english": "filth",
+    "chinese": "污秽"
+  },
+  {
+    "english": "fiscal",
+    "chinese": "财政的"
+  },
+  {
+    "english": "fixture",
+    "chinese": "固定装置"
+  },
+  {
+    "english": "flake",
+    "chinese": "薄片"
+  },
+  {
+    "english": "flamboyant",
+    "chinese": "华丽的"
+  },
+  {
+    "english": "flank",
+    "chinese": "侧面"
+  },
+  {
+    "english": "flannel",
+    "chinese": "法兰绒"
+  },
+  {
+    "english": "flap",
+    "chinese": "拍打"
+  },
+  {
+    "english": "flare",
+    "chinese": "闪耀"
+  },
+  {
+    "english": "flask",
+    "chinese": "烧瓶"
+  },
+  {
+    "english": "flatter",
+    "chinese": "奉承"
+  },
+  {
+    "english": "flaw",
+    "chinese": "缺陷"
+  },
+  {
+    "english": "flee",
+    "chinese": "逃跑"
+  },
+  {
+    "english": "flicker",
+    "chinese": "闪烁"
+  },
+  {
+    "english": "fling",
+    "chinese": "扔"
+  },
+  {
+    "english": "flip",
+    "chinese": "轻弹"
+  },
+  {
+    "english": "flirt",
+    "chinese": "调情"
+  },
+  {
+    "english": "flock",
+    "chinese": "群"
+  },
+  {
+    "english": "fluctuate",
+    "chinese": "波动"
+  },
+  {
+    "english": "fluent",
+    "chinese": "流利的"
+  },
+  {
+    "english": "fluff",
+    "chinese": "绒毛"
+  },
+  {
+    "english": "fluorescent",
+    "chinese": "荧光的"
+  },
+  {
+    "english": "flush",
+    "chinese": "脸红"
+  },
+  {
+    "english": "flutter",
+    "chinese": "飘动"
+  },
+  {
+    "english": "flux",
+    "chinese": "流量"
+  },
+  {
+    "english": "foam",
+    "chinese": "泡沫"
+  },
+  {
+    "english": "foe",
+    "chinese": "敌人"
+  },
+  {
+    "english": "foliage",
+    "chinese": "叶子"
+  },
+  {
+    "english": "folklore",
+    "chinese": "民间传说"
+  },
+  {
+    "english": "footnote",
+    "chinese": "脚注"
+  },
+  {
+    "english": "footprint",
+    "chinese": "脚印"
+  },
+  {
+    "english": "forage",
+    "chinese": "搜寻食物"
+  },
+  {
+    "english": "forbear",
+    "chinese": "克制"
+  },
+  {
+    "english": "fore",
+    "chinese": "前部"
+  },
+  {
+    "english": "foremost",
+    "chinese": "最重要的"
+  },
+  {
+    "english": "forerunner",
+    "chinese": "先驱"
+  },
+  {
+    "english": "foresee",
+    "chinese": "预见"
+  },
+  {
+    "english": "foretell",
+    "chinese": "预言"
+  },
+  {
+    "english": "forfeit",
+    "chinese": "失去"
+  },
+  {
+    "english": "forgery",
+    "chinese": "伪造品"
+  },
+  {
+    "english": "formidable",
+    "chinese": "可怕的"
+  },
+  {
+    "english": "forsake",
+    "chinese": "放弃"
+  },
+  {
+    "english": "fort",
+    "chinese": "堡垒"
+  },
+  {
+    "english": "forthcoming",
+    "chinese": "即将到来的"
+  },
+  {
+    "english": "fortify",
+    "chinese": "加强"
+  },
+  {
+    "english": "fortress",
+    "chinese": "堡垒"
+  },
+  {
+    "english": "fossil",
+    "chinese": "化石"
+  },
+  {
+    "english": "foul",
+    "chinese": "犯规的"
+  },
+  {
+    "english": "fowl",
+    "chinese": "家禽"
+  },
+  {
+    "english": "fracture",
+    "chinese": "骨折"
+  },
+  {
+    "english": "fragile",
+    "chinese": "脆弱的"
+  },
+  {
+    "english": "fragrant",
+    "chinese": "芳香的"
+  },
+  {
+    "english": "frail",
+    "chinese": "虚弱的"
+  },
+  {
+    "english": "frantic",
+    "chinese": "狂乱的"
+  },
+  {
+    "english": "fraternity",
+    "chinese": "兄弟会"
+  },
+  {
+    "english": "fraud",
+    "chinese": "欺诈"
+  },
+  {
+    "english": "freight",
+    "chinese": "货运"
+  },
+  {
+    "english": "frenzy",
+    "chinese": "狂乱"
+  },
+  {
+    "english": "friction",
+    "chinese": "摩擦"
+  },
+  {
+    "english": "fringe",
+    "chinese": "边缘"
+  },
+  {
+    "english": "frontier",
+    "chinese": "边界"
+  },
+  {
+    "english": "frost",
+    "chinese": "霜"
+  },
+  {
+    "english": "frugal",
+    "chinese": "节俭的"
+  },
+  {
+    "english": "fugitive",
+    "chinese": "逃亡者"
+  },
+  {
+    "english": "fumigate",
+    "chinese": "熏蒸"
+  },
+  {
+    "english": "furious",
+    "chinese": "狂怒的"
+  },
+  {
+    "english": "furnish",
+    "chinese": "装备"
+  },
+  {
+    "english": "fuse",
+    "chinese": "保险丝"
+  },
+  {
+    "english": "fusion",
+    "chinese": "融合"
+  },
+  {
+    "english": "futile",
+    "chinese": "无用的"
+  },
+  {
+    "english": "galaxy",
+    "chinese": "银河"
+  },
+  {
+    "english": "gale",
+    "chinese": "大风"
+  },
+  {
+    "english": "gallant",
+    "chinese": "勇敢的"
+  },
+  {
+    "english": "gallop",
+    "chinese": "疾驰"
+  },
+  {
+    "english": "gamble",
+    "chinese": "赌博"
+  },
+  {
+    "english": "gangster",
+    "chinese": "匪徒"
+  },
+  {
+    "english": "garrison",
+    "chinese": "卫戍部队"
+  },
+  {
+    "english": "gash",
+    "chinese": "深痕"
+  },
+  {
+    "english": "gasp",
+    "chinese": "喘气"
+  },
+  {
+    "english": "gauge",
+    "chinese": "量规"
+  },
+  {
+    "english": "gaze",
+    "chinese": "凝视"
+  },
+  {
+    "english": "gem",
+    "chinese": "宝石"
+  },
+  {
+    "english": "gender",
+    "chinese": "性别"
+  },
+  {
+    "english": "generalize",
+    "chinese": "概括"
+  },
+  {
+    "english": "genesis",
+    "chinese": "起源"
+  },
+  {
+    "english": "genetic",
+    "chinese": "遗传的"
+  },
+  {
+    "english": "genre",
+    "chinese": "体裁"
+  },
+  {
+    "english": "geology",
+    "chinese": "地质学"
+  },
+  {
+    "english": "germ",
+    "chinese": "病菌"
+  },
+  {
+    "english": "ghastly",
+    "chinese": "可怕的"
+  },
+  {
+    "english": "ghetto",
+    "chinese": "贫民区"
+  },
+  {
+    "english": "gigantic",
+    "chinese": "巨大的"
+  },
+  {
+    "english": "giggle",
+    "chinese": "傻笑"
+  },
+  {
+    "english": "ginger",
+    "chinese": "姜"
+  },
+  {
+    "english": "glacier",
+    "chinese": "冰川"
+  },
+  {
+    "english": "glamour",
+    "chinese": "魅力"
+  },
+  {
+    "english": "gland",
+    "chinese": "腺"
+  },
+  {
+    "english": "glare",
+    "chinese": "怒视"
+  },
+  {
+    "english": "glaze",
+    "chinese": "上釉"
+  },
+  {
+    "english": "gleam",
+    "chinese": "闪光"
+  },
+  {
+    "english": "glide",
+    "chinese": "滑行"
+  },
+  {
+    "english": "glimmer",
+    "chinese": "微光"
+  },
+  {
+    "english": "glisten",
+    "chinese": "闪耀"
+  },
+  {
+    "english": "glitter",
+    "chinese": "闪光"
+  },
+  {
+    "english": "gloom",
+    "chinese": "昏暗"
+  },
+  {
+    "english": "gloss",
+    "chinese": "光泽"
+  },
+  {
+    "english": "glossary",
+    "chinese": "词汇表"
+  },
+  {
+    "english": "gnaw",
+    "chinese": "咬"
+  },
+  {
+    "english": "gobble",
+    "chinese": "狼吞虎咽"
+  },
+  {
+    "english": "goddess",
+    "chinese": "女神"
+  },
+  {
+    "english": "gorge",
+    "chinese": "峡谷"
+  },
+  {
+    "english": "gorgeous",
+    "chinese": "华丽的"
+  },
+  {
+    "english": "gorilla",
+    "chinese": "大猩猩"
+  },
+  {
+    "english": "gospel",
+    "chinese": "福音"
+  },
+  {
+    "english": "gossip",
+    "chinese": "八卦"
+  },
+  {
+    "english": "gourmet",
+    "chinese": "美食家"
+  },
+  {
+    "english": "gown",
+    "chinese": "长袍"
+  },
+  {
+    "english": "graft",
+    "chinese": "嫁接"
+  },
+  {
+    "english": "granite",
+    "chinese": "花岗岩"
+  },
+  {
+    "english": "graph",
+    "chinese": "图表"
+  },
+  {
+    "english": "graphic",
+    "chinese": "图形的"
+  },
+  {
+    "english": "grapple",
+    "chinese": "扭打"
+  },
+  {
+    "english": "grasshopper",
+    "chinese": "蚱蜢"
+  },
+  {
+    "english": "gratitude",
+    "chinese": "感激"
+  },
+  {
+    "english": "gravel",
+    "chinese": "砾石"
+  },
+  {
+    "english": "graze",
+    "chinese": "放牧"
+  },
+  {
+    "english": "grease",
+    "chinese": "油脂"
+  },
+  {
+    "english": "greed",
+    "chinese": "贪婪"
+  },
+  {
+    "english": "grenade",
+    "chinese": "手榴弹"
+  },
+  {
+    "english": "grief",
+    "chinese": "悲痛"
+  },
+  {
+    "english": "grievance",
+    "chinese": "不满"
+  },
+  {
+    "english": "grieve",
+    "chinese": "悲伤"
+  },
+  {
+    "english": "grill",
+    "chinese": "烤架"
+  },
+  {
+    "english": "grim",
+    "chinese": "冷酷的"
+  },
+  {
+    "english": "grin",
+    "chinese": "露齿笑"
+  },
+  {
+    "english": "grit",
+    "chinese": "砂砾"
+  },
+  {
+    "english": "groan",
+    "chinese": "呻吟"
+  },
+  {
+    "english": "groove",
+    "chinese": "沟槽"
+  },
+  {
+    "english": "grope",
+    "chinese": "摸索"
+  },
+  {
+    "english": "grotesque",
+    "chinese": "怪诞的"
+  },
+  {
+    "english": "grove",
+    "chinese": "小树林"
+  },
+  {
+    "english": "growl",
+    "chinese": "咆哮"
+  },
+  {
+    "english": "grudge",
+    "chinese": "怨恨"
+  },
+  {
+    "english": "gruff",
+    "chinese": "粗鲁的"
+  },
+  {
+    "english": "grumble",
+    "chinese": "抱怨"
+  },
+  {
+    "english": "grunt",
+    "chinese": "咕哝"
+  },
+  {
+    "english": "guardian",
+    "chinese": "监护人"
+  },
+  {
+    "english": "guerrilla",
+    "chinese": "游击队员"
+  },
+  {
+    "english": "guild",
+    "chinese": "协会"
+  },
+  {
+    "english": "guilt",
+    "chinese": "内疚"
+  },
+  {
+    "english": "gulp",
+    "chinese": "吞咽"
+  },
+  {
+    "english": "gush",
+    "chinese": "涌出"
+  },
+  {
+    "english": "gust",
+    "chinese": "一阵强风"
+  },
+  {
+    "english": "gut",
+    "chinese": "肠子"
+  },
+  {
+    "english": "gutter",
+    "chinese": "排水沟"
+  },
+  {
+    "english": "gymnasium",
+    "chinese": "体育馆"
+  },
+  {
+    "english": "habitat",
+    "chinese": "栖息地"
+  },
+  {
+    "english": "hack",
+    "chinese": "砍"
+  },
+  {
+    "english": "hail",
+    "chinese": "冰雹"
+  },
+  {
+    "english": "hamlet",
+    "chinese": "小村庄"
+  },
+  {
+    "english": "hammer",
+    "chinese": "锤子"
+  },
+  {
+    "english": "hamper",
+    "chinese": "阻碍"
+  },
+  {
+    "english": "handicap",
+    "chinese": "障碍"
+  },
+  {
+    "english": "handicraft",
+    "chinese": "手工艺"
+  },
+  {
+    "english": "handsome",
+    "chinese": "英俊的"
+  },
+  {
+    "english": "haphazard",
+    "chinese": "随意的"
+  },
+  {
+    "english": "harassment",
+    "chinese": "骚扰"
+  },
+  {
+    "english": "hardy",
+    "chinese": "耐寒的"
+  },
+  {
+    "english": "harmonious",
+    "chinese": "和谐的"
+  },
+  {
+    "english": "harsh",
+    "chinese": "严厉的"
+  },
+  {
+    "english": "hassle",
+    "chinese": "麻烦"
+  },
+  {
+    "english": "haste",
+    "chinese": "匆忙"
+  },
+  {
+    "english": "hasten",
+    "chinese": "加快"
+  },
+  {
+    "english": "hasty",
+    "chinese": "匆忙的"
+  },
+  {
+    "english": "hatch",
+    "chinese": "孵化"
+  },
+  {
+    "english": "haul",
+    "chinese": "拖运"
+  },
+  {
+    "english": "haunt",
+    "chinese": "出没"
+  },
+  {
+    "english": "haven",
+    "chinese": "避难所"
+  },
+  {
+    "english": "havoc",
+    "chinese": "大破坏"
+  },
+  {
+    "english": "hawk",
+    "chinese": "鹰"
+  },
+  {
+    "english": "haze",
+    "chinese": "薄雾"
+  },
+  {
+    "english": "hearing",
+    "chinese": "听力"
+  },
+  {
+    "english": "heave",
+    "chinese": "举起"
+  },
+  {
+    "english": "hegemony",
+    "chinese": "霸权"
+  },
+  {
+    "english": "heighten",
+    "chinese": "提高"
+  },
+  {
+    "english": "heir",
+    "chinese": "继承人"
+  },
+  {
+    "english": "helicopter",
+    "chinese": "直升机"
+  },
+  {
+    "english": "helmet",
+    "chinese": "头盔"
+  },
+  {
+    "english": "hemisphere",
+    "chinese": "半球"
+  },
+  {
+    "english": "herald",
+    "chinese": "先驱"
+  },
+  {
+    "english": "herb",
+    "chinese": "草本"
+  },
+  {
+    "english": "hereditary",
+    "chinese": "遗传的"
+  },
+  {
+    "english": "heresy",
+    "chinese": "异端"
+  },
+  {
+    "english": "heritage",
+    "chinese": "遗产"
+  },
+  {
+    "english": "hermit",
+    "chinese": "隐士"
+  },
+  {
+    "english": "heroine",
+    "chinese": "女英雄"
+  },
+  {
+    "english": "hideous",
+    "chinese": "可怕的"
+  },
+  {
+    "english": "hierarchy",
+    "chinese": "等级"
+  },
+  {
+    "english": "highlight",
+    "chinese": "强调"
+  },
+  {
+    "english": "hijack",
+    "chinese": "劫持"
+  },
+  {
+    "english": "hike",
+    "chinese": "远足"
+  },
+  {
+    "english": "hilarious",
+    "chinese": "欢闹的"
+  },
+  {
+    "english": "hinder",
+    "chinese": "阻碍"
+  },
+  {
+    "english": "hinge",
+    "chinese": "铰链"
+  },
+  {
+    "english": "hiss",
+    "chinese": "嘶嘶声"
+  },
+  {
+    "english": "historian",
+    "chinese": "历史学家"
+  },
+  {
+    "english": "hive",
+    "chinese": "蜂巢"
+  },
+  {
+    "english": "hoarse",
+    "chinese": "嘶哑的"
+  },
+  {
+    "english": "hoist",
+    "chinese": "升起"
+  },
+  {
+    "english": "hollow",
+    "chinese": "空的"
+  },
+  {
+    "english": "homage",
+    "chinese": "敬意"
+  },
+  {
+    "english": "homogeneous",
+    "chinese": "同质的"
+  },
+  {
+    "english": "hood",
+    "chinese": "头巾"
+  },
+  {
+    "english": "hook",
+    "chinese": "钩子"
+  },
+  {
+    "english": "hoop",
+    "chinese": "箍"
+  },
+  {
+    "english": "hop",
+    "chinese": "跳跃"
+  },
+  {
+    "english": "horizon",
+    "chinese": "地平线"
+  },
+  {
+    "english": "hormone",
+    "chinese": "激素"
+  },
+  {
+    "english": "horn",
+    "chinese": "角"
+  },
+  {
+    "english": "horoscope",
+    "chinese": "占星"
+  },
+  {
+    "english": "hose",
+    "chinese": "软管"
+  },
+  {
+    "english": "hospitable",
+    "chinese": "好客的"
+  },
+  {
+    "english": "hostage",
+    "chinese": "人质"
+  },
+  {
+    "english": "hostel",
+    "chinese": "旅社"
+  },
+  {
+    "english": "hound",
+    "chinese": "猎犬"
+  },
+  {
+    "english": "hover",
+    "chinese": "徘徊"
+  },
+  {
+    "english": "howl",
+    "chinese": "嚎叫"
+  },
+  {
+    "english": "hub",
+    "chinese": "中心"
+  },
+  {
+    "english": "huddle",
+    "chinese": "挤作一团"
+  },
+  {
+    "english": "hue",
+    "chinese": "色调"
+  },
+  {
+    "english": "hug",
+    "chinese": "拥抱"
+  },
+  {
+    "english": "hum",
+    "chinese": "哼唱"
+  },
+  {
+    "english": "humane",
+    "chinese": "仁慈的"
+  },
+  {
+    "english": "humanitarian",
+    "chinese": "人道主义的"
+  },
+  {
+    "english": "humid",
+    "chinese": "潮湿的"
+  },
+  {
+    "english": "humiliate",
+    "chinese": "羞辱"
+  },
+  {
+    "english": "hurdle",
+    "chinese": "栏架"
+  },
+  {
+    "english": "hurl",
+    "chinese": "猛投"
+  },
+  {
+    "english": "hurricane",
+    "chinese": "飓风"
+  },
+  {
+    "english": "hybrid",
+    "chinese": "杂交的"
+  },
+  {
+    "english": "hygiene",
+    "chinese": "卫生"
+  },
+  {
+    "english": "hymn",
+    "chinese": "赞美诗"
+  },
+  {
+    "english": "hyphen",
+    "chinese": "连字符"
+  },
+  {
+    "english": "hypocrisy",
+    "chinese": "虚伪"
+  },
+  {
+    "english": "hypothesis",
+    "chinese": "假说"
+  },
+  {
+    "english": "iceberg",
+    "chinese": "冰山"
+  },
+  {
+    "english": "ideology",
+    "chinese": "意识形态"
+  },
+  {
+    "english": "idiom",
+    "chinese": "成语"
+  },
+  {
+    "english": "idiot",
+    "chinese": "白痴"
+  },
+  {
+    "english": "ignite",
+    "chinese": "点燃"
+  },
+  {
+    "english": "ignorance",
+    "chinese": "无知"
+  },
+  {
+    "english": "illicit",
+    "chinese": "非法的"
+  },
+  {
+    "english": "illiterate",
+    "chinese": "文盲的"
+  },
+  {
+    "english": "illuminate",
+    "chinese": "照亮"
+  },
+  {
+    "english": "illusion",
+    "chinese": "错觉"
+  },
+  {
+    "english": "imaginative",
+    "chinese": "富有想象力的"
+  },
+  {
+    "english": "immaculate",
+    "chinese": "无暇的"
+  },
+  {
+    "english": "immature",
+    "chinese": "不成熟的"
+  },
+  {
+    "english": "immerse",
+    "chinese": "沉浸"
+  },
+  {
+    "english": "imminent",
+    "chinese": "迫近的"
+  },
+  {
+    "english": "immortal",
+    "chinese": "不朽的"
+  },
+  {
+    "english": "impair",
+    "chinese": "损害"
+  },
+  {
+    "english": "impart",
+    "chinese": "传授"
+  },
+  {
+    "english": "impeach",
+    "chinese": "弹劾"
+  },
+  {
+    "english": "impede",
+    "chinese": "妨碍"
+  },
+  {
+    "english": "imperative",
+    "chinese": "必要的"
+  },
+  {
+    "english": "imperial",
+    "chinese": "帝国的"
+  },
+  {
+    "english": "impetus",
+    "chinese": "动力"
+  },
+  {
+    "english": "implicit",
+    "chinese": "隐含的"
+  },
+  {
+    "english": "implore",
+    "chinese": "恳求"
+  },
+  {
+    "english": "impoverish",
+    "chinese": "使贫困"
+  },
+  {
+    "english": "imprison",
+    "chinese": "监禁"
+  },
+  {
+    "english": "impromptu",
+    "chinese": "即兴的"
+  },
+  {
+    "english": "improper",
+    "chinese": "不适当的"
+  },
+  {
+    "english": "inaccessible",
+    "chinese": "难接近的"
+  },
+  {
+    "english": "inadequate",
+    "chinese": "不充分的"
+  },
+  {
+    "english": "inaugurate",
+    "chinese": "就职"
+  },
+  {
+    "english": "incapable",
+    "chinese": "无能的"
+  },
+  {
+    "english": "incense",
+    "chinese": "香"
+  },
+  {
+    "english": "incentive",
+    "chinese": "激励"
+  },
+  {
+    "english": "incessant",
+    "chinese": "不停的"
+  },
+  {
+    "english": "incidence",
+    "chinese": "发生率"
+  },
+  {
+    "english": "incidentally",
+    "chinese": "顺便提"
+  },
+  {
+    "english": "incite",
+    "chinese": "煽动"
+  },
+  {
+    "english": "inclusive",
+    "chinese": "包含的"
+  },
+  {
+    "english": "incorporate",
+    "chinese": "合并"
+  },
+  {
+    "english": "incumbent",
+    "chinese": "在职的"
+  },
+  {
+    "english": "incur",
+    "chinese": "招致"
+  },
+  {
+    "english": "indebted",
+    "chinese": "感激的"
+  },
+  {
+    "english": "indicative",
+    "chinese": "指示的"
+  },
+  {
+    "english": "indignant",
+    "chinese": "愤慨的"
+  },
+  {
+    "english": "indispensable",
+    "chinese": "不可缺少的"
+  },
+  {
+    "english": "induce",
+    "chinese": "引诱"
+  },
+  {
+    "english": "indulge",
+    "chinese": "沉溺"
+  },
+  {
+    "english": "industrious",
+    "chinese": "勤勉的"
+  },
+  {
+    "english": "inertia",
+    "chinese": "惯性"
+  },
+  {
+    "english": "infancy",
+    "chinese": "婴儿期"
+  },
+  {
+    "english": "infect",
+    "chinese": "感染"
+  },
+  {
+    "english": "infer",
+    "chinese": "推断"
+  },
+  {
+    "english": "inferior",
+    "chinese": "下等的"
+  },
+  {
+    "english": "infest",
+    "chinese": "侵扰"
+  },
+  {
+    "english": "inflate",
+    "chinese": "膨胀"
+  },
+  {
+    "english": "inflict",
+    "chinese": "施加"
+  },
+  {
+    "english": "influenza",
+    "chinese": "流感"
+  },
+  {
+    "english": "informal",
+    "chinese": "非正式的"
+  },
+  {
+    "english": "infringe",
+    "chinese": "侵犯"
+  },
+  {
+    "english": "ingenious",
+    "chinese": "巧妙的"
+  },
+  {
+    "english": "inhabit",
+    "chinese": "居住"
+  },
+  {
+    "english": "inherent",
+    "chinese": "固有的"
+  },
+  {
+    "english": "inhibit",
+    "chinese": "抑制"
+  },
+  {
+    "english": "inhuman",
+    "chinese": "不人道的"
+  },
+  {
+    "english": "initiate",
+    "chinese": "开始"
+  },
+  {
+    "english": "initiative",
+    "chinese": "主动性"
+  },
+  {
+    "english": "inject",
+    "chinese": "注射"
+  },
+  {
+    "english": "inland",
+    "chinese": "内陆的"
+  },
+  {
+    "english": "inlet",
+    "chinese": "入口"
+  },
+  {
+    "english": "innate",
+    "chinese": "先天的"
+  },
+  {
+    "english": "innovate",
+    "chinese": "创新"
+  },
+  {
+    "english": "innumerable",
+    "chinese": "无数的"
+  },
+  {
+    "english": "insane",
+    "chinese": "精神错乱的"
+  },
+  {
+    "english": "inscribe",
+    "chinese": "题写"
+  },
+  {
+    "english": "insecticide",
+    "chinese": "杀虫剂"
+  },
+  {
+    "english": "insecure",
+    "chinese": "不安全的"
+  },
+  {
+    "english": "insomnia",
+    "chinese": "失眠"
+  },
+  {
+    "english": "inspiration",
+    "chinese": "灵感"
+  },
+  {
+    "english": "instigate",
+    "chinese": "煽动"
+  },
+  {
+    "english": "instrumental",
+    "chinese": "工具的"
+  },
+  {
+    "english": "insulate",
+    "chinese": "隔离"
+  },
+  {
+    "english": "intact",
+    "chinese": "完整的"
+  },
+  {
+    "english": "integral",
+    "chinese": "完整的"
+  },
+  {
+    "english": "integrity",
+    "chinese": "正直"
+  },
+  {
+    "english": "intellect",
+    "chinese": "智力"
+  },
+  {
+    "english": "intelligible",
+    "chinese": "可理解的"
+  },
+  {
+    "english": "intent",
+    "chinese": "意图"
+  },
+  {
+    "english": "intercept",
+    "chinese": "拦截"
+  },
+  {
+    "english": "intercourse",
+    "chinese": "交往"
+  },
+  {
+    "english": "interim",
+    "chinese": "临时的"
+  },
+  {
+    "english": "intermediate",
+    "chinese": "中间的"
+  },
+  {
+    "english": "intermittent",
+    "chinese": "间歇的"
+  },
+  {
+    "english": "interpose",
+    "chinese": "插入"
+  },
+  {
+    "english": "interrogate",
+    "chinese": "审问"
+  },
+  {
+    "english": "intersection",
+    "chinese": "十字路口"
+  },
+  {
+    "english": "intimidate",
+    "chinese": "恐吓"
+  },
+  {
+    "english": "intricate",
+    "chinese": "复杂的"
+  },
+  {
+    "english": "intrigue",
+    "chinese": "引起兴趣"
+  },
+  {
+    "english": "intrinsic",
+    "chinese": "内在的"
+  },
+  {
+    "english": "intrude",
+    "chinese": "闯入"
+  },
+  {
+    "english": "intuition",
+    "chinese": "直觉"
+  },
+  {
+    "english": "invalid",
+    "chinese": "无效的"
+  },
+  {
+    "english": "invaluable",
+    "chinese": "无价的"
+  },
+  {
+    "english": "invariably",
+    "chinese": "不变地"
+  },
+  {
+    "english": "invasion",
+    "chinese": "入侵"
+  },
+  {
+    "english": "inventory",
+    "chinese": "存货"
+  },
+  {
+    "english": "invert",
+    "chinese": "颠倒"
+  },
+  {
+    "english": "irrational",
+    "chinese": "不理性的"
+  },
+  {
+    "english": "irrespective",
+    "chinese": "不考虑的"
+  },
+  {
+    "english": "irrigate",
+    "chinese": "灌溉"
+  },
+  {
+    "english": "irritate",
+    "chinese": "激怒"
+  },
+  {
+    "english": "itinerary",
+    "chinese": "行程"
+  },
+  {
+    "english": "ivory",
+    "chinese": "象牙"
+  },
+  {
+    "english": "jeopardy",
+    "chinese": "危险"
+  },
+  {
+    "english": "jerk",
+    "chinese": "急拉"
+  },
+  {
+    "english": "jest",
+    "chinese": "玩笑"
+  },
+  {
+    "english": "jewel",
+    "chinese": "宝石"
+  },
+  {
+    "english": "jog",
+    "chinese": "慢跑"
+  },
+  {
+    "english": "jolly",
+    "chinese": "快乐的"
+  },
+  {
+    "english": "jolt",
+    "chinese": "震动"
+  },
+  {
+    "english": "journalism",
+    "chinese": "新闻业"
+  },
+  {
+    "english": "joyful",
+    "chinese": "快乐的"
+  },
+  {
+    "english": "jubilant",
+    "chinese": "欢腾的"
+  },
+  {
+    "english": "judicial",
+    "chinese": "司法的"
+  },
+  {
+    "english": "jug",
+    "chinese": "壶"
+  },
+  {
+    "english": "junction",
+    "chinese": "连接"
+  },
+  {
+    "english": "jungle",
+    "chinese": "丛林"
+  },
+  {
+    "english": "junk",
+    "chinese": "垃圾"
+  },
+  {
+    "english": "jurisdiction",
+    "chinese": "司法权"
+  },
+  {
+    "english": "justification",
+    "chinese": "辩护"
+  },
+  {
+    "english": "juvenile",
+    "chinese": "青少年的"
+  },
+  {
+    "english": "kennel",
+    "chinese": "狗窝"
+  },
+  {
+    "english": "kernel",
+    "chinese": "核心"
+  },
+  {
+    "english": "kerosene",
+    "chinese": "煤油"
+  },
+  {
+    "english": "kettle",
+    "chinese": "水壶"
+  },
+  {
+    "english": "kidnap",
+    "chinese": "绑架"
+  },
+  {
+    "english": "kidney",
+    "chinese": "肾"
+  },
+  {
+    "english": "kindergarten",
+    "chinese": "幼儿园"
+  },
+  {
+    "english": "kindle",
+    "chinese": "点燃"
+  },
+  {
+    "english": "kit",
+    "chinese": "工具包"
+  },
+  {
+    "english": "knack",
+    "chinese": "诀窍"
+  }
+]

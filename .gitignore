@@ -1,0 +1,20 @@
+# 依赖
+node_modules/
+
+# Android 构建产物
+word_app_web/android/.gradle/
+word_app_web/android/app/build/
+word_app_web/android/build/
+word_app_web/android/.idea/
+word_app_web/android/local.properties
+
+# 构建产物（源码在根目录，www 为 Capacitor webDir）
+word_app_web/www/
+
+# 打包文件
+*.apk
+*.zip
+
+# 残余文件
+nul;
+.claude/

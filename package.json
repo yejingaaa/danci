@@ -1,0 +1,8 @@
+{
+  "name": "word-app-web",
+  "version": "1.0.0",
+  "description": "单词学习 App - Web 版",
+  "scripts": {
+    "start": "npx serve ."
+  }
+}

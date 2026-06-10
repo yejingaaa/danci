@@ -1199,6 +1199,9 @@ function renderWordList(words) {
   const count = document.getElementById('word-count');
   const searchInput = document.getElementById('word-search');
   searchInput.style.display = words.length > 5 ? 'block' : 'none';
+  // 限制列表高度，让批量操作按钮始终可见
+  list.style.overflowY = 'auto';
+  list.style.maxHeight = 'calc(100vh - 320px)';
   if (words.length === 0 && allWordsCache.length === 0) {
     count.textContent = '共 0 个单词';
     list.innerHTML = '<div class="empty-state"><span class="empty-state-icon">📭</span><div class="empty-state-text">这个词本还是空的</div></div>';

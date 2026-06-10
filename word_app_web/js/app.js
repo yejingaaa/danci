@@ -133,10 +133,8 @@ async function startDailyStudy() {
   newWords = newWords.filter(w => { if (seen.has(w.id)) return false; seen.add(w.id); return true; });
   dueWords = dueWords.filter(w => { if (seen.has(w.id)) return false; seen.add(w.id); return true; });
 
-  // 限制新词数（不超过每日剩余额度）
-  const remain = Math.max(0, dailyGoal - dailyNewCount);
-  if (remain <= 0) { showToast('今日新词已完成！🎉'); return; }
-  newWords = newWords.slice(0, remain);
+  // 每次最多学 10 个新词（不限每日总量），全部到期复习
+  newWords = newWords.slice(0, 10);
 
   if (newWords.length === 0 && dueWords.length === 0) {
     showToast('没有待学习的单词 📭');
@@ -176,10 +174,10 @@ function refreshSettings() {
 }
 
 async function setDailyGoal(val) {
-  dailyGoal = parseInt(val) || 10;
+  dailyGoal = Math.max(1, parseInt(val) || 10);
   await appDB.setSetting('dailyGoal', dailyGoal);
   refreshHome();
-  showToast(`每日新词数已设为 ${dailyGoal}`);
+  showToast(`每日目标已设为 ${dailyGoal}`);
 }
 
 async function setDirection(dir) {
@@ -250,8 +248,8 @@ async function loadSettings() {
   } else {
     dailyNewCount = await appDB.getSetting('dailyNewCount') || 0;
   }
-  const goalSel = document.getElementById('daily-goal-select');
-  if (goalSel) goalSel.value = dailyGoal;
+  const goalInput = document.getElementById('daily-goal-input');
+  if (goalInput) goalInput.value = dailyGoal;
 }
 
 // ============== 学习页面 ==============
@@ -465,7 +463,7 @@ async function nextWord() {
   if (studyMode === 'daily') {
     const item = wordQueue[currentWordIndex];
     if (item && item.type === 'new') {
-      dailyNewCount = Math.min(dailyGoal, dailyNewCount + 1);
+      dailyNewCount += 1;
       await appDB.setSetting('dailyNewCount', dailyNewCount);
     }
   }
@@ -1727,12 +1725,18 @@ function showToast(message) {
 
 // ============== 全屏模式 ==============
 function toggleFullscreen() {
-  if (!document.fullscreenElement) {
-    document.documentElement.requestFullscreen().catch(() => {
+  const el = document.documentElement;
+  const rfs = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
+  const isFull = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+  if (!isFull) {
+    if (rfs) {
+      rfs.call(el).catch(() => showToast('全屏模式被浏览器阻止'));
+    } else {
       showToast('当前浏览器不支持全屏模式');
-    });
+    }
   } else {
-    document.exitFullscreen().catch(() => {});
+    const efs = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen || document.msExitFullscreen;
+    if (efs) efs.call(document).catch(() => {});
   }
 }
 

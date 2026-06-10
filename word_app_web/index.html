@@ -139,15 +139,8 @@
             <button class="btn btn-orange btn-sm" onclick="saveCustomIntervals()" style="margin-top:8px;width:100%;">保存</button>
           </div>
           <div class="settings-item">
-            <span>每日新词数</span>
-            <select id="daily-goal-select" onchange="setDailyGoal(this.value)" style="padding:6px 12px;border-radius:8px;border:1.5px solid rgba(149,165,166,0.2);font-size:14px;background:var(--card);color:var(--text);">
-              <option value="5">5</option>
-              <option value="10">10</option>
-              <option value="15">15</option>
-              <option value="20">20</option>
-              <option value="30">30</option>
-              <option value="50">50</option>
-            </select>
+            <span>每日目标（仅统计）</span>
+            <input type="number" id="daily-goal-input" value="10" min="1" onchange="setDailyGoal(this.value)" style="width:70px;padding:6px 12px;border-radius:8px;border:1.5px solid rgba(149,165,166,0.2);font-size:14px;background:var(--card);color:var(--text);text-align:center;">
           </div>
           <div class="settings-item">
             <span>夜间模式</span>
@@ -165,9 +158,6 @@
           </div>
           <input type="file" id="import-backup-input" accept=".json" style="display:none" onchange="importBackup(event)">
           <button class="btn-text" style="margin-top:12px;color:var(--btn-red);font-size:13px;" onclick="resetAllData()">🗑️ 清空所有数据</button>
-        </div>
-        <div class="card" style="text-align:center;">
-          <button class="btn btn-outline btn-sm" onclick="exitApp()">🚪 退出应用</button>
         </div>
         <div class="card" style="text-align:center;">
           <div style="display:flex;gap:8px;justify-content:center;">

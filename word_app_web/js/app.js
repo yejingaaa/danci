@@ -41,8 +41,6 @@ function switchTab(tabName) {
   const titles = { study: '单词软件', words: '词库', stats: '统计', profile: '我的' };
   document.getElementById('page-title').textContent = titles[tabName] || '单词软件';
 
-  // 隐藏返回按钮
-  document.getElementById('global-back-btn').classList.remove('visible');
 }
 
 /** 显示全屏页面（隐藏底部导航） */
@@ -53,7 +51,6 @@ function showFullscreenPage(pageId) {
 
   document.getElementById('fullscreen-pages').classList.add('visible');
   document.getElementById('bottom-nav').classList.add('hidden');
-  document.getElementById('global-back-btn').classList.add('visible');
 
   // 刷新数据
   if (pageId === 'study') refreshStudy();
@@ -74,7 +71,6 @@ function showSubPage(pageId) {
 function goHome() {
   document.getElementById('fullscreen-pages').classList.remove('visible');
   document.getElementById('bottom-nav').classList.remove('hidden');
-  document.getElementById('global-back-btn').classList.remove('visible');
   document.getElementById('page-title').textContent = '单词软件';
 
   // 回到学习 tab 并刷新
@@ -333,6 +329,7 @@ function renderCurrentWord() {
     actions.style.display = 'flex';
     spellArea.style.display = 'none';
     actions.innerHTML = `
+      <button class="btn btn-outline" onclick="showAnswer(wordQueue[currentWordIndex].word || wordQueue[currentWordIndex])" style="font-size:13px;">👁 显示答案</button>
       <button class="btn btn-red" onclick="handleRecallAction('forgot')"><span class="btn-icon">✕</span> 忘了</button>
       <button class="btn btn-orange" onclick="handleRecallAction('struggled')"><span class="btn-icon">△</span> 勉强</button>
       <button class="btn btn-green" onclick="handleRecallAction('mastered')"><span class="btn-icon">★</span> 熟练</button>
@@ -367,19 +364,28 @@ async function handleAction(action) {
   if (action === 'forgot') sessionStats.forgot++;
   else if (action === 'struggled') sessionStats.struggled++;
   else sessionStats.mastered++;
-  nextWord();
+  if (action === 'forgot' || action === 'struggled') {
+    showAnswer(word);
+  } else {
+    nextWord();
+  }
 }
 
 // \u62fc\u5199\u6a21\u5f0f\uff1a\u5b9e\u65f6\u8f93\u5165\u68c0\u6d4b
+let spellInputHandler = null;
 function setupSpellInputListener() {
-  const oldInput = document.getElementById('spell-input');
-  if (!oldInput) return;
-  const newInput = oldInput.cloneNode(true);
-  oldInput.parentNode.replaceChild(newInput, oldInput);
-  newInput.addEventListener('input', onSpellInput);
-  newInput.addEventListener('keydown', (e) => {
+  const input = document.getElementById('spell-input');
+  if (!input) return;
+  // \u79fb\u9664\u65e7\u76d1\u542c\u5668
+  if (spellInputHandler) {
+    input.removeEventListener('input', spellInputHandler);
+  }
+  const handler = function(e) { onSpellInput(e); };
+  spellInputHandler = handler;
+  input.addEventListener('input', handler);
+  input.onkeydown = function(e) {
     if (e.key === 'Enter') { e.preventDefault(); if (showingAnswer) handleShowNext(); }
-  });
+  };
 }
 
 function onSpellInput() {

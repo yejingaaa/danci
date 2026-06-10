@@ -157,8 +157,9 @@
         <div class="card" style="text-align:center;">
           <button class="btn btn-outline btn-sm" onclick="exitApp()">🚪 退出应用</button>
         </div>
-        <div class="card" style="text-align:center;font-size:13px;color:var(--btn-gray);padding:16px;">
-          💡 在浏览器菜单选择「添加到主屏幕」，体验更好
+        <div class="card" style="text-align:center;">
+          <button class="btn btn-outline btn-sm" onclick="showInstallGuide()">📲 安装到主屏幕</button>
+          <div id="install-guide" style="display:none;margin-top:12px;padding:12px;background:var(--bg);border-radius:8px;font-size:13px;color:var(--btn-gray);text-align:left;line-height:1.6;"></div>
         </div>
       </div>
     </div>
@@ -180,17 +181,15 @@
             <div class="word-display"><div class="word-english" id="word-english">hello</div><div class="word-chinese" id="word-chinese">你好</div></div>
           </div>
           <div id="spell-area" style="display:none;">
-            <form id="spell-form" onsubmit="handleSpellSubmit(event)">
-              <input type="text" id="spell-input" class="spell-input" placeholder="输入翻译..." autocomplete="off">
-            </form>
-            <div class="btn-group">
-              <button id="spell-check-btn" class="btn btn-orange" onclick="handleSpellCheck()">✓ 检查</button>
-              <button id="spell-forgot-btn" class="btn btn-red" onclick="handleSpellForgot()">✕ 忘了</button>
+            <input type="text" id="spell-input" class="spell-input" placeholder="输入翻译..." autocomplete="off">
+            <div class="btn-group" style="margin-top:12px;">
+              <button class="btn btn-orange" onclick="handleSpellAction('struggled')" style="flex:1;">△ 勉强</button>
+              <button class="btn btn-red" onclick="handleSpellAction('forgot')" style="flex:1;">✕ 忘了</button>
             </div>
           </div>
           <div id="study-actions">
             <button class="btn btn-red" onclick="handleAction('forgot')"><span class="btn-icon">✕</span> 忘了</button>
-            <button class="btn btn-orange" onclick="handleAction('remembered')"><span class="btn-icon">✓</span> 记得</button>
+            <button class="btn btn-orange" onclick="handleAction('struggled')"><span class="btn-icon">△</span> 勉强</button>
             <button class="btn btn-green" onclick="handleAction('mastered')"><span class="btn-icon">★</span> 熟练</button>
           </div>
           <div id="answer-area" class="card" style="display:none;">

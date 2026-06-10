@@ -9,7 +9,7 @@ let studyDirection = 'en2cn'; // 'en2cn' | 'cn2en'
 let wordQueue = [];
 let currentWordIndex = 0;
 let showingAnswer = false;
-let algorithmName = 'sm2';
+let algorithmName = 'three_state';
 let customIntervals = null;
 let isNightMode = false;
 
@@ -156,7 +156,7 @@ async function loadSettings() {
     document.getElementById('night-toggle').checked = isNightMode;
   }
   studyDirection = await appDB.getSetting('studyDirection') || 'en2cn';
-  algorithmName = await appDB.getSetting('algorithm') || 'sm2';
+  algorithmName = await appDB.getSetting('algorithm') || 'three_state';
   const saved = await appDB.getSetting('customIntervals');
   if (saved) {
     customIntervals = saved;
@@ -167,7 +167,7 @@ async function loadSettings() {
 
 // ============== 学习页面 ==============
 let lastRenderedIndex = -1;
-let sessionStats = { total: 0, correct: 0, wrong: 0 };
+let sessionStats = { total: 0, mastered: 0, struggled: 0, forgot: 0 };
 
 function renderCurrentWord() {
   if (wordQueue.length === 0 || currentWordIndex >= wordQueue.length) {
@@ -191,11 +191,7 @@ function renderCurrentWord() {
   showingAnswer = false;
 
   const spellInput = document.getElementById('spell-input');
-  spellInput.value = '';
-  spellInput.className = 'spell-input';
-  spellInput.disabled = false;
-  document.getElementById('spell-check-btn').disabled = false;
-  document.getElementById('spell-forgot-btn').disabled = false;
+  if (spellInput) { spellInput.value = ''; spellInput.className = 'spell-input'; spellInput.disabled = false; }
 
   const modeLabelMap = { learn: '学习', spell: '拼写', recall: '复习' };
   const dirLabel = studyDirection === 'en2cn' ? '英→中' : '中→英';
@@ -207,7 +203,7 @@ function renderCurrentWord() {
     spellArea.style.display = 'none';
     actions.innerHTML = `
       <button class="btn btn-red" onclick="handleAction('forgot')"><span class="btn-icon">✕</span> 忘了</button>
-      <button class="btn btn-orange" onclick="handleAction('remembered')"><span class="btn-icon">✓</span> 记得</button>
+      <button class="btn btn-orange" onclick="handleAction('struggled')"><span class="btn-icon">△</span> 勉强</button>
       <button class="btn btn-green" onclick="handleAction('mastered')"><span class="btn-icon">★</span> 熟练</button>
     `;
     if (studyDirection === 'cn2en') {
@@ -230,13 +226,15 @@ function renderCurrentWord() {
       document.getElementById('word-chinese').textContent = '';
       document.getElementById('spell-input').placeholder = '输入对应的中文释义...';
     }
+    setupSpellInputListener();
   } else if (studyMode === 'recall') {
     display.style.display = 'block';
     actions.style.display = 'flex';
     spellArea.style.display = 'none';
     actions.innerHTML = `
       <button class="btn btn-red" onclick="handleRecallAction('forgot')"><span class="btn-icon">✕</span> 忘了</button>
-      <button class="btn btn-orange" onclick="handleRecallAction('remembered')"><span class="btn-icon">✓</span> 记得</button>
+      <button class="btn btn-orange" onclick="handleRecallAction('struggled')"><span class="btn-icon">△</span> 勉强</button>
+      <button class="btn btn-green" onclick="handleRecallAction('mastered')"><span class="btn-icon">★</span> 熟练</button>
     `;
     if (studyDirection === 'cn2en') {
       document.getElementById('word-english').textContent = word.chinese;
@@ -265,39 +263,62 @@ async function handleAction(action) {
   await appDB.updateWord(updated);
   await appDB.insertRecord({ wordId: word.id, action });
   sessionStats.total++;
-  if (action === 'forgot') sessionStats.wrong++;
-  else sessionStats.correct++;
+  if (action === 'forgot') sessionStats.forgot++;
+  else if (action === 'struggled') sessionStats.struggled++;
+  else sessionStats.mastered++;
   nextWord();
 }
 
-function handleSpellCheck() {
-  const word = wordQueue[currentWordIndex];
-  if (!word) return;
+// \u62fc\u5199\u6a21\u5f0f\uff1a\u5b9e\u65f6\u8f93\u5165\u68c0\u6d4b
+function setupSpellInputListener() {
+  const oldInput = document.getElementById('spell-input');
+  if (!oldInput) return;
+  const newInput = oldInput.cloneNode(true);
+  oldInput.parentNode.replaceChild(newInput, oldInput);
+  newInput.addEventListener('input', onSpellInput);
+  newInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') { e.preventDefault(); if (showingAnswer) handleShowNext(); }
+  });
+}
 
+function onSpellInput() {
+  const word = wordQueue[currentWordIndex];
+  if (!word || showingAnswer) return;
   const input = document.getElementById('spell-input');
   const answer = studyDirection === 'en2cn' ? word.chinese : word.english;
-  const userAnswer = input.value.trim().toLowerCase();
-  const correctAnswer = answer.trim().toLowerCase();
-  // \u89c4\u8303\u5316\u7a7a\u683c\uff08\u591a\u4e2a\u7a7a\u683c\u5408\u5e76\u4e3a\u4e00\u4e2a\uff09\uff0c\u4fdd\u7559\u5b57\u6bcd\u548c\u4e2d\u6587\u7528\u4e8e\u5bf9\u6bd4
-  const cleanUser = userAnswer.replace(/\s+/g, ' ').replace(/[^\u4e00-\u9fa5a-zA-Z\s]/g, '');
-  const cleanCorrect = correctAnswer.replace(/\s+/g, ' ').replace(/[^\u4e00-\u9fa5a-zA-Z\s]/g, '');
+  const raw = input.value;
+  if (!raw) { input.className = 'spell-input'; return; }
 
-  if (cleanUser === cleanCorrect) {
+  const cu = raw.trim().toLowerCase().replace(/\s+/g,' ').replace(/[^\u4e00-\u9fa5a-zA-Z\s]/g,'');
+  const ca = answer.trim().toLowerCase().replace(/\s+/g,' ').replace(/[^\u4e00-\u9fa5a-zA-Z\s]/g,'');
+
+  if (cu === ca) {
     input.className = 'spell-input correct';
-    sessionStats.total++;
-    sessionStats.correct++;
+    input.disabled = true;
+    sessionStats.total++; sessionStats.mastered++;
     setTimeout(async () => {
-      const updated = await applyAlgorithm(word, 'remembered', algorithmName, customIntervals);
-      await appDB.updateWord(updated);
-      await appDB.insertRecord({ wordId: word.id, action: 'remembered' });
+      const upd = await applyAlgorithm(word, 'mastered', algorithmName, customIntervals);
+      await appDB.updateWord(upd);
+      await appDB.insertRecord({ wordId: word.id, action: 'mastered' });
       nextWord();
     }, 300);
-  } else {
-    input.className = 'spell-input wrong';
-    setTimeout(() => {
-      showAnswer(word);
-    }, 400);
+    return;
   }
+
+  let ok = true;
+  for (let i = 0; i < cu.length; i++) { if (i >= ca.length || cu[i] !== ca[i]) { ok = false; break; } }
+  input.className = ok ? 'spell-input' : 'spell-input wrong';
+}
+
+async function handleSpellAction(action) {
+  const word = wordQueue[currentWordIndex];
+  if (!word) return;
+  const updated = await applyAlgorithm(word, action, algorithmName, customIntervals);
+  await appDB.updateWord(updated);
+  await appDB.insertRecord({ wordId: word.id, action });
+  sessionStats.total++;
+  if (action === 'forgot') sessionStats.forgot++; else sessionStats.struggled++;
+  showAnswer(word);
 }
 
 async function handleSpellForgot() {
@@ -307,7 +328,7 @@ async function handleSpellForgot() {
   await appDB.updateWord(updated);
   await appDB.insertRecord({ wordId: word.id, action: 'forgot' });
   sessionStats.total++;
-  sessionStats.wrong++;
+  sessionStats.forgot++;
   showAnswer(word);
 }
 
@@ -318,13 +339,9 @@ async function handleRecallAction(action) {
   await appDB.updateWord(updated);
   await appDB.insertRecord({ wordId: word.id, action });
   sessionStats.total++;
-  if (action === 'forgot') {
-    sessionStats.wrong++;
-    showAnswer(word);
-  } else {
-    sessionStats.correct++;
-    nextWord();
-  }
+  if (action === 'forgot') { sessionStats.forgot++; showAnswer(word); }
+  else if (action === 'struggled') { sessionStats.struggled++; showAnswer(word); }
+  else { sessionStats.mastered++; nextWord(); }
 }
 
 function showAnswer(word) {
@@ -333,21 +350,12 @@ function showAnswer(word) {
   document.getElementById('answer-english').textContent = word.english;
   document.getElementById('answer-chinese').textContent = word.chinese;
   answerArea.style.display = 'block';
-  if (studyMode === 'spell') {
+  if (studyMode === 'spell' || studyMode === 'quiz') {
     document.getElementById('spell-input').disabled = true;
-    document.getElementById('spell-check-btn').disabled = true;
-    document.getElementById('spell-forgot-btn').disabled = true;
   }
 }
 
 function handleShowNext() { nextWord(); }
-
-// 处理拼写表单提交（手机键盘 Enter/Go 键会触发 submit 事件）
-function handleSpellSubmit(e) {
-  e.preventDefault();
-  if (showingAnswer) { handleShowNext(); }
-  else { handleSpellCheck(); }
-}
 
 function nextWord() {
   if (currentWordIndex < wordQueue.length - 1) {
@@ -364,17 +372,16 @@ function showStudyComplete() {
   container.style.display = 'none';
   const emptyHint = document.getElementById('study-empty');
   emptyHint.style.display = 'block';
-  const accuracy = sessionStats.total > 0 ? Math.round(sessionStats.correct / sessionStats.total * 100) : 0;
   emptyHint.innerHTML = `
     <div class="study-complete">
       <span class="study-complete-icon">🎉</span>
       <div class="study-complete-text">学习完成！</div>
       <div style="margin:16px 0 24px;display:flex;flex-direction:column;gap:10px;align-items:center;">
         <div style="font-size:15px;color:var(--btn-gray);">本次学习了 <strong style="color:var(--text);font-size:18px;">${sessionStats.total}</strong> 个单词</div>
-        <div style="font-size:15px;color:var(--btn-gray);">
-          正确 <strong style="color:var(--green);font-size:18px;">${sessionStats.correct}</strong>
-          · 错误 <strong style="color:var(--coral);font-size:18px;">${sessionStats.wrong}</strong>
-          · 正确率 <strong style="color:${accuracy >= 80 ? 'var(--green)' : accuracy >= 60 ? 'var(--btn-orange)' : 'var(--coral)'};font-size:18px;">${accuracy}%</strong>
+        <div style="font-size:15px;color:var(--btn-gray);display:flex;gap:16px;">
+          <span>熟练 <strong style="color:var(--green);font-size:18px;">${sessionStats.mastered}</strong></span>
+          <span>勉强 <strong style="color:#FFA500;font-size:18px;">${sessionStats.struggled}</strong></span>
+          <span>忘了 <strong style="color:var(--coral);font-size:18px;">${sessionStats.forgot}</strong></span>
         </div>
       </div>
       <button class="btn btn-orange" onclick="goHome()" style="width:100%;max-width:200px;margin:0 auto;">返回首页</button>
@@ -508,7 +515,7 @@ async function startReview(mode, intensive) {
   wordQueue = [...words];
   currentWordIndex = 0;
   showingAnswer = false;
-  sessionStats = { total: 0, correct: 0, wrong: 0 };
+  sessionStats = { total: 0, mastered: 0, struggled: 0, forgot: 0 };
   showFullscreenPage('study');
 }
 
@@ -537,7 +544,7 @@ async function refreshStudy() {
   }
   currentWordIndex = 0;
   showingAnswer = false;
-  sessionStats = { total: 0, correct: 0, wrong: 0 };
+  sessionStats = { total: 0, mastered: 0, struggled: 0, forgot: 0 };
   container.style.display = 'block';
   emptyHint.style.display = 'none';
   renderCurrentWord();
@@ -778,29 +785,32 @@ function renderReviewChart(records, start, end) {
  * Generate proficiency distribution chart HTML
  */
 function renderProficiencyChart(allWords) {
-  const levels = [0, 1, 2, 3, 4, 5];
-  const counts = {};
-  levels.forEach(l => counts[l] = 0);
+  const levels = { forgot: { label: '错误', color: '#E74C3C', count: 0 },
+                   struggled: { label: '勉强', color: '#FFA500', count: 0 },
+                   mastered: { label: '熟练', color: '#2ECC71', count: 0 } };
   allWords.forEach(w => {
-    const p = Math.floor(w.proficiency ?? 0); // 向下取整归入对应等级
-    counts[p] = (counts[p] || 0) + 1;
+    const s = w.progressScore ?? 0;
+    if (s >= 67) levels.mastered.count++;
+    else if (s >= 34) levels.struggled.count++;
+    else levels.forgot.count++;
   });
 
-  const maxVal = Math.max(...Object.values(counts), 1);
-  const colors = ['#95A5A6', '#F87171', '#FBBF24', '#34D399', '#2ECC71', '#059669'];
-  const labels = ['未学', 'Lv.1', 'Lv.2', 'Lv.3', 'Lv.4', 'Lv.5'];
+  const maxVal = Math.max(levels.forgot.count, levels.struggled.count, levels.mastered.count, 1);
+  const colorOrder = ['#E74C3C', '#FFA500', '#2ECC71'];
+  const labelOrder = ['错误', '勉强', '熟练'];
+  const countOrder = [levels.forgot.count, levels.struggled.count, levels.mastered.count];
 
   let html = '<div class="stats-card">'
     + '<div class="stats-card-title">📊 单词掌握分布</div>'
     + '<div class="prof-dist">';
 
-  for (let l = 0; l <= 5; l++) {
-    const cnt = counts[l] || 0;
+  for (let i = 0; i < 3; i++) {
+    const cnt = countOrder[i];
     const pct = Math.round((cnt / maxVal) * 100);
     html += '<div class="prof-row">'
-      + '<div class="prof-label">' + labels[l] + '</div>'
+      + '<div class="prof-label">' + labelOrder[i] + '</div>'
       + '<div class="prof-bar-bg">'
-      + '<div class="prof-bar-fill" style="width:' + pct + '%;background:' + colors[l] + ';"></div>'
+      + '<div class="prof-bar-fill" style="width:' + pct + '%;background:' + colorOrder[i] + ';"></div>'
       + '</div>'
       + '<div class="prof-count">' + cnt + '</div>'
       + '</div>';
@@ -996,7 +1006,7 @@ function renderWordItemHtml(w) {
     <label class="word-checkbox"><input type="checkbox" ${w.isSelected ? 'checked' : ''} onchange="toggleWordSelect(${w.id}, this.checked)"></label>
     <div class="word-info" onclick="showWordDetail(${w.id})" style="cursor:pointer;"><div class="word-en">${escapeHtml(w.english)}</div><div class="word-zh">${escapeHtml(w.chinese)}</div></div>
     <div class="word-stats">
-      <span class="badge ${w.proficiency >= 3 ? 'badge-green' : 'badge-gray'}">Lv.${Math.floor(w.proficiency)}</span>
+      <span class="badge ${(w.progressScore || 0) >= 67 ? 'badge-green' : (w.progressScore || 0) >= 34 ? 'badge-orange' : 'badge-gray'} ${(w.progressScore || 0) >= 67 ? '' : (w.progressScore || 0) >= 34 ? '' : ''}">${getScoreStateText(w.progressScore || 0)}</span>
       <button class="btn-icon" onclick="showEditWord(${w.id})" title="编辑" style="margin-left:2px;">✏️</button>
       <button class="btn-icon" onclick="toggleFavorite(${w.id})" title="收藏" style="margin-left:4px;">${w.isFavorited ? '⭐' : '☆'}</button>
       <button class="btn-icon" onclick="deleteWord(${w.id})" title="删除" style="margin-left:2px;">🗑️</button>
@@ -1171,7 +1181,7 @@ async function showWordDetail(id) {
 
   document.getElementById('detail-english').textContent = word.english;
   document.getElementById('detail-chinese').textContent = word.chinese;
-  document.getElementById('detail-proficiency').textContent = `Lv.${Math.floor(word.proficiency)} / 5`;
+  document.getElementById('detail-proficiency').textContent = `${getScoreStateText(word.progressScore || 0)} (${word.progressScore || 0}分)`;
   document.getElementById('detail-reviewed').textContent = `${word.reviewCount || 0} 次`;
   document.getElementById('detail-consecutive').textContent = `${word.consecutiveCorrect || 0} 次`;
   document.getElementById('detail-forgot').textContent = `${forgotCount} 次`;
@@ -1522,6 +1532,34 @@ function showToast(message) {
   setTimeout(() => toast.classList.remove('show'), 2000);
 }
 
+// ============== 安装引导 ==============
+function showInstallGuide() {
+  const el = document.getElementById('install-guide');
+  if (el.style.display !== 'none') { el.style.display = 'none'; return; }
+  const isIOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const isChrome = /chrome/i.test(navigator.userAgent) && !isIOS;
+  let guide = '';
+  if (isIOS) {
+    guide = '📱 <b>Safari 安装步骤：</b><br>1. 点击底部分享按钮 <span style="font-size:18px;">⬆️</span><br>2. 滑动找到「添加到主屏幕」<br>3. 点右上角「添加」';
+  } else if (isChrome) {
+    guide = '📱 <b>Chrome 安装步骤：</b><br>1. 点击右上角 <span style="font-size:18px;">⋮</span> 菜单<br>2. 选择「添加到主屏幕」<br>3. 点「添加」';
+    // 尝试触发 beforeinstallprompt
+    if (window.deferredPrompt) {
+      window.deferredPrompt.prompt();
+    }
+  } else {
+    guide = '📱 <b>通用步骤：</b><br>1. 打开浏览器菜单<br>2. 找到「添加到主屏幕」或「安装应用」<br>3. 按提示完成添加';
+  }
+  el.innerHTML = guide;
+  el.style.display = 'block';
+}
+
+// 监听 beforeinstallprompt（Chrome PWA 安装弹窗）
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  window.deferredPrompt = e;
+});
+
 // ============== 滑动手势 ==============
 let touchStartX = 0, touchStartY = 0, touchDiffX = 0;
 let swipeAbortController = null;
@@ -1597,6 +1635,11 @@ async function init() {
     await appDB.createBook('默认词本');
   }
   await loadSettings();
+  // 检查 TTS 可用性
+  if (!('speechSynthesis' in window)) {
+    const btn = document.querySelector('.word-pronounce');
+    if (btn) btn.style.opacity = '0.3';
+  }
   switchTab('study');
 
   document.getElementById('file-input').addEventListener('change', onFileSelected);

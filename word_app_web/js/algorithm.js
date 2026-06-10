@@ -1,175 +1,157 @@
 /**
- * 记忆算法模块
- * 默认：SM-2 变体
- * 可选：固定间隔 / 自定义间隔
+ * 三态记忆算法 v3
+ * 基于进度分 0~100：错误(0~33) / 勉强(34~66) / 熟练(67~100)
  */
 
-// SM-2 标准间隔（天）：第1次复习后间隔
-const SM2_INTERVALS = [0.5, 1, 3, 7, 15, 30, 60];
+// 根据进度分获取复习间隔（天）
+function getReviewInterval(score) {
+  if (score >= 81) return 14;
+  if (score >= 61) return 7;
+  if (score >= 41) return 3;
+  if (score >= 21) return 1;
+  return 0.17; // 4小时
+}
+
+// 连续熟练递减系数
+function getMasteredBonus(consecutiveCorrect) {
+  const bonuses = [10, 8, 6, 5, 4, 3, 2, 2, 1, 1];
+  const idx = Math.min(consecutiveCorrect, bonuses.length - 1);
+  return bonuses[idx];
+}
 
 /**
- * SM-2 变体算法
+ * 应用三态算法
  * @param {Object} word - 单词对象
- * @param {string} action - 'forgot' | 'remembered' | 'mastered'
+ * @param {string} action - 'forgot' | 'struggled' | 'mastered'
  * @returns {Object} 更新后的单词字段
  */
-function applySM2(word, action) {
+function applyThreeState(word, action) {
   const now = new Date();
-
-  let { proficiency, reviewCount, consecutiveCorrect, lastReviewed, nextReview } = word;
-
-  // 确保默认值
-  proficiency = proficiency ?? 0;
-  reviewCount = reviewCount ?? 0;
-  consecutiveCorrect = consecutiveCorrect ?? 0;
+  let score = word.progressScore ?? 0;
+  let consecutiveCorrect = word.consecutiveCorrect ?? 0;
+  let consecutiveWrong = word.consecutiveWrong ?? 0;
 
   switch (action) {
     case 'forgot': {
-      proficiency = Math.max(0, proficiency - 1);
+      score = Math.max(0, score - 25);
       consecutiveCorrect = 0;
-      reviewCount += 1;
-      // 立即复习（最短0.5天）
+      consecutiveWrong = (consecutiveWrong || 0) + 1;
+      // 连续忘了 ≥3 次 → 4小时内再次复习
+      const hours = consecutiveWrong >= 3 ? 2 : 4;
       const nextDate = new Date(now);
-      nextDate.setHours(nextDate.getHours() + 12);
-      nextReview = nextDate.toISOString();
-      break;
+      nextDate.setHours(nextDate.getHours() + hours);
+      return {
+        progressScore: score,
+        consecutiveCorrect: 0,
+        consecutiveWrong,
+        lastReviewed: now.toISOString(),
+        nextReview: nextDate.toISOString(),
+      };
     }
 
-    case 'remembered': {
-      // 逐步提升熟练度（每2次升1级），按正常 SM-2 间隔推进
-      proficiency = Math.min(5, (proficiency || 0) + 0.5);
-      consecutiveCorrect = Math.min(consecutiveCorrect + 1, 10);
-      reviewCount += 1;
-      const intervalIndex = Math.min(consecutiveCorrect, SM2_INTERVALS.length - 1);
-      const days = SM2_INTERVALS[intervalIndex];
+    case 'struggled': {
+      score = Math.max(0, score - 5);
+      consecutiveCorrect = 0;
+      consecutiveWrong = 0;
+      // 1 天后复习
       const nextDate = new Date(now);
-      nextDate.setDate(nextDate.getDate() + days);
-      nextReview = nextDate.toISOString();
-      break;
+      nextDate.setDate(nextDate.getDate() + 1);
+      return {
+        progressScore: score,
+        consecutiveCorrect: 0,
+        consecutiveWrong: 0,
+        lastReviewed: now.toISOString(),
+        nextReview: nextDate.toISOString(),
+      };
     }
 
     case 'mastered': {
-      proficiency = Math.min(5, proficiency + 1);
-      consecutiveCorrect += 1;
-      reviewCount += 1;
-      // 延长间隔：1, 3, 7, 15, 30, 60 天
-      const intervalIndex = Math.min(proficiency, SM2_INTERVALS.length - 1);
-      const days = SM2_INTERVALS[intervalIndex];
+      const bonus = getMasteredBonus(consecutiveCorrect);
+      score = Math.min(100, score + bonus);
+      consecutiveCorrect = Math.min((consecutiveCorrect || 0) + 1, 10);
+      consecutiveWrong = 0;
+      const days = getReviewInterval(score);
       const nextDate = new Date(now);
       nextDate.setDate(nextDate.getDate() + days);
-      nextReview = nextDate.toISOString();
-      break;
+      return {
+        progressScore: score,
+        consecutiveCorrect,
+        consecutiveWrong: 0,
+        lastReviewed: now.toISOString(),
+        nextReview: nextDate.toISOString(),
+      };
     }
   }
-
-  // 错误频率增强：最近3次复习中错误 ≥2 次，间隔减半（≥6小时）
-  // 这个逻辑在应用层做，因为需要查历史记录
-  // 这里只返回基础计算结果
-
-  lastReviewed = now.toISOString();
-
-  return {
-    proficiency,
-    reviewCount,
-    consecutiveCorrect,
-    lastReviewed,
-    nextReview,
-  };
 }
 
 /**
- * 固定间隔算法
- * @param {Object} word
- * @param {string} action
- * @param {number[]} intervals - 自定义间隔数组
+ * 根据进度分获取状态标签
  */
-function applyFixedInterval(word, action, intervals = [1, 2, 4, 7, 15, 30]) {
-  const now = new Date();
-  let { proficiency, reviewCount, consecutiveCorrect, lastReviewed, nextReview } = word;
+function getScoreState(score) {
+  if (score >= 67) return 'mastered';
+  if (score >= 34) return 'struggled';
+  return 'forgot';
+}
 
-  proficiency = proficiency ?? 0;
-  reviewCount = reviewCount ?? 0;
-  consecutiveCorrect = consecutiveCorrect ?? 0;
+function getScoreStateText(score) {
+  if (score >= 67) return '熟练';
+  if (score >= 34) return '勉强';
+  return '错误';
+}
+
+function getScoreStateColor(score) {
+  if (score >= 67) return '#2ECC71';
+  if (score >= 34) return '#FFA500';
+  return '#E74C3C';
+}
+
+/**
+ * 主入口：根据算法名称应用
+ */
+async function applyAlgorithm(word, action, algorithmName = 'three_state') {
+  if (algorithmName === 'sm2') return fallbackSM2(word, action);
+  if (algorithmName === 'fixed') return fallbackFixed(word, action);
+  return applyThreeState(word, action);
+}
+
+// ============== 旧算法保留作为备选 ==============
+const SM2_INTERVALS = [0.5, 1, 3, 7, 15, 30, 60];
+
+function fallbackSM2(word, action) {
+  const now = new Date();
+  let score = word.progressScore ?? 0;
+  let consecutiveCorrect = word.consecutiveCorrect ?? 0;
 
   if (action === 'forgot') {
-    proficiency = Math.max(0, proficiency - 1);
     consecutiveCorrect = 0;
-    reviewCount += 1;
-    // 回到第一阶段
+    score = Math.max(0, score - 25);
     const nextDate = new Date(now);
-    nextDate.setDate(nextDate.getDate() + intervals[0]);
-    nextReview = nextDate.toISOString();
-  } else if (action === 'remembered' || action === 'mastered') {
-    if (action === 'mastered') {
-      proficiency = Math.min(5, proficiency + 1);
-    } else {
-      proficiency = Math.min(5, (proficiency || 0) + 0.5);
-    }
-    consecutiveCorrect += 1;
-    reviewCount += 1;
-    const idx = Math.min(consecutiveCorrect - 1, intervals.length - 1);
-    const nextDate = new Date(now);
-    nextDate.setDate(nextDate.getDate() + intervals[idx]);
-    nextReview = nextDate.toISOString();
+    nextDate.setHours(nextDate.getHours() + 12);
+    return { progressScore: score, consecutiveCorrect, lastReviewed: now.toISOString(), nextReview: nextDate.toISOString() };
   }
-
-  lastReviewed = now.toISOString();
-
-  return {
-    proficiency,
-    reviewCount,
-    consecutiveCorrect,
-    lastReviewed,
-    nextReview,
-  };
+  consecutiveCorrect = Math.min(consecutiveCorrect + 1, 10);
+  const days = SM2_INTERVALS[Math.min(consecutiveCorrect, SM2_INTERVALS.length - 1)];
+  const nextDate = new Date(now);
+  nextDate.setDate(nextDate.getDate() + days);
+  score = Math.min(100, score + (action === 'struggled' ? 2 : 10));
+  return { progressScore: score, consecutiveCorrect, lastReviewed: now.toISOString(), nextReview: nextDate.toISOString() };
 }
 
-/**
- * 应用错误频率惩罚
- * @param {Object} word - 更新后的单词
- * @param {Array} recentRecords - 最近3次复习记录
- * @returns {Object} 可能被修改的 nextReview
- */
-function applyErrorPenalty(word, recentRecords) {
-  if (!recentRecords || recentRecords.length < 3) return word;
+function fallbackFixed(word, action) {
+  const now = new Date();
+  let score = word.progressScore ?? 0;
+  let consecutiveCorrect = word.consecutiveCorrect ?? 0;
 
-  const last3 = recentRecords.slice(0, 3);
-  const errorCount = last3.filter(r => r.action === 'forgot').length;
-
-  if (errorCount >= 2 && word.nextReview) {
-    const original = new Date(word.nextReview).getTime();
-    const now = Date.now();
-    const halfInterval = Math.max((original - now) / 2, 6 * 60 * 60 * 1000); // ≥6小时
-    const newDate = new Date(now + halfInterval);
-    word.nextReview = newDate.toISOString();
+  if (action === 'forgot') {
+    consecutiveCorrect = 0;
+    score = Math.max(0, score - 25);
+    const nextDate = new Date(now);
+    nextDate.setDate(nextDate.getDate() + 1);
+    return { progressScore: score, consecutiveCorrect, lastReviewed: now.toISOString(), nextReview: nextDate.toISOString() };
   }
-
-  return word;
-}
-
-/**
- * 根据算法名称和配置应用算法
- */
-async function applyAlgorithm(word, action, algorithmName = 'sm2', customIntervals = null) {
-  let updated;
-
-  if (algorithmName === 'sm2') {
-    updated = applySM2(word, action);
-  } else if (algorithmName === 'fixed') {
-    const intervals = customIntervals || [1, 2, 4, 7, 15, 30];
-    updated = applyFixedInterval(word, action, intervals);
-  } else {
-    // 自定义间隔
-    const intervals = customIntervals || [1, 3, 5, 10, 20];
-    updated = applyFixedInterval(word, action, intervals);
-  }
-
-  // 应用错误频率惩罚
-  const records = await appDB.getRecordsByWordId(word.id, 3);
-  updated = applyErrorPenalty(updated, records);
-
-  return {
-    ...word,
-    ...updated,
-  };
+  consecutiveCorrect = Math.min(consecutiveCorrect + 1, 10);
+  const nextDate = new Date(now);
+  nextDate.setDate(nextDate.getDate() + consecutiveCorrect);
+  score = Math.min(100, score + (action === 'struggled' ? 2 : 8));
+  return { progressScore: score, consecutiveCorrect, lastReviewed: now.toISOString(), nextReview: nextDate.toISOString() };
 }

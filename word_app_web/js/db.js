@@ -1,9 +1,9 @@
 /**
- * IndexedDB 数据库层 v2 - 支持单词本
+ * IndexedDB 数据库层 v3 - 支持三态进度分
  */
 
 const DB_NAME = 'WordAppDB';
-const DB_VERSION = 2;
+const DB_VERSION = 3;
 
 class AppDatabase {
   constructor() { this.db = null; }
@@ -35,11 +35,33 @@ class AppDatabase {
           if (!db.objectStoreNames.contains('word_books')) {
             db.createObjectStore('word_books', { keyPath: 'id', autoIncrement: true });
           }
-          // 给 words 表新增 bookId 字段（通过添加索引实现）
           const wordStore = event.target.transaction.objectStore('words');
           if (!wordStore.indexNames.contains('book_id')) {
             wordStore.createIndex('book_id', 'bookId', { unique: false });
           }
+        }
+
+        // v3: 三态进度分
+        if (oldVersion < 3) {
+          const wordStore = event.target.transaction.objectStore('words');
+          if (!wordStore.indexNames.contains('progress_score')) {
+            wordStore.createIndex('progress_score', 'progressScore', { unique: false });
+          }
+          // 迁移已有数据：proficiency(0~5) → progressScore(0~100)
+          const req = wordStore.openCursor();
+          req.onsuccess = () => {
+            const cursor = req.result;
+            if (cursor) {
+              const word = cursor.value;
+              if (word.progressScore === undefined || word.progressScore === null) {
+                const oldP = word.proficiency ?? 0;
+                word.progressScore = Math.round(oldP * 20);
+                word.proficiency = undefined;
+                cursor.update(word);
+              }
+              cursor.continue();
+            }
+          };
         }
       };
 
@@ -179,7 +201,7 @@ class AppDatabase {
       bookId: word.bookId ?? 1,
       english: word.english,
       chinese: word.chinese,
-      proficiency: word.proficiency ?? 0,
+      progressScore: word.progressScore ?? 0,
       reviewCount: word.reviewCount ?? 0,
       consecutiveCorrect: word.consecutiveCorrect ?? 0,
       lastReviewed: word.lastReviewed ?? null,
@@ -401,7 +423,7 @@ class AppDatabase {
 
   async getMasteredCount(bookId) {
     const all = bookId ? await this.getWordsByBook(bookId) : await this.getAllWords();
-    return all.filter(w => w.proficiency >= 3 && w.consecutiveCorrect >= 2).length;
+    return all.filter(w => w.progressScore >= 67).length;
   }
 
   async getTotalWordCount(bookId) {

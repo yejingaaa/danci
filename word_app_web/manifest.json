@@ -3,7 +3,7 @@
   "short_name": "单词软件",
   "description": "单词学习 App - 支持 SM-2 间隔重复记忆",
   "start_url": "index.html",
-  "scope": ".",
+  "scope": "/danci/word_app_web/",
   "display": "standalone",
   "background_color": "#FDFBF7",
   "theme_color": "#FFA500",

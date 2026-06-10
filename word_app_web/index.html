@@ -170,7 +170,10 @@
           <button class="btn btn-outline btn-sm" onclick="exitApp()">🚪 退出应用</button>
         </div>
         <div class="card" style="text-align:center;">
-          <button class="btn btn-outline btn-sm" onclick="showInstallGuide()">📲 安装到主屏幕</button>
+          <div style="display:flex;gap:8px;justify-content:center;">
+            <button class="btn btn-outline btn-sm" onclick="toggleFullscreen()">⛶ 全屏模式</button>
+            <button class="btn btn-outline btn-sm" onclick="showInstallGuide()">📲 安装到主屏幕</button>
+          </div>
           <div id="install-guide" style="display:none;margin-top:12px;padding:12px;background:var(--bg);border-radius:8px;font-size:13px;color:var(--btn-gray);text-align:left;line-height:1.6;"></div>
         </div>
       </div>

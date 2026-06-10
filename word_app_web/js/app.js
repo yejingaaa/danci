@@ -1721,6 +1721,17 @@ function showToast(message) {
   setTimeout(() => toast.classList.remove('show'), 2000);
 }
 
+// ============== 全屏模式 ==============
+function toggleFullscreen() {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen().catch(() => {
+      showToast('当前浏览器不支持全屏模式');
+    });
+  } else {
+    document.exitFullscreen().catch(() => {});
+  }
+}
+
 // ============== 安装引导 ==============
 function showInstallGuide() {
   const el = document.getElementById('install-guide');

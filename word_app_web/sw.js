@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wordapp-v1';
+const CACHE_NAME = 'wordapp-v2';
 
 // 需要缓存的资源
 const PRECACHE_URLS = [

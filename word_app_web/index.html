@@ -44,8 +44,8 @@
       <div class="tab-content active" data-tab="study">
         <div class="card">
           <div class="card-title">学习概览</div>
-          <div class="stat-row" onclick="switchTab('words')" style="cursor:pointer;"><span class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span><span class="stat-label">总单词数</span><span class="stat-value" id="stat-total" style="color:#FFA500">0</span></div>
-          <div class="stat-row" onclick="startStudyFromSource('selected')" style="cursor:pointer;"><span class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg></span><span class="stat-label">待复习</span><span class="stat-value" id="stat-due" style="color:#E74C3C">0</span></div>
+          <div class="stat-row" onclick="showAllWords()" style="cursor:pointer;"><span class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg></span><span class="stat-label">总单词数</span><span class="stat-value" id="stat-total" style="color:#FFA500">0</span></div>
+          <div class="stat-row" onclick="showDueWords()" style="cursor:pointer;"><span class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12,6 12,12 16,14"/></svg></span><span class="stat-label">待复习</span><span class="stat-value" id="stat-due" style="color:#E74C3C">0</span></div>
           <div class="stat-row" onclick="showLearnedWords()" style="cursor:pointer;"><span class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 11l3 3L22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></span><span class="stat-label">已学习</span><span class="stat-value" id="stat-learned" style="color:#3498DB">0</span></div>
           <div class="stat-row" onclick="showMasteredWords()" style="cursor:pointer;"><span class="stat-icon"><svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20,6 9,17 4,12"/></svg></span><span class="stat-label">已掌握</span><span class="stat-value" id="stat-mastered" style="color:#2ECC71">0</span></div>
         </div>
@@ -72,16 +72,18 @@
           <button class="btn btn-outline btn-sm" onclick="showBuiltinBooks()" style="width:100%;margin-top:8px;">📚 导入内置词库</button>
         </div>
         <!-- 单词列表视图（点进词本后显示） -->
-        <div id="words-view" style="display:none;">
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
-            <button class="btn btn-gray btn-sm" onclick="showBooksView()" style="padding:0 12px;">← 返回</button>
-            <span style="font-size:16px;font-weight:600;flex:1;" id="current-book-name">词本</span>
-            <button class="btn btn-orange btn-sm" onclick="showImportDialog()">➕</button>
-            <button class="btn btn-secondary btn-sm" onclick="handleDirectFileImport()">📁</button>
+        <div id="words-view" style="display:none;flex-direction:column;max-height:calc(100vh - 130px);">
+          <div style="flex-shrink:0;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px;">
+              <button class="btn btn-gray btn-sm" onclick="showBooksView()" style="padding:0 12px;">← 返回</button>
+              <span style="font-size:16px;font-weight:600;flex:1;" id="current-book-name">词本</span>
+              <button class="btn btn-orange btn-sm" onclick="showImportDialog()">➕</button>
+              <button class="btn btn-secondary btn-sm" onclick="handleDirectFileImport()">📁</button>
+            </div>
+            <div style="font-size:14px;color:var(--btn-gray);margin-bottom:8px;" id="word-count">共 0 个单词</div>
+            <input type="text" id="word-search" class="spell-input" style="margin-bottom:8px;text-align:left;font-size:14px;display:none;" placeholder="搜索单词..." oninput="filterWordList()">
           </div>
-          <div style="font-size:14px;color:var(--btn-gray);margin-bottom:8px;" id="word-count">共 0 个单词</div>
-          <input type="text" id="word-search" class="spell-input" style="margin-bottom:8px;text-align:left;font-size:14px;display:none;" placeholder="搜索单词..." oninput="filterWordList()">
-          <div id="word-list"></div>
+          <div id="word-list" style="flex:1;overflow-y:auto;min-height:0;"></div>
           <input type="file" id="file-input" accept=".txt,.csv,.tsv,.json,.md,.xlsx" style="display:none">
           <div id="batch-actions" style="display:flex;gap:8px;margin-top:10px;">
             <button class="btn btn-outline btn-sm" onclick="toggleSelectAll()" style="flex:1;">全选</button>
@@ -213,8 +215,7 @@
       <div id="page-mistake" class="fullscreen-page">
         <div class="card">
           <div class="card-title">❌ 错题本</div>
-          <p style="font-size:14px;color:var(--btn-gray);margin-bottom:16px;">自动记录点击"忘了"的单词</p>
-          <div id="mistake-list"></div>
+          <div id="mistake-list" style="max-height:calc(100vh - 250px);overflow-y:auto;"></div>
           <button class="btn btn-orange" style="width:100%;margin-top:12px;" onclick="startStudyFromSource('mistake')">从错题本开始复习</button>
         </div>
       </div>
@@ -223,9 +224,16 @@
       <div id="page-favorite" class="fullscreen-page">
         <div class="card">
           <div class="card-title">⭐ 收藏本</div>
-          <p style="font-size:14px;color:var(--btn-gray);margin-bottom:16px;">手动标记收藏的单词</p>
-          <div id="favorite-list"></div>
+          <div id="favorite-list" style="max-height:calc(100vh - 250px);overflow-y:auto;"></div>
           <button class="btn btn-orange" style="width:100%;margin-top:12px;" onclick="startStudyFromSource('favorite')">从收藏本开始复习</button>
+        </div>
+      </div>
+
+      <!-- 单词浏览页面（统计入口） -->
+      <div id="page-wordsview" class="fullscreen-page">
+        <div class="card">
+          <div class="card-title" id="wordsview-title">单词列表</div>
+          <div id="wordsview-list" style="max-height:calc(100vh - 200px);overflow-y:auto;"></div>
         </div>
       </div>
     </div>

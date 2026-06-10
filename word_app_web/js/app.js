@@ -340,11 +340,13 @@ function renderCurrentWord() {
 }
 
 // ============== 学习操作 ==============
+// ============== 学习操作 ==============
 async function handleAction(action) {
-  const word = wordQueue[currentWordIndex];
+  const item = wordQueue[currentWordIndex];
+  const word = item.word || item;
   if (!word) return;
   const updated = await applyAlgorithm(word, action, algorithmName, customIntervals);
-  await appDB.updateWord(updated);
+  await appDB.updateWord({ ...word, ...updated });
   await appDB.insertRecord({ wordId: word.id, action });
   sessionStats.total++;
   if (action === 'forgot') sessionStats.forgot++;
@@ -375,7 +377,8 @@ function setupSpellInputListener() {
 }
 
 function onSpellInput() {
-  const word = wordQueue[currentWordIndex];
+  const item = wordQueue[currentWordIndex];
+  const word = item.word || item;
   if (!word || showingAnswer) return;
   const input = document.getElementById('spell-input');
   const answer = studyDirection === 'en2cn' ? word.chinese : word.english;
@@ -391,7 +394,7 @@ function onSpellInput() {
     sessionStats.total++; sessionStats.mastered++;
     setTimeout(async () => {
       const upd = await applyAlgorithm(word, 'mastered', algorithmName, customIntervals);
-      await appDB.updateWord(upd);
+      await appDB.updateWord({ ...word, ...upd });
       await appDB.insertRecord({ wordId: word.id, action: 'mastered' });
       nextWord();
     }, 300);
@@ -404,10 +407,11 @@ function onSpellInput() {
 }
 
 async function handleSpellAction(action) {
-  const word = wordQueue[currentWordIndex];
+  const item = wordQueue[currentWordIndex];
+  const word = item.word || item;
   if (!word) return;
   const updated = await applyAlgorithm(word, action, algorithmName, customIntervals);
-  await appDB.updateWord(updated);
+  await appDB.updateWord({ ...word, ...updated });
   await appDB.insertRecord({ wordId: word.id, action });
   sessionStats.total++;
   if (action === 'forgot') sessionStats.forgot++; else sessionStats.struggled++;
@@ -415,10 +419,11 @@ async function handleSpellAction(action) {
 }
 
 async function handleRecallAction(action) {
-  const word = wordQueue[currentWordIndex];
+  const item = wordQueue[currentWordIndex];
+  const word = item.word || item;
   if (!word) return;
-  const updated = await applyAlgorithm(word, action === 'remembered' ? 'remembered' : 'forgot', algorithmName, customIntervals);
-  await appDB.updateWord(updated);
+  const updated = await applyAlgorithm(word, action, algorithmName, customIntervals);
+  await appDB.updateWord({ ...word, ...updated });
   await appDB.insertRecord({ wordId: word.id, action });
   sessionStats.total++;
   if (action === 'forgot') { sessionStats.forgot++; showAnswer(word); }
@@ -440,7 +445,6 @@ function showAnswer(word) {
 function handleShowNext() { nextWord(); }
 
 async function nextWord() {
-  // 在 daily 模式下，学完一个新词后更新每日计数
   if (studyMode === 'daily') {
     const item = wordQueue[currentWordIndex];
     if (item && item.type === 'new') {
@@ -452,8 +456,34 @@ async function nextWord() {
     currentWordIndex++;
     showingAnswer = false;
     renderCurrentWord();
+  } else if (studyMode === 'daily') {
+    // daily 模式：队列学完 → 追加 10 个新词继续
+    await appendMoreDailyWords();
+    if (wordQueue.length > currentWordIndex + 1) {
+      currentWordIndex++;
+      showingAnswer = false;
+      renderCurrentWord();
+    } else {
+      showStudyComplete();
+    }
   } else {
     showStudyComplete();
+  }
+}
+
+async function appendMoreDailyWords() {
+  const books = await appDB.getAllBooks();
+  let newWords = [];
+  for (const b of books) {
+    const words = await appDB.getWordsByBook(b.id);
+    for (const w of words) {
+      if ((w.progressScore || 0) === 0) newWords.push(w);
+    }
+  }
+  const seen = new Set(wordQueue.map(q => (q.word||q).id));
+  newWords = newWords.filter(w => !seen.has(w.id)).slice(0, 10);
+  if (newWords.length > 0) {
+    for (const w of newWords) wordQueue.push({ word: w, type: 'new' });
   }
 }
 
@@ -606,24 +636,47 @@ async function toggleFavorite(id) {
   refreshManage();
 }
 
-// 查看已学习/已掌握单词
+// 查看已学习/已掌握单词（全屏页面）
+function renderWordItems(words) {
+  if (words.length === 0) return '<div style="text-align:center;padding:40px;color:var(--btn-gray);">暂无单词</div>';
+  return words.map(w => `
+    <div class="word-item">
+      <div class="word-info"><div class="word-en">${escapeHtml(w.english)}</div><div class="word-zh">${escapeHtml(w.chinese)}</div></div>
+      <span class="badge ${(w.progressScore||0)>=67?'badge-green':(w.progressScore||0)>=34?'badge-orange':'badge-gray'}">${getScoreStateText(w.progressScore||0)}</span>
+    </div>
+  `).join('');
+}
+
 async function showLearnedWords() {
-  switchTab('words');
-  // 如果有词本打开，先返回词本列表
-  if (document.getElementById('words-view').style.display !== 'none') showBooksView();
-  const allWords = await appDB.getAllWords();
-  const learned = allWords.filter(w => (w.progressScore || 0) > 0).length;
-  if (learned === 0) { showToast('还没有学过的单词'); return; }
-  showToast(`已学习 ${learned} 个单词`);
+  const all = await appDB.getAllWords();
+  const words = all.filter(w => (w.progressScore||0)>0);
+  document.getElementById('wordsview-title').textContent = `📝 已学习 (${words.length})`;
+  document.getElementById('wordsview-list').innerHTML = renderWordItems(words);
+  showFullscreenPage('wordsview');
 }
 
 async function showMasteredWords() {
-  switchTab('words');
-  if (document.getElementById('words-view').style.display !== 'none') showBooksView();
-  const allWords = await appDB.getAllWords();
-  const mastered = allWords.filter(w => w.progressScore >= 67).length;
-  if (mastered === 0) { showToast('还没有熟练的单词'); return; }
-  showToast(`已掌握 ${mastered} 个单词`);
+  const all = await appDB.getAllWords();
+  const words = all.filter(w => w.progressScore>=67);
+  document.getElementById('wordsview-title').textContent = `✅ 已掌握 (${words.length})`;
+  document.getElementById('wordsview-list').innerHTML = renderWordItems(words);
+  showFullscreenPage('wordsview');
+}
+
+async function showAllWords() {
+  const all = await appDB.getAllWords();
+  document.getElementById('wordsview-title').textContent = `📖 全部单词 (${all.length})`;
+  document.getElementById('wordsview-list').innerHTML = renderWordItems(all);
+  showFullscreenPage('wordsview');
+}
+
+async function showDueWords() {
+  const all = await appDB.getAllWords();
+  const today = new Date().toISOString().substring(0,10);
+  const words = all.filter(w => !w.nextReview || w.nextReview.substring(0,10)<=today);
+  document.getElementById('wordsview-title').textContent = `⏰ 待复习 (${words.length})`;
+  document.getElementById('wordsview-list').innerHTML = renderWordItems(words);
+  showFullscreenPage('wordsview');
 }
 
 function startStudyFromSource(source) {

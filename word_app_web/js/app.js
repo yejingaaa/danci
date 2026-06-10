@@ -734,13 +734,13 @@ async function refreshStats() {
   const accuracy = totalReviews > 0 ? Math.round(correctCount / totalReviews * 100) : 0;
 
   const studyDays = new Set();
-  records.forEach(r => studyDays.add(r.reviewedAt.substring(0, 10)));
+  records.forEach(r => { if (r.reviewedAt) studyDays.add(r.reviewedAt.substring(0, 10)); });
 
   const startStr = start.toISOString();
   const newWords = allWords.filter(w => w.createdAt >= startStr).length;
 
   const mistakeCounts = {};
-  for (const r of records) { if (r.action === 'forgot') mistakeCounts[r.wordId] = (mistakeCounts[r.wordId] || 0) + 1; }
+  for (const r of records) { if (r.action === 'forgot' && r.wordId) mistakeCounts[r.wordId] = (mistakeCounts[r.wordId] || 0) + 1; }
   const topMistakes = Object.entries(mistakeCounts).sort((a, b) => b[1] - a[1]).slice(0, 3);
   const topMistakeWords = [];
   for (const [wordId, count] of topMistakes) {
@@ -854,6 +854,7 @@ function renderReviewChart(records, start, end) {
   // Group records by date
   const dayMap = {};
   for (const r of records) {
+    if (!r.reviewedAt) continue;
     const d = r.reviewedAt.substring(0, 10);
     if (!dayMap[d]) dayMap[d] = { correct: 0, wrong: 0, total: 0 };
     dayMap[d].total++;
@@ -973,7 +974,7 @@ async function getAllReviewRecordsSince(startDate, endDate) {
   });
   const start = startDate.getTime();
   const end = endDate ? endDate.getTime() : Date.now();
-  return all.filter(r => { const t = new Date(r.reviewedAt).getTime(); return t >= start && t <= end; });
+  return all.filter(r => { if (!r.reviewedAt) return false; const t = new Date(r.reviewedAt).getTime(); return !isNaN(t) && t >= start && t <= end; });
 }
 
 // ============== 管理 ==============

@@ -315,7 +315,6 @@ function renderCurrentWord() {
     actions.style.display = 'flex';
     spellArea.style.display = 'none';
     actions.innerHTML = `
-      <button class="btn btn-outline" onclick="showAnswer(wordQueue[currentWordIndex].word || wordQueue[currentWordIndex])" style="font-size:13px;">👁 显示答案</button>
       <button class="btn btn-red" onclick="handleRecallAction('forgot')"><span class="btn-icon">✕</span> 忘了</button>
       <button class="btn btn-orange" onclick="handleRecallAction('struggled')"><span class="btn-icon">△</span> 勉强</button>
       <button class="btn btn-green" onclick="handleRecallAction('mastered')"><span class="btn-icon">★</span> 熟练</button>
@@ -372,7 +371,7 @@ function setupSpellInputListener() {
   spellInputHandler = handler;
   input.addEventListener('input', handler);
   input.onkeydown = function(e) {
-    if (e.key === 'Enter') { e.preventDefault(); if (showingAnswer) handleShowNext(); }
+    if (e.key === 'Enter') { e.preventDefault(); if (showingAnswer) nextWord(); }
   };
 }
 
@@ -440,9 +439,10 @@ function showAnswer(word) {
   if (studyMode === 'spell' || studyMode === 'quiz') {
     document.getElementById('spell-input').disabled = true;
   }
+  // 显示答案后 1.5 秒自动跳转下一词
+  clearTimeout(window._answerTimer);
+  window._answerTimer = setTimeout(() => { if (showingAnswer) nextWord(); }, 1500);
 }
-
-function handleShowNext() { nextWord(); }
 
 async function nextWord() {
   if (studyMode === 'daily') {
@@ -1954,8 +1954,7 @@ async function init() {
 
   document.getElementById('spell-input').addEventListener('keydown', (e) => {
     if (e.key === 'Enter') {
-      if (showingAnswer) { handleShowNext(); }
-      else { handleSpellCheck(); }
+      if (showingAnswer) nextWord();
     }
   });
 

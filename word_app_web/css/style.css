@@ -1129,6 +1129,19 @@ body.night-mode .nav-item:active { background: rgba(255,255,255,0.04); }
   display: flex;
 }
 
+/* 缩小版发音按钮 */
+.word-pronounce-sm {
+  background: none;
+  border: none;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 2px 8px;
+  opacity: 0.6;
+  transition: opacity 0.15s;
+  line-height: 1;
+}
+.word-pronounce-sm:active { opacity: 1; }
+
 /* ========== 响应式 ========== */
 @media (max-width: 480px) {
   #app { padding: 12px; }

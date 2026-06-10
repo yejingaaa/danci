@@ -181,10 +181,10 @@
           <div class="study-progress-wrap">
             <span class="study-progress-text" id="study-progress">0 / 0</span>
             <span class="study-progress-text" id="study-mode-label" style="opacity:0.6;">学习</span>
+            <button class="word-pronounce-sm" onclick="speakCurrentWord()">🔊</button>
             <button class="study-exit-btn" onclick="goHome()">✕ 退出</button>
           </div>
           <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
-          <div style="text-align:center;"><button class="word-pronounce" onclick="speakCurrentWord()">🔊</button></div>
           <div class="card" id="word-display">
             <div class="word-display"><div class="word-english" id="word-english">hello</div><div class="word-chinese" id="word-chinese">你好</div></div>
           </div>
@@ -202,7 +202,6 @@
           </div>
           <div id="answer-area" class="card" style="display:none;">
             <div class="answer-display"><div class="word-english" id="answer-english"></div><div class="word-chinese" id="answer-chinese"></div></div>
-            <button class="btn btn-orange" onclick="handleShowNext()">继续 →</button>
           </div>
           <div class="study-nav-row">
             <button class="btn" onclick="handleSwipeLeft()">← 上一个</button>

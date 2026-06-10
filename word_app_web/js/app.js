@@ -439,9 +439,6 @@ function showAnswer(word) {
   if (studyMode === 'spell' || studyMode === 'quiz') {
     document.getElementById('spell-input').disabled = true;
   }
-  // 显示答案后 1.5 秒自动跳转下一词
-  clearTimeout(window._answerTimer);
-  window._answerTimer = setTimeout(() => { if (showingAnswer) nextWord(); }, 1500);
 }
 
 async function nextWord() {

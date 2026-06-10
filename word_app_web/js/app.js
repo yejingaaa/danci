@@ -153,17 +153,6 @@ async function startDailyStudy() {
 }
 
 // ============== 设置 ==============
-function refreshSettings() {
-  document.querySelectorAll('#direction-control .seg-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.value === studyDirection);
-  });
-  document.querySelectorAll('#algorithm-control .seg-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.value === algorithmName);
-  });
-  document.getElementById('custom-interval-area').style.display =
-    algorithmName === 'fixed' ? 'block' : 'none';
-}
-
 async function setDailyGoal(val) {
   dailyGoal = Math.max(1, parseInt(val) || 10);
   await appDB.setSetting('dailyGoal', dailyGoal);
@@ -1522,8 +1511,6 @@ async function handleImport() {
   else { showToast('解析失败，请检查格式（每行: 单词,释义）'); }
 }
 
-function handleFileImport() { document.getElementById('file-input').click(); }
-
 // 直接导入文件（不弹文本框）
 async function handleDirectFileImport() {
   // 这个按钮只在词本视图中可见，直接选文件导入到当前词本
@@ -1877,17 +1864,6 @@ function setupSwipeGesture() {
 
 
 // ============== 退出应用 ==============
-function exitApp() {
-  if (window.Capacitor?.Plugins?.App) {
-    window.Capacitor.Plugins.App.exitApp();
-  } else {
-    // 浏览器环境：尝试关闭页面
-    if (confirm('确认退出？')) {
-      window.close();
-    }
-  }
-}
-
 // ============== 初始化 ==============
 async function init() {
   await appDB.open();
@@ -1899,7 +1875,7 @@ async function init() {
   await loadSettings();
   // 检查 TTS 可用性
   if (!('speechSynthesis' in window)) {
-    const btn = document.querySelector('.word-pronounce');
+    const btn = document.querySelector('.word-pronounce-sm');
     if (btn) btn.style.opacity = '0.3';
   }
   switchTab('study');

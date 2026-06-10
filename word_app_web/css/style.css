@@ -85,7 +85,7 @@ body.night-mode {
 /* 夜间模式平滑过渡 */
 body, .card, .word-item, .word-en, .word-zh, .stat-label, .stat-value,
 .card-title, .hint, .nav-item, .seg-btn, .settings-item, .badge,
-.btn-outline, .btn-secondary, .answer-display, .word-pronounce {
+.btn-outline, .btn-secondary, .answer-display {
   transition: color var(--transition), background-color var(--transition);
 }
 
@@ -222,39 +222,6 @@ body, .card, .word-item, .word-en, .word-zh, .stat-label, .stat-value,
 /* ========== 单词学习卡片 — 温润质感设计 ========== */
 
 /* 发音按钮 */
-.word-pronounce {
-  display: inline-flex; align-items: center; justify-content: center;
-  width: 46px; height: 46px; border-radius: 50%;
-  background: var(--card);
-  border: 1.5px solid rgba(149,165,166,0.2);
-  cursor: pointer; font-size: 18px; margin-bottom: 20px;
-  color: var(--text);
-  transition: all 0.2s ease;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.03);
-  position: relative;
-}
-.word-pronounce:hover {
-  border-color: var(--btn-orange);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 16px rgba(255,165,0,0.12);
-}
-.word-pronounce:active { transform: scale(0.88); }
-.word-pronounce::after {
-  content: '';
-  position: absolute;
-  inset: -3px;
-  border-radius: 50%;
-  border: 1.5px solid transparent;
-  background: linear-gradient(135deg, var(--btn-orange), transparent, var(--btn-orange)) border-box;
-  -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-.word-pronounce:hover::after { opacity: 1; }
-
 /* ------ 单词展示卡片 ------ */
 #word-display.card {
   background: var(--card);

@@ -81,32 +81,23 @@ function goHome() {
 async function refreshHome() {
   const total = await appDB.getTotalWordCount();
   document.getElementById('stat-total').textContent = total;
+  const allWords = total > 0 ? await appDB.getAllWords() : [];
+  const learned = allWords.filter(w => (w.progressScore || 0) > 0).length;
+  const mastered = allWords.filter(w => w.progressScore >= 67).length;
   const due = await appDB.getDueCount();
   document.getElementById('stat-due').textContent = due;
-  document.getElementById('stat-mastered').textContent = await appDB.getMasteredCount();
+  document.getElementById('stat-learned').textContent = learned;
+  document.getElementById('stat-mastered').textContent = mastered;
 
-  // 每日进度
-  const remain = Math.max(0, dailyGoal - dailyNewCount);
-  const remainingNew = total > 0 ? await getRemainingNewWords() : 0;
-  const newToday = Math.min(remain, remainingNew);
   const hint = document.getElementById('home-hint');
   if (total === 0) {
     hint.innerHTML = '现在还没有单词 📭';
     document.getElementById('start-daily-btn').style.display = 'none';
   } else {
-    hint.innerHTML = `📅 今日任务：新词 <strong>${dailyNewCount}/${dailyGoal}</strong> · 复习 <strong>${due}</strong> 个`;
+    const pct = total > 0 ? Math.round(learned / total * 100) : 0;
+    hint.innerHTML = `📊 总进度 <strong>${learned}/${total}</strong> (${pct}%) · 今日已学 <strong>${dailyNewCount}</strong> 个`;
     document.getElementById('start-daily-btn').style.display = 'block';
   }
-}
-
-async function getRemainingNewWords() {
-  const books = await appDB.getAllBooks();
-  let count = 0;
-  for (const b of books) {
-    const words = await appDB.getWordsByBook(b.id);
-    count += words.filter(w => (w.progressScore || 0) === 0).length;
-  }
-  return count;
 }
 
 function startStudy(mode) {
@@ -285,10 +276,11 @@ function renderCurrentWord() {
 
   const effectiveMode = studyMode === 'daily' ? (isReview ? 'recall' : 'learn') : studyMode;
   const modeLabelMap = { learn: '学习', spell: '拼写', recall: '复习', daily: isReview ? '复习' : '新词' };
+  const mode = effectiveMode;
   const dirLabel = studyDirection === 'en2cn' ? '英→中' : '中→英';
   document.getElementById('study-mode-label').textContent = `${modeLabelMap[studyMode] || ''} · ${dirLabel}${intensiveMode ? ' 🔥密集' : ''}`;
 
-  if (studyMode === 'learn' || (studyMode === 'daily' && !isReview)) {
+  if (mode === 'learn') {
     display.style.display = 'block';
     actions.style.display = 'flex';
     spellArea.style.display = 'none';
@@ -318,7 +310,7 @@ function renderCurrentWord() {
       document.getElementById('spell-input').placeholder = '输入对应的中文释义...';
     }
     setupSpellInputListener();
-  } else if (studyMode === 'recall' || (studyMode === 'daily' && isReview)) {
+  } else if (mode === 'recall') {
     display.style.display = 'block';
     actions.style.display = 'flex';
     spellArea.style.display = 'none';
@@ -419,17 +411,6 @@ async function handleSpellAction(action) {
   await appDB.insertRecord({ wordId: word.id, action });
   sessionStats.total++;
   if (action === 'forgot') sessionStats.forgot++; else sessionStats.struggled++;
-  showAnswer(word);
-}
-
-async function handleSpellForgot() {
-  const word = wordQueue[currentWordIndex];
-  if (!word) return;
-  const updated = await applyAlgorithm(word, 'forgot', algorithmName, customIntervals);
-  await appDB.updateWord(updated);
-  await appDB.insertRecord({ wordId: word.id, action: 'forgot' });
-  sessionStats.total++;
-  sessionStats.forgot++;
   showAnswer(word);
 }
 
@@ -623,6 +604,26 @@ async function toggleFavorite(id) {
   const nowFav = await appDB.toggleFavorite(id);
   showToast(nowFav ? '已收藏 ⭐' : '已取消收藏');
   refreshManage();
+}
+
+// 查看已学习/已掌握单词
+async function showLearnedWords() {
+  switchTab('words');
+  // 如果有词本打开，先返回词本列表
+  if (document.getElementById('words-view').style.display !== 'none') showBooksView();
+  const allWords = await appDB.getAllWords();
+  const learned = allWords.filter(w => (w.progressScore || 0) > 0).length;
+  if (learned === 0) { showToast('还没有学过的单词'); return; }
+  showToast(`已学习 ${learned} 个单词`);
+}
+
+async function showMasteredWords() {
+  switchTab('words');
+  if (document.getElementById('words-view').style.display !== 'none') showBooksView();
+  const allWords = await appDB.getAllWords();
+  const mastered = allWords.filter(w => w.progressScore >= 67).length;
+  if (mastered === 0) { showToast('还没有熟练的单词'); return; }
+  showToast(`已掌握 ${mastered} 个单词`);
 }
 
 function startStudyFromSource(source) {
@@ -1201,7 +1202,7 @@ function renderWordList(words) {
   searchInput.style.display = words.length > 5 ? 'block' : 'none';
   // 限制列表高度，让批量操作按钮始终可见
   list.style.overflowY = 'auto';
-  list.style.maxHeight = 'calc(100vh - 320px)';
+  list.style.maxHeight = 'calc(100vh - 390px)';
   if (words.length === 0 && allWordsCache.length === 0) {
     count.textContent = '共 0 个单词';
     list.innerHTML = '<div class="empty-state"><span class="empty-state-icon">📭</span><div class="empty-state-text">这个词本还是空的</div></div>';

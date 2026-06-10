@@ -342,6 +342,13 @@ function showAnswer(word) {
 
 function handleShowNext() { nextWord(); }
 
+// 处理拼写表单提交（手机键盘 Enter/Go 键会触发 submit 事件）
+function handleSpellSubmit(e) {
+  e.preventDefault();
+  if (showingAnswer) { handleShowNext(); }
+  else { handleSpellCheck(); }
+}
+
 function nextWord() {
   if (currentWordIndex < wordQueue.length - 1) {
     currentWordIndex++;
@@ -392,10 +399,30 @@ function handleSwipeLeft() {
 
 // ============== TTS ==============
 function speak(text, lang = 'en') {
-  if ('speechSynthesis' in window) {
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = lang === 'en' ? 'en-US' : 'zh-CN';
-    utterance.rate = 0.9;
+  if (!('speechSynthesis' in window)) return;
+  // 取消正在播放的语音，避免重叠
+  speechSynthesis.cancel();
+
+  const utterance = new SpeechSynthesisUtterance(text);
+  utterance.lang = lang === 'en' ? 'en-US' : 'zh-CN';
+  utterance.rate = 0.85;
+
+  // 等待语音加载完成再播放（移动端需要）
+  if (speechSynthesis.getVoices().length > 0) {
+    // 选择最优语音
+    const voices = speechSynthesis.getVoices();
+    const preferred = voices.find(v => v.lang.startsWith(lang === 'en' ? 'en-US' : 'zh'));
+    if (preferred) utterance.voice = preferred;
+    speechSynthesis.speak(utterance);
+  } else {
+    // 首次加载，等 voices 就绪
+    speechSynthesis.addEventListener('voiceschanged', () => {
+      const voices = speechSynthesis.getVoices();
+      const preferred = voices.find(v => v.lang.startsWith(lang === 'en' ? 'en-US' : 'zh'));
+      if (preferred) utterance.voice = preferred;
+      speechSynthesis.speak(utterance);
+    }, { once: true });
+    // 兜底：直接播
     speechSynthesis.speak(utterance);
   }
 }
@@ -1596,6 +1623,19 @@ async function init() {
       });
     }
   } catch (_) { /* 非 Capacitor 环境忽略 */ }
+
+  // 监听浏览器返回键（popstate）
+  window.addEventListener('popstate', () => {
+    if (document.getElementById('fullscreen-pages').classList.contains('visible')) {
+      goHome();
+    }
+  });
+  // 进入全屏页面时 push 一个 state，让返回键可拦截
+  const origShowFullscreen = showFullscreenPage;
+  showFullscreenPage = function(pageId) {
+    history.pushState({ page: pageId }, '');
+    origShowFullscreen.call(this, pageId);
+  };
 
   // 隐藏启动加载画面
   const splash = document.getElementById('loading-splash');

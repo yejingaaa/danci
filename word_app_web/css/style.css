@@ -59,6 +59,7 @@ body.night-mode {
   padding: 14px 0 12px;
   position: relative;
   min-height: 52px;
+  z-index: 70;
 }
 
 .app-bar h1 {
@@ -1146,4 +1147,22 @@ body.night-mode .nav-item:active { background: rgba(255,255,255,0.04); }
 /* ========== 响应式 ========== */
 @media (max-width: 480px) {
   #app { padding: 12px; }
+}
+
+/* 学习页退出按钮 */
+.study-exit-btn {
+  background: none;
+  border: 1px solid rgba(149,165,166,0.25);
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-size: 13px;
+  color: var(--btn-gray);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  margin-left: auto;
+  white-space: nowrap;
+}
+.study-exit-btn:active {
+  background: rgba(149,165,166,0.1);
+  transform: scale(0.95);
 }

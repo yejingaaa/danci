@@ -2,10 +2,15 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#FFA500">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="单词软件">
   <title>单词软件</title>
   <link rel="manifest" href="manifest.json">
   <link rel="icon" href="pwa-icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="pwa-icon.svg">
   <script>
     // 在 CSS 渲染前检查夜间模式偏好，防止闪烁
     if (localStorage.getItem('wordapp_nightMode') === 'true') {
@@ -28,7 +33,7 @@
   </div>
   <div id="app">
     <div class="app-bar">
-      <button class="back-btn" onclick="goHome()" id="global-back-btn">←</button>
+      <button class="back-btn" onclick="goHome()" id="global-back-btn">← 退出</button>
       <h1 id="page-title">单词软件</h1>
     </div>
     <div id="toast" class="toast"></div>
@@ -152,6 +157,9 @@
         <div class="card" style="text-align:center;">
           <button class="btn btn-outline btn-sm" onclick="exitApp()">🚪 退出应用</button>
         </div>
+        <div class="card" style="text-align:center;font-size:13px;color:var(--btn-gray);padding:16px;">
+          💡 在浏览器菜单选择「添加到主屏幕」，体验更好
+        </div>
       </div>
     </div>
 
@@ -164,6 +172,7 @@
           <div class="study-progress-wrap">
             <span class="study-progress-text" id="study-progress">0 / 0</span>
             <span class="study-progress-text" id="study-mode-label" style="opacity:0.6;">学习</span>
+            <button class="study-exit-btn" onclick="goHome()">✕ 退出</button>
           </div>
           <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
           <div style="text-align:center;"><button class="word-pronounce" onclick="speakCurrentWord()">🔊</button></div>
@@ -171,7 +180,9 @@
             <div class="word-display"><div class="word-english" id="word-english">hello</div><div class="word-chinese" id="word-chinese">你好</div></div>
           </div>
           <div id="spell-area" style="display:none;">
-            <input type="text" id="spell-input" class="spell-input" placeholder="输入翻译..." autocomplete="off">
+            <form id="spell-form" onsubmit="handleSpellSubmit(event)">
+              <input type="text" id="spell-input" class="spell-input" placeholder="输入翻译..." autocomplete="off">
+            </form>
             <div class="btn-group">
               <button id="spell-check-btn" class="btn btn-orange" onclick="handleSpellCheck()">✓ 检查</button>
               <button id="spell-forgot-btn" class="btn btn-red" onclick="handleSpellForgot()">✕ 忘了</button>

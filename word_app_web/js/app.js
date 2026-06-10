@@ -35,7 +35,7 @@ function switchTab(tabName) {
   // 刷新对应数据
   if (tabName === 'study') refreshHome();
   else if (tabName === 'words') refreshManage();
-  else if (tabName === 'stats') refreshStats();
+  else if (tabName === 'stats') safeRefreshStats();
 
   // 更新标题
   const titles = { study: '单词软件', words: '词库', stats: '统计', profile: '我的' };
@@ -692,7 +692,7 @@ function switchStatsTab(period) {
   document.querySelectorAll('.stat-tab').forEach(t => t.classList.remove('active'));
   const activeTab = document.querySelector(`.stat-tab[data-period="${period}"]`);
   if (activeTab) activeTab.classList.add('active');
-  refreshStats();
+  safeRefreshStats();
 }
 
 function getPeriodRange(period) {
@@ -831,9 +831,18 @@ async function refreshStats() {
     html += renderProficiencyChart(allWords);
   }
 
-  html += '<button class="stats-refresh-btn" onclick="refreshStats()">\ud83d\udd04 \u5237\u65b0\u6570\u636e</button>';
+  html += '<button class="stats-refresh-btn" onclick="refreshStats()">\ud83d\udd04 \u66f4\u65b0\u6570\u636e</button>';
 
   document.getElementById('stats-content').innerHTML = html;
+}
+
+// \u6355\u83b7\u7edf\u8ba1\u9519\u8bef
+async function safeRefreshStats() {
+  try {
+    await refreshStats();
+  } catch (e) {
+    document.getElementById('stats-content').innerHTML = '<div class="card" style="text-align:center;padding:40px;color:var(--btn-gray);">\u7edf\u8ba1\u52a0\u8f7d\u5931\u8d25\uff1a' + escapeHtml(e.message || e) + '</div>';
+  }
 }
 
 

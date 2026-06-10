@@ -155,10 +155,6 @@ async function startDailyStudy() {
     }
   }
 
-  // 更新每日计数
-  dailyNewCount += newWords.length;
-  await appDB.setSetting('dailyNewCount', dailyNewCount);
-
   wordQueue = queue;
   currentWordIndex = 0;
   showingAnswer = false;
@@ -464,7 +460,15 @@ function showAnswer(word) {
 
 function handleShowNext() { nextWord(); }
 
-function nextWord() {
+async function nextWord() {
+  // 在 daily 模式下，学完一个新词后更新每日计数
+  if (studyMode === 'daily') {
+    const item = wordQueue[currentWordIndex];
+    if (item && item.type === 'new') {
+      dailyNewCount = Math.min(dailyGoal, dailyNewCount + 1);
+      await appDB.setSetting('dailyNewCount', dailyNewCount);
+    }
+  }
   if (currentWordIndex < wordQueue.length - 1) {
     currentWordIndex++;
     showingAnswer = false;

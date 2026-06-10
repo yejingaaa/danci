@@ -1108,6 +1108,49 @@ async function batchDeleteSelected() {
   refreshWordList(currentBookId);
 }
 
+// ============== 内置词库导入 ==============
+const BUILTIN_BOOKS = [
+  { file: 'wordbooks/elementary.json', name: '小学词汇 (~1170词)', level: '小学' },
+  { file: 'wordbooks/middle.json', name: '初中词汇 (~1340词)', level: '初中' },
+  { file: 'wordbooks/high.json', name: '高中词汇 (~2330词)', level: '高中' },
+];
+
+function showBuiltinBooks() {
+  const list = document.getElementById('books-list');
+  let html = '<div style="margin:12px 0;font-size:14px;font-weight:600;color:var(--text);">📚 内置词库</div>';
+  for (const book of BUILTIN_BOOKS) {
+    html += `<div class="word-item" style="cursor:pointer;" onclick="importBuiltinBook('${book.file}','${book.level}')">
+      <div class="word-info"><div class="word-en">${book.name}</div><div class="word-zh">点击导入为新词本</div></div>
+    </div>`;
+  }
+  html += '<button class="btn btn-gray btn-sm" onclick="refreshManage()" style="width:100%;margin-top:8px;">← 返回</button>';
+  list.innerHTML = html;
+}
+
+async function importBuiltinBook(file, level) {
+  if (!confirm(`确定导入「${level}词汇」？将创建新词本并导入所有单词。`)) return;
+  try {
+    const resp = await fetch(file);
+    const words = await resp.json();
+    if (!words || !words.length) { showToast('词库文件为空'); return; }
+    // 创建词本
+    const bookName = `${level}词汇`;
+    const books = await appDB.getAllBooks();
+    let book = books.find(b => b.name === bookName);
+    if (!book) {
+      const bookId = await appDB.createBook(bookName);
+      book = { id: bookId, name: bookName };
+    }
+    // 导入单词
+    const wordData = words.map(w => ({ english: w.english, chinese: w.chinese, bookId: book.id, isSelected: true, createdAt: new Date().toISOString() }));
+    const inserted = await appDB.insertWordsUnique(wordData);
+    showToast(`成功导入 ${inserted} 个单词到「${bookName}」`);
+    refreshManage();
+  } catch (err) {
+    showToast('导入失败：' + (err.message || '请检查网络'));
+  }
+}
+
 function batchMoveSelected() {
   const selected = allWordsCache.filter(w => w.isSelected);
   if (!selected.length) { showToast('请先勾选要移动的单词'); return; }

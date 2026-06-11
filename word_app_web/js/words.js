@@ -179,6 +179,9 @@ function getWordDisplay(w) {
   if (w.cardType === 'multiple_choice') {
     return { en: w.fields?.question || '', zh: '选择题' };
   }
+  if (w.cardType === 'image_card') {
+    return { en: w.fields?.back || w.fields?.front || '', zh: '图片卡片' };
+  }
   return { en: w.english || '', zh: w.chinese || '' };
 }
 
@@ -411,8 +414,32 @@ async function showWordDetail(id) {
     }).join('');
   }
 
-  document.getElementById('detail-english').textContent = word.english;
-  document.getElementById('detail-chinese').textContent = word.chinese;
+  // 按卡片类型显示不同的内容
+  const typeName = (WordApp.cardTypes[word.cardType] || {}).name || word.cardType || '基础';
+  document.getElementById('detail-english').innerHTML = ''
+    + `<span style="font-size:12px;color:var(--btn-gray);font-weight:400;">[${typeName}]</span> `
+    + (word.cardType === 'basic' ? escapeHtml(word.english)
+      : word.cardType === 'cloze' ? escapeHtml(word.fields?.text || '').replace(/\{\{c\d::(.*?)\}\}/g, '<mark>$1</mark>')
+      : word.cardType === 'multiple_choice' ? escapeHtml(word.fields?.question || '')
+      : escapeHtml(word.english || word.fields?.front || ''));
+  document.getElementById('detail-chinese').textContent = word.cardType === 'basic' ? word.chinese : '';
+
+  // 选择题额外显示选项
+  const extraInfo = document.getElementById('detail-extra-info');
+  if (word.cardType === 'multiple_choice' && word.fields?.options) {
+    if (!extraInfo) {
+      const infoDiv = document.createElement('div');
+      infoDiv.id = 'detail-extra-info';
+      infoDiv.style.cssText = 'margin:8px 0;font-size:14px;color:var(--btn-gray);';
+      document.getElementById('detail-chinese').after(infoDiv);
+    }
+    document.getElementById('detail-extra-info').innerHTML = word.fields.options.map((o, i) =>
+      `<div style="padding:4px 0;${o === word.fields.answer ? 'color:var(--green);font-weight:600;' : ''}">${String.fromCharCode(65 + i)}. ${escapeHtml(o)}${o === word.fields.answer ? ' ✓' : ''}</div>`
+    ).join('');
+  } else if (extraInfo) {
+    extraInfo.remove();
+  }
+
   document.getElementById('detail-proficiency').textContent = `${getScoreStateText(word.progressScore || 0)} (${word.progressScore || 0}分)`;
   document.getElementById('detail-reviewed').textContent = `${word.reviewCount || 0} 次`;
   document.getElementById('detail-consecutive').textContent = `${word.consecutiveCorrect || 0} 次`;
@@ -425,7 +452,10 @@ async function showWordDetail(id) {
 
 function closeDetailDialog() {
   document.getElementById('detail-dialog').style.display = 'none';
+  const extraInfo = document.getElementById('detail-extra-info');
+  if (extraInfo) extraInfo.remove();
 }
+
 
 // ============== 编辑单词 ==============
 function showEditWord(id) {
@@ -788,12 +818,12 @@ async function exportData() {
     showToast('CSV 导出成功 📤');
   } else {
     const records = await appDB.getAllRecords();
-    const settingKeys = ['studyDirection', 'algorithm', 'customIntervals', 'nightMode'];
+    const settingKeys = ['studyDirection', 'algorithm', 'customIntervals', 'nightMode', 'dailyGoal', 'defaultCardType', 'learningDate', 'dailyNewCount'];
     const settings = {};
     for (const key of settingKeys) {
       settings[key] = await appDB.getSetting(key);
     }
-    const data = { version: 1, exportedAt: new Date().toISOString(), books, words, records, settings };
+    const data = { version: 2, exportedAt: new Date().toISOString(), books, words, records, settings };
     const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');

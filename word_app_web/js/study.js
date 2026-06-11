@@ -15,6 +15,18 @@ let swipeAbortController = null;
 function startStudy(mode) {
   WordApp.state.studyMode = mode;
   intensiveMode = false;
+  // 拼写模式仅支持 basic 卡片，过滤其他类型
+  if (mode === 'spell' && WordApp.state.wordQueue.length > 0) {
+    WordApp.state.wordQueue = WordApp.state.wordQueue.filter(item => {
+      const w = item.word || item;
+      return !w.cardType || w.cardType === 'basic';
+    });
+    if (WordApp.state.wordQueue.length === 0) {
+      showToast('拼写模式仅支持基础卡片');
+      return;
+    }
+    WordApp.state.currentWordIndex = 0;
+  }
   showFullscreenPage('study');
 }
 
@@ -143,6 +155,11 @@ function renderCardContent(word, mode) {
         selectMCAction(word, selected, isCorrect);
       });
     });
+  } else if (word.cardType === 'image_card') {
+    document.getElementById('word-english').innerHTML = ''
+      + (rendered.imageUrl ? `<img src="${escapeHtml(rendered.imageUrl)}" style="max-width:100%;max-height:200px;border-radius:8px;object-fit:contain;display:block;margin:0 auto;" alt="卡片图片" onerror="this.style.display='none'">` : '')
+      + `<div style="margin-top:8px;font-size:14px;color:var(--btn-gray);">点击下方按钮查看答案</div>`;
+    document.getElementById('word-chinese').textContent = '';
   }
 }
 

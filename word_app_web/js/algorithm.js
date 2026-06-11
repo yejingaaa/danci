@@ -112,6 +112,23 @@ registerCardType('multiple_choice', {
   },
 });
 
+// ----- 图片卡片 -----
+registerCardType('image_card', {
+  name: '图片卡片',
+  renderFront(card, direction) {
+    const imageUrl = card.fields.image_url || card.fields.front || '';
+    const back = card.fields.back || '';
+    return { front: imageUrl, back, imageUrl };
+  },
+  renderAnswer(card, direction) {
+    return { text: card.fields.back || '' };
+  },
+  checkAnswer(card, input) {
+    const answer = card.fields.back || '';
+    return input.trim().toLowerCase() === answer.trim().toLowerCase();
+  },
+});
+
 // ============== 算法调度入口 ==============
 
 /**
@@ -335,6 +352,79 @@ registerAlgorithm('custom_interval', {
           reviewCount: rc,
           consecutiveCorrect: rating === 'remembered' ? (ms.consecutiveCorrect ?? 0) + 1 : 0,
           consecutiveWrong: rating === 'forgotten' ? (ms.consecutiveWrong ?? 0) + 1 : 0,
+        },
+        lastReviewed: now.toISOString(),
+        nextReview: dueDate.toISOString(),
+      },
+      dueDate,
+    };
+  },
+});
+
+// ============== FSRS-5 算法 ==============
+/**
+ * FSRS-5 (Free Spaced Repetition Scheduler)
+ * 基于稳定性(Stability)、难度(Difficulty)的自适应间隔重复算法
+ * 评价等级映射：0→grade 1(忘记), 1→grade 2(困难), 2→grade 3(勉强/通过)
+ *            3→grade 4(良好), 4→grade 5(完美)
+ * grade < 3 视为失败重置，grade >= 3 视为成功递进
+ */
+registerAlgorithm('fsrs', {
+  name: 'FSRS-5',
+  description: '基于稳定性/难度的自适应间隔重复算法',
+
+  // FSRS-5 默认参数 (w[0]~w[18])
+  w: [0.4, 0.6, 2.4, 0.1, 0.5, 1.0, 0.1, 0.5, 0.0, 0.1, 0.0, 0.1, 0.2, 0.3, 0.0, 1.0, 0.1, 0.2, 0.1],
+
+  getRatingOptions() {
+    return [
+      { value: 0, label: '完全忘记', color: '#E74C3C' },
+      { value: 1, label: '困难', color: '#E67E22' },
+      { value: 2, label: '勉强', color: '#FFA500' },
+      { value: 3, label: '良好', color: '#2ECC71' },
+      { value: 4, label: '完美', color: '#27AE60' },
+    ];
+  },
+
+  schedule(word, rating, now) {
+    const ms = word.memoryState?.data || {};
+    let S = ms.stability || 0;
+    let D = ms.difficulty ?? 5.0;
+    const rc = (ms.reviewCount || 0) + 1;
+    const q = parseInt(rating) || 0;
+    const grade = q + 1; // 0-4 → 1-5
+
+    if (rc === 1) {
+      S = Math.max(0.1, this.w[15] * Math.exp(this.w[16] * (grade - 1)));
+      D = Math.max(1, Math.min(10, this.w[2] + this.w[3] * (5 - grade)));
+    } else {
+      if (grade < 3) {
+        S = Math.max(0.1, this.w[11] * Math.pow(D, -this.w[12]) * (Math.pow(S + 1, this.w[13]) - 1) * Math.exp(this.w[14] * (grade - 1)));
+      } else {
+        const f1 = 1 + this.w[6] * (Math.exp(this.w[7] * (grade - 2)) - 1);
+        const f2 = Math.exp(-this.w[8] * D) + this.w[9];
+        S = S * f1 * f2;
+      }
+      const dDelta = this.w[4] * (5 - grade);
+      D = Math.max(1, Math.min(10, D + Math.max(-1, Math.min(1, dDelta))));
+    }
+
+    const interval = Math.max(1, Math.round(S));
+    const dueDate = new Date(now);
+    dueDate.setDate(dueDate.getDate() + interval);
+
+    const progressScore = q >= 3 ? 100 : q === 2 ? 67 : q === 1 ? 34 : 10;
+
+    return {
+      memoryState: {
+        algorithm: 'fsrs',
+        data: {
+          stability: S,
+          difficulty: D,
+          progressScore,
+          reviewCount: rc,
+          consecutiveCorrect: q >= 2 ? (ms.consecutiveCorrect || 0) + 1 : 0,
+          consecutiveWrong: q < 2 ? (ms.consecutiveWrong || 0) + 1 : 0,
         },
         lastReviewed: now.toISOString(),
         nextReview: dueDate.toISOString(),

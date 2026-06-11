@@ -1,9 +1,10 @@
 /**
- * IndexedDB 数据库层 v3 - 支持三态进度分
+ * IndexedDB 数据库层 v4 - 通用卡片模型
+ * 支持多种卡片类型（basic/cloze/multiple_choice）和可插拔记忆算法
  */
 
 const DB_NAME = 'WordAppDB';
-const DB_VERSION = 3;
+const DB_VERSION = 4;
 
 class AppDatabase {
   constructor() { this.db = null; }
@@ -63,6 +64,44 @@ class AppDatabase {
             }
           };
         }
+
+        // v4: 通用卡片结构（cardType, fields, memoryState）
+        if (oldVersion < 4) {
+          const wordStore = event.target.transaction.objectStore('words');
+          if (!wordStore.indexNames.contains('card_type')) {
+            wordStore.createIndex('card_type', 'cardType', { unique: false });
+          }
+          // 迁移已有数据：添加 cardType, fields, memoryState
+          const req = wordStore.openCursor();
+          req.onsuccess = () => {
+            const cursor = req.result;
+            if (cursor) {
+              const word = cursor.value;
+              if (!word.cardType) {
+                word.cardType = 'basic';
+                word.fields = {
+                  front: word.english || '',
+                  back: word.chinese || '',
+                  extra: '',
+                };
+                word.memoryState = {
+                  algorithm: 'three_state',
+                  data: {
+                    progressScore: word.progressScore ?? 0,
+                    reviewCount: word.reviewCount ?? 0,
+                    consecutiveCorrect: word.consecutiveCorrect ?? 0,
+                    consecutiveWrong: word.consecutiveWrong ?? 0,
+                  },
+                  lastReviewed: word.lastReviewed ?? null,
+                  nextReview: word.nextReview ?? null,
+                };
+                if (word.isSelected === undefined) word.isSelected = true;
+                cursor.update(word);
+              }
+              cursor.continue();
+            }
+          };
+        }
       };
 
       request.onsuccess = (event) => {
@@ -75,11 +114,13 @@ class AppDatabase {
 
   // ==================== 单词本 CRUD ====================
 
-  async createBook(name) {
+  async createBook(name, cardType) {
     const tx = this.db.transaction('word_books', 'readwrite');
     const store = tx.objectStore('word_books');
+    const data = { name, createdAt: new Date().toISOString() };
+    if (cardType) data.defaultCardType = cardType;
     return new Promise((resolve, reject) => {
-      const req = store.add({ name, createdAt: new Date().toISOString() });
+      const req = store.add(data);
       req.onsuccess = () => resolve(req.result);
       req.onerror = () => reject(req.error);
     });
@@ -192,18 +233,83 @@ class AppDatabase {
     });
   }
 
+  // ==================== 通用卡片标准化 ====================
+
+  /**
+   * 将单词对象标准化为通用卡片格式（向后兼容）
+   * - 旧格式（english/chinese/progressScore）→ 添加 cardType/fields/memoryState
+   * - 新格式 → 确保 flat 字段 (english/chinese/progressScore) 同步
+   */
+  _normalizeWord(word) {
+    if (!word) return word;
+
+    if (word.cardType) {
+      // 新格式：确保向后兼容的 flat 字段存在
+      if (word.english === undefined && word.fields) {
+        word.english = word.fields.front || '';
+        word.chinese = word.fields.back || '';
+      }
+      if (word.progressScore === undefined && word.memoryState?.data) {
+        word.progressScore = word.memoryState.data.progressScore ?? 0;
+        word.reviewCount = word.memoryState.data.reviewCount ?? 0;
+        word.consecutiveCorrect = word.memoryState.data.consecutiveCorrect ?? 0;
+        word.consecutiveWrong = word.memoryState.data.consecutiveWrong ?? 0;
+      }
+      if (word.isSelected === undefined) word.isSelected = true;
+      return word;
+    }
+
+    // 旧格式：添加新结构（不破坏旧字段）
+    word.cardType = 'basic';
+    word.fields = word.fields || {
+      front: word.english || '',
+      back: word.chinese || '',
+      extra: '',
+    };
+    word.memoryState = word.memoryState || {
+      algorithm: 'three_state',
+      data: {
+        progressScore: word.progressScore ?? 0,
+        reviewCount: word.reviewCount ?? 0,
+        consecutiveCorrect: word.consecutiveCorrect ?? 0,
+        consecutiveWrong: word.consecutiveWrong ?? 0,
+      },
+      lastReviewed: word.lastReviewed ?? null,
+      nextReview: word.nextReview ?? null,
+    };
+    if (word.isSelected === undefined) word.isSelected = true;
+    return word;
+  }
+
   // ==================== 单词 CRUD（支持词本） ====================
 
   async insertWord(word) {
     const tx = this.db.transaction('words', 'readwrite');
     const store = tx.objectStore('words');
+    // 兼容旧格式（flat english/chinese）和新格式（fields.front/back）
+    const front = word.english || word.fields?.front || '';
+    const back = word.chinese || word.fields?.back || '';
     const data = {
       bookId: word.bookId ?? 1,
-      english: word.english,
-      chinese: word.chinese,
+      english: front,
+      chinese: back,
+      cardType: word.cardType || 'basic',
+      fields: word.fields || { front, back, extra: '' },
+      memoryState: word.memoryState || {
+        algorithm: 'three_state',
+        data: {
+          progressScore: word.progressScore ?? 0,
+          reviewCount: word.reviewCount ?? 0,
+          consecutiveCorrect: word.consecutiveCorrect ?? 0,
+          consecutiveWrong: word.consecutiveWrong ?? 0,
+        },
+        lastReviewed: word.lastReviewed ?? null,
+        nextReview: word.nextReview ?? null,
+      },
       progressScore: word.progressScore ?? 0,
       reviewCount: word.reviewCount ?? 0,
       consecutiveCorrect: word.consecutiveCorrect ?? 0,
+      consecutiveWrong: word.consecutiveWrong ?? 0,
       lastReviewed: word.lastReviewed ?? null,
       nextReview: word.nextReview ?? null,
       isFavorited: word.isFavorited ?? false,
@@ -223,18 +329,21 @@ class AppDatabase {
     }
   }
 
-  /** 批量插入单词，自动跳过同词本中已存在的（按英文去重） */
+  /** 批量插入单词，自动跳过同词本中已存在的（按英文/正面去重） */
   async insertWordsUnique(words) {
     const existing = await this.getWordsByBook(words[0]?.bookId || 1);
-    const existingMap = new Set(existing.map(w => w.english.toLowerCase().trim()));
+    // 兼容旧格式 english 和新格式 fields.front
+    const existingMap = new Set(existing.map(w => (w.english || w.fields?.front || '').toLowerCase().trim()));
     let count = 0;
     for (const word of words) {
-      if (!existingMap.has(word.english.toLowerCase().trim())) {
+      const front = (word.english || word.fields?.front || '').toLowerCase().trim();
+      if (!existingMap.has(front)) {
         await this.insertWord(word);
         count++;
+        existingMap.add(front); // 去重集合也更新，避免同批重复
       }
     }
-    return count; // 返回实际插入数量
+    return count;
   }
 
   async getAllWords() {
@@ -242,7 +351,10 @@ class AppDatabase {
     const store = tx.objectStore('words');
     return new Promise((resolve, reject) => {
       const req = store.getAll();
-      req.onsuccess = () => resolve(req.result || []);
+      req.onsuccess = () => {
+        const words = req.result || [];
+        resolve(words.map(w => this._normalizeWord(w)));
+      };
       req.onerror = () => reject(req.error);
     });
   }
@@ -253,7 +365,10 @@ class AppDatabase {
     const index = store.index('book_id');
     return new Promise((resolve, reject) => {
       const req = index.getAll(IDBKeyRange.only(bookId));
-      req.onsuccess = () => resolve(req.result || []);
+      req.onsuccess = () => {
+        const words = req.result || [];
+        resolve(words.map(w => this._normalizeWord(w)));
+      };
       req.onerror = () => reject(req.error);
     });
   }
@@ -277,12 +392,28 @@ class AppDatabase {
     const store = tx.objectStore('words');
     return new Promise((resolve, reject) => {
       const req = store.get(id);
-      req.onsuccess = () => resolve(req.result);
+      req.onsuccess = () => resolve(this._normalizeWord(req.result));
       req.onerror = () => reject(req.error);
     });
   }
 
   async updateWord(word) {
+    // 同步 flat 字段 → memoryState（确保两种表示一致）
+    if (word.memoryState?.data) {
+      word.memoryState.data.progressScore = word.progressScore ?? 0;
+      word.memoryState.data.reviewCount = word.reviewCount ?? 0;
+      word.memoryState.data.consecutiveCorrect = word.consecutiveCorrect ?? 0;
+      word.memoryState.data.consecutiveWrong = word.consecutiveWrong ?? 0;
+    }
+    if (word.memoryState) {
+      word.memoryState.lastReviewed = word.lastReviewed ?? null;
+      word.memoryState.nextReview = word.nextReview ?? null;
+    }
+    // 同步 flat english/chinese ↔ fields.front/back
+    if (word.fields) {
+      word.fields.front = word.english ?? word.fields.front ?? '';
+      word.fields.back = word.chinese ?? word.fields.back ?? '';
+    }
     const tx = this.db.transaction('words', 'readwrite');
     const store = tx.objectStore('words');
     return new Promise((resolve, reject) => {

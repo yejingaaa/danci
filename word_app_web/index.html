@@ -131,16 +131,22 @@
           </div>
           <div class="settings-item">
             <span>记忆算法</span>
-            <div class="seg-control" id="algorithm-control">
-              <button class="seg-btn active" data-value="sm2" onclick="setAlgorithm('sm2')">SM-2</button>
-              <button class="seg-btn" data-value="fixed" onclick="setAlgorithm('fixed')">固定间隔</button>
-            </div>
+            <div class="seg-control" id="algorithm-control"></div>
+          </div>
           </div>
           <div id="custom-interval-area" style="display:none;margin-top:8px;margin-bottom:8px;">
             <p style="font-size:14px;color:var(--btn-gray);margin-bottom:8px;">自定义间隔（天），用逗号分隔：</p>
             <input type="text" id="custom-intervals" class="spell-input" value="1,3,5,10,20" style="text-align:left;" placeholder="1,2,4,7,15,30">
-            <button class="btn btn-orange btn-sm" onclick="saveCustomIntervals()" style="margin-top:8px;width:100%;">保存</button>
+            <div id="interval-preview" style="font-size:13px;color:var(--btn-gray);margin:6px 0;"></div>
+            <button class="btn btn-orange btn-sm" onclick="saveCustomIntervals()" style="margin-top:4px;width:100%;">保存</button>
           </div>
+          <div class="settings-item">
+            <span>默认卡片类型</span>
+            <select id="default-card-type" onchange="setDefaultCardType(this.value)" style="padding:6px 12px;border-radius:8px;border:1.5px solid rgba(149,165,166,0.2);font-size:14px;background:var(--card);color:var(--text);">
+              <option value="basic">基础卡片</option>
+              <option value="cloze">完形填空</option>
+              <option value="multiple_choice">选择题</option>
+            </select>
           <div class="settings-item">
             <span>每日目标（仅统计）</span>
             <input type="number" id="daily-goal-input" value="10" min="1" onchange="setDailyGoal(this.value)" style="width:70px;padding:6px 12px;border-radius:8px;border:1.5px solid rgba(149,165,166,0.2);font-size:14px;background:var(--card);color:var(--text);text-align:center;">
@@ -332,10 +338,39 @@
     <div id="create-book-dialog" class="dialog-overlay" style="display:none;">
       <div class="card" style="width:100%;max-width:380px;">
         <div class="card-title">📕 新建词本</div>
-        <input id="new-book-name" class="spell-input" style="text-align:left;" placeholder="输入词本名称">
+        <input id="new-book-name" class="spell-input" style="text-align:left;margin-bottom:12px;" placeholder="输入词本名称">
+        <div style="margin-bottom:12px;">
+          <label style="font-size:14px;color:var(--btn-gray);display:block;margin-bottom:4px;">默认卡片类型</label>
+          <select id="new-book-card-type" style="width:100%;padding:8px;border:2px solid var(--btn-gray);border-radius:8px;font-size:14px;background:var(--card);color:var(--text);">
+            <option value="">沿用全局默认</option>
+            <option value="basic">基础卡片</option>
+            <option value="cloze">完形填空</option>
+            <option value="multiple_choice">选择题</option>
+          </select>
+        </div>
         <div class="btn-group" style="margin-top:12px;">
           <button class="btn btn-gray" onclick="closeCreateBookDialog()">取消</button>
           <button class="btn btn-orange" onclick="createBook()">创建</button>
+        </div>
+      </div>
+    </div>
+
+    <div id="column-map-dialog" class="dialog-overlay" style="display:none;">
+      <div class="card" style="width:100%;max-width:460px;">
+        <div class="card-title">📋 选择列映射</div>
+        <p style="font-size:14px;color:var(--btn-gray);margin-bottom:12px;">请选择每列对应的字段，以及这批卡片的类型</p>
+        <div id="column-map-fields"></div>
+        <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(149,165,166,0.15);">
+          <label style="font-size:14px;color:var(--btn-gray);display:block;margin-bottom:4px;">卡片类型</label>
+          <select id="column-map-card-type" style="width:100%;padding:10px;border:2px solid var(--btn-gray);border-radius:8px;font-size:15px;background:var(--card);color:var(--text);">
+            <option value="basic">基础卡片（英/中）</option>
+            <option value="cloze">完形填空</option>
+            <option value="multiple_choice">选择题</option>
+          </select>
+        </div>
+        <div class="btn-group" style="margin-top:12px;">
+          <button class="btn btn-gray" onclick="closeColumnMapDialog()">取消</button>
+          <button class="btn btn-orange" onclick="confirmColumnMap()">确认导入</button>
         </div>
       </div>
     </div>
@@ -356,8 +391,12 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.24.1/dist/index.js" defer></script>
-  <script src="js/db.js?v=20260610"></script>
-  <script src="js/algorithm.js?v=20260610"></script>
-  <script src="js/app.js?v=20260610"></script>
+  <script src="js/db.js?v=20260611"></script>
+  <script src="js/algorithm.js?v=20260611"></script>
+  <script src="js/study.js?v=20260611"></script>
+  <script src="js/words.js?v=20260611"></script>
+  <script src="js/stats.js?v=20260611"></script>
+  <script src="js/profile.js?v=20260611"></script>
+  <script src="js/app.js?v=20260611"></script>
 </body>
 </html>

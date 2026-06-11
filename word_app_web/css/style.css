@@ -1131,3 +1131,78 @@ body.night-mode .nav-item:active { background: rgba(255,255,255,0.04); }
   background: rgba(149,165,166,0.1);
   transform: scale(0.95);
 }
+
+/* ========== 卡片类型扩展样式 ========== */
+
+/* 完形填空 - 空白占位 */
+.cloze-blank {
+  display: inline-block;
+  min-width: 80px;
+  border-bottom: 2px solid var(--btn-orange);
+  margin: 0 4px;
+  color: var(--btn-orange);
+  font-weight: 600;
+  letter-spacing: 2px;
+}
+
+/* 完形填空 - 输入框 */
+.cloze-input {
+  margin-top: 12px;
+  width: 100%;
+}
+
+/* 完形填空 - 答案高亮 */
+.cloze-answer {
+  background: #FFE082;
+  border-radius: 3px;
+  padding: 1px 4px;
+  color: #2C3E50;
+}
+
+/* 选择题 - 选项按钮 */
+.mc-options {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.mc-option {
+  display: block;
+  width: 100%;
+  padding: 12px 16px;
+  background: var(--card);
+  border: 2px solid rgba(149,165,166,0.2);
+  border-radius: 10px;
+  font-size: 15px;
+  color: var(--text);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  text-align: left;
+}
+
+.mc-option:active {
+  transform: scale(0.98);
+}
+
+.mc-option.mc-correct {
+  border-color: #2ECC71;
+  background: rgba(46,204,113,0.1);
+  color: #2ECC71;
+}
+
+.mc-option.mc-wrong {
+  border-color: #E74C3C;
+  background: rgba(231,76,60,0.1);
+  color: #E74C3C;
+}
+
+.mc-option:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+/* 卡片类型扩展容器 */
+.card-extras {
+  margin-top: 8px;
+}

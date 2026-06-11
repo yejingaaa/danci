@@ -1,4 +1,4 @@
-const CACHE_NAME = 'wordapp-v2';
+const CACHE_NAME = 'wordapp-v3';
 
 // 需要缓存的资源
 const PRECACHE_URLS = [
@@ -8,6 +8,10 @@ const PRECACHE_URLS = [
   './js/app.js',
   './js/db.js',
   './js/algorithm.js',
+  './js/study.js',
+  './js/words.js',
+  './js/stats.js',
+  './js/profile.js',
   './manifest.json',
   './pwa-icon.svg',
 ];

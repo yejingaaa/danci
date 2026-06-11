@@ -1111,7 +1111,10 @@ body.night-mode .nav-item:active { background: rgba(255,255,255,0.04); }
 
 /* ========== 响应式 ========== */
 @media (max-width: 480px) {
-  #app { padding: 12px; }
+  #app { padding: 12px; overflow-x: hidden; }
+  #main-content { overflow-x: hidden; }
+  .seg-btn { padding: 6px 8px; font-size: 12px; }
+  .settings-item { gap: 8px; }
 }
 
 /* 学习页退出按钮 */

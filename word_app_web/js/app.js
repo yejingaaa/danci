@@ -3,30 +3,29 @@
  */
 
 // ============== 共享状态命名空间 ==============
-window.WordApp = {
-  state: {
-    // 学习
-    studyMode: 'learn',
-    wordQueue: [],
-    currentWordIndex: 0,
-    showingAnswer: false,
-    dailyNewCount: 0,
-    learningDate: '',
+window.WordApp = window.WordApp || {};
+WordApp.state = {
+  // 学习
+  studyMode: 'learn',
+  wordQueue: [],
+  currentWordIndex: 0,
+  showingAnswer: false,
+  dailyNewCount: 0,
+  learningDate: '',
 
-    // 算法
-    algorithmName: 'three_state',
-    customIntervals: null,
+  // 算法
+  algorithmName: 'three_state',
+  customIntervals: null,
 
-    // 方向
-    studyDirection: 'en2cn',
+  // 方向
+  studyDirection: 'en2cn',
 
-    // 设置
-    dailyGoal: 10,
-    isNightMode: false,
+  // 设置
+  dailyGoal: 10,
+  isNightMode: false,
 
-    // 导航
-    currentView: 'home',
-  },
+  // 导航
+  currentView: 'home',
 };
 
 // ============== 导航系统 ==============

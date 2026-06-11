@@ -320,11 +320,12 @@ async function handleAction(action) {
   await appDB.updateWord({ ...word, ...updated });
   await appDB.insertRecord({ wordId: word.id, action: String(action) });
   sessionStats.total++;
-  // 兼容各种算法的评价值
-  if (action === 'forgot' || action === 0 || action === 'forgotten') sessionStats.forgot++;
-  else if (action === 'struggled' || action === 1 || action === 2) sessionStats.struggled++;
+  // 宽松比较：onclick 传入字符串，但算法内部可能使用数字
+  const num = parseInt(action);
+  if (action === 'forgot' || num === 0 || action === 'forgotten') sessionStats.forgot++;
+  else if (action === 'struggled' || num === 1 || num === 2) sessionStats.struggled++;
   else sessionStats.mastered++;
-  if (action === 'forgot' || action === 'struggled' || action === 0 || action === 1 || action === 'forgotten') {
+  if (action === 'forgot' || action === 'struggled' || num === 0 || num === 1 || action === 'forgotten') {
     showAnswer(word);
   } else {
     nextWord();
@@ -403,9 +404,10 @@ async function handleRecallAction(action) {
   await appDB.updateWord({ ...word, ...updated });
   await appDB.insertRecord({ wordId: word.id, action: String(action) });
   sessionStats.total++;
-  // 兼容各种算法的评价值
-  if (action === 'forgot' || action === 0 || action === 'forgotten') { sessionStats.forgot++; showAnswer(word); }
-  else if (action === 'struggled' || action === 1 || action === 2) { sessionStats.struggled++; showAnswer(word); }
+  // 宽松比较：onclick 传入字符串
+  const num = parseInt(action);
+  if (action === 'forgot' || num === 0 || action === 'forgotten') { sessionStats.forgot++; showAnswer(word); }
+  else if (action === 'struggled' || num === 1 || num === 2) { sessionStats.struggled++; showAnswer(word); }
   else { sessionStats.mastered++; nextWord(); }
 }
 

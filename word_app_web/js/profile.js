@@ -33,15 +33,6 @@ async function setDailyGoal(val) {
   showToast(`每日目标已设为 ${WordApp.state.dailyGoal}`);
 }
 
-async function setDirection(dir) {
-  WordApp.state.studyDirection = dir;
-  document.querySelectorAll('#direction-control .seg-btn').forEach(b => {
-    b.classList.toggle('active', b.dataset.value === dir);
-  });
-  await appDB.setSetting('studyDirection', dir);
-  showToast(dir === 'en2cn' ? '已切换为英→中' : '已切换为中→英');
-}
-
 async function setAlgorithm(algo) {
   WordApp.state.algorithmName = ALGORITHM_MAP[algo] || algo;
   document.querySelectorAll('#algorithm-control .seg-btn').forEach(b => {
@@ -52,11 +43,6 @@ async function setAlgorithm(algo) {
   await appDB.setSetting('algorithm', WordApp.state.algorithmName);
   const name = (WordApp.algorithms[WordApp.state.algorithmName] || {}).name || WordApp.state.algorithmName;
   showToast(`已切换为 ${name}`);
-}
-
-async function setDefaultCardType(type) {
-  await appDB.setSetting('defaultCardType', type);
-  showToast(`默认卡片类型已设为 ${WordApp.cardTypes[type]?.name || type}`);
 }
 
 async function saveCustomIntervals() {
@@ -98,7 +84,6 @@ async function loadSettings() {
   if (document.getElementById('night-toggle')) {
     document.getElementById('night-toggle').checked = WordApp.state.isNightMode;
   }
-  WordApp.state.studyDirection = await appDB.getSetting('studyDirection') || 'en2cn';
 
   // 算法
   let algo = await appDB.getSetting('algorithm') || 'three_state';
@@ -117,11 +102,6 @@ async function loadSettings() {
     if (el) el.value = saved.join(',');
     updateIntervalPreview(saved);
   }
-
-  // 默认卡片类型
-  const defaultCardType = await appDB.getSetting('defaultCardType') || 'basic';
-  const cardTypeSelect = document.getElementById('default-card-type');
-  if (cardTypeSelect) cardTypeSelect.value = defaultCardType;
 
   // 每日目标 & 计数
   WordApp.state.dailyGoal = await appDB.getSetting('dailyGoal') || 10;

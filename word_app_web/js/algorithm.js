@@ -1,9 +1,10 @@
 /**
- * 记忆算法插件系统 v2
+ * 记忆算法插件系统 v3
  * 支持可插拔算法架构，每个算法实现 schedule() 和 getRatingOptions()
+ * 通用记忆工具：不假设任何语言
  */
 
-// ============== 插件注册中心 ==============
+// ============== 算法注册中心 ==============
 window.WordApp = window.WordApp || {};
 if (!WordApp.algorithms) WordApp.algorithms = {};
 
@@ -12,148 +13,34 @@ if (!WordApp.algorithms) WordApp.algorithms = {};
  * @param {string} name - 算法标识
  * @param {Object} impl - 算法实现
  * @param {string} impl.name - 显示名称
- * @param {string} impl.description - 描述
  * @param {Function} impl.getRatingOptions - () => [{value, label, color}]
- * @param {Function} impl.schedule - (word, rating, now) => { memoryState, dueDate }
+ * @param {Function} impl.schedule - (item, rating, now) => { memoryState, dueDate }
  */
 function registerAlgorithm(name, impl) {
   WordApp.algorithms[name] = impl;
 }
 
-// ============== 卡片类型注册中心 ==============
-if (!WordApp.cardTypes) WordApp.cardTypes = {};
-
-/**
- * 注册一个卡片类型
- * @param {string} name - 类型标识
- * @param {Object} impl - 卡片实现
- * @param {string} impl.name - 显示名称
- * @param {Function} impl.renderFront - (card, direction) => { front, back, ... }
- * @param {Function} impl.renderAnswer - (card, direction) => { text }
- * @param {Function} impl.checkAnswer - (card, userInput, direction) => boolean
- */
-function registerCardType(name, impl) {
-  WordApp.cardTypes[name] = impl;
-}
-
-// ----- 基础卡片 -----
-registerCardType('basic', {
-  name: '基础卡片',
-  renderFront(card, direction) {
-    const front = direction === 'en2cn' ? card.fields.front : card.fields.back;
-    const back = direction === 'en2cn' ? card.fields.back : card.fields.front;
-    return { front, back };
-  },
-  renderAnswer(card, direction) {
-    const text = direction === 'en2cn' ? card.fields.back : card.fields.front;
-    return { text };
-  },
-  checkAnswer(card, input, direction) {
-    const answer = direction === 'en2cn' ? card.fields.back : card.fields.front;
-    return input.trim().toLowerCase() === answer.trim().toLowerCase();
-  },
-});
-
-// ----- 完形填空 -----
-registerCardType('cloze', {
-  name: '完形填空',
-  renderFront(card, direction) {
-    const text = card.fields.text || '';
-    // 替换 {{c1::答案}} 为带下划线的空格
-    const parts = text.split(/\{\{c\d::(.*?)\}\}/g);
-    let front = '';
-    const answers = [];
-    parts.forEach((part, i) => {
-      if (i % 2 === 0) {
-        front += escapeHtml(part);
-      } else {
-        front += `<span class="cloze-blank" data-answer="${escapeHtml(part)}">______</span>`;
-        answers.push(part);
-      }
-    });
-    return { front, back: text, clozeAnswers: answers };
-  },
-  renderAnswer(card, direction) {
-    const text = card.fields.text || '';
-    const answered = text.replace(/\{\{c\d::(.*?)\}\}/g, '<mark class="cloze-answer">$1</mark>');
-    return { text: answered };
-  },
-  checkAnswer(card, input) {
-    const text = card.fields.text || '';
-    const matches = [...text.matchAll(/\{\{c\d::(.*?)\}\}/g)];
-    if (matches.length === 0) return false;
-    // 只检查第一个空
-    const correct = matches[0][1];
-    return input.trim().toLowerCase() === correct.trim().toLowerCase();
-  },
-});
-
-// ----- 选择题 -----
-registerCardType('multiple_choice', {
-  name: '选择题',
-  renderFront(card, direction) {
-    const question = card.fields.question || '';
-    const options = card.fields.options || [];
-    const answer = card.fields.answer || '';
-    return {
-      front: escapeHtml(question),
-      options: options.map((opt, i) => ({
-        label: `${String.fromCharCode(65 + i)}. ${opt}`,
-        value: opt,
-        isCorrect: opt === answer,
-      })),
-    };
-  },
-  renderAnswer(card, direction) {
-    return { text: `正确答案：${card.fields.answer || ''}` };
-  },
-  checkAnswer(card, selected) {
-    return selected === card.fields.answer;
-  },
-});
-
-// ----- 图片卡片 -----
-registerCardType('image_card', {
-  name: '图片卡片',
-  renderFront(card, direction) {
-    const imageUrl = card.fields.image_url || card.fields.front || '';
-    const back = card.fields.back || '';
-    return { front: imageUrl, back, imageUrl };
-  },
-  renderAnswer(card, direction) {
-    return { text: card.fields.back || '' };
-  },
-  checkAnswer(card, input) {
-    const answer = card.fields.back || '';
-    return input.trim().toLowerCase() === answer.trim().toLowerCase();
-  },
-});
-
 // ============== 算法调度入口 ==============
 
 /**
  * 应用算法并返回更新后的字段
- * @param {Object} word - 单词对象（含 memoryState）
+ * @param {Object} item - 记忆项对象（含 memoryState）
  * @param {string|number} action - 评价值
  * @param {string} algorithmName - 算法名
- * @returns {Object} 包含 flat 字段和 memoryState 的更新对象
+ * @returns {Object} 包含 memoryState 和相关字段的更新对象
  */
-async function applyAlgorithm(word, action, algorithmName) {
+async function applyAlgorithm(item, action, algorithmName) {
   const algo = WordApp.algorithms[algorithmName];
   if (!algo) {
     console.warn('未知算法:', algorithmName, '，使用三态算法');
-    return applyThreeStateFallback(word, action);
+    return applyThreeStateFallback(item, action);
   }
   const now = new Date();
-  const result = algo.schedule(word, action, now);
+  const result = algo.schedule(item, action, now);
   const ms = result.memoryState;
   const dueDate = result.dueDate instanceof Date ? result.dueDate.toISOString() : result.dueDate;
 
   return {
-    progressScore: ms.data?.progressScore ?? 0,
-    consecutiveCorrect: ms.data?.consecutiveCorrect ?? 0,
-    consecutiveWrong: ms.data?.consecutiveWrong ?? 0,
-    reviewCount: ms.data?.reviewCount ?? (word.reviewCount || 0) + 1,
     lastReviewed: now.toISOString(),
     nextReview: dueDate,
     memoryState: ms,
@@ -434,37 +321,30 @@ registerAlgorithm('fsrs', {
   },
 });
 
-// ============== 回退方案（三态旧版，算法未找到时使用） ==============
-function applyThreeStateFallback(word, action) {
+// ============== 回退方案（算法未找到时用三态逻辑） ==============
+function applyThreeStateFallback(item, action) {
   const now = new Date();
-  let score = word.progressScore ?? 0;
-  let cc = word.consecutiveCorrect ?? 0;
-  let cw = word.consecutiveWrong ?? 0;
-  const rc = (word.reviewCount || 0) + 1;
+  const ms = item.memoryState?.data || {};
+  let score = ms.progressScore ?? 0;
+  let cc = ms.consecutiveCorrect ?? 0;
+  let cw = ms.consecutiveWrong ?? 0;
+  const rc = (ms.reviewCount ?? 0) + 1;
 
+  let nextDate;
   switch (action) {
-    case 'forgot': {
+    case 'forgot':
       score = Math.max(0, score - 25);
-      cc = 0;
-      cw = (cw || 0) + 1;
-      const hours = cw >= 3 ? 2 : 4;
-      const nextDate = new Date(now);
-      nextDate.setHours(nextDate.getHours() + hours);
-      return {
-        progressScore: score, consecutiveCorrect: cc, consecutiveWrong: cw, reviewCount: rc,
-        lastReviewed: now.toISOString(), nextReview: nextDate.toISOString(),
-      };
-    }
-    case 'struggled': {
+      cc = 0; cw = (cw || 0) + 1;
+      nextDate = new Date(now);
+      nextDate.setHours(nextDate.getHours() + (cw >= 3 ? 2 : 4));
+      break;
+    case 'struggled':
       score = Math.max(0, score - 5);
       cc = 0; cw = 0;
-      const nextDate = new Date(now);
+      nextDate = new Date(now);
       nextDate.setDate(nextDate.getDate() + 1);
-      return {
-        progressScore: score, consecutiveCorrect: cc, consecutiveWrong: cw, reviewCount: rc,
-        lastReviewed: now.toISOString(), nextReview: nextDate.toISOString(),
-      };
-    }
+      break;
+    default:
     case 'mastered': {
       const bonuses = [10, 8, 6, 5, 4, 3, 2, 2, 1, 1];
       const bonusIdx = Math.min(cc, bonuses.length - 1);
@@ -472,14 +352,22 @@ function applyThreeStateFallback(word, action) {
       cc = Math.min((cc || 0) + 1, 10);
       cw = 0;
       const days = score >= 81 ? 14 : score >= 61 ? 7 : score >= 41 ? 3 : score >= 21 ? 1 : 0.17;
-      const nextDate = new Date(now);
+      nextDate = new Date(now);
       nextDate.setDate(nextDate.getDate() + days);
-      return {
-        progressScore: score, consecutiveCorrect: cc, consecutiveWrong: cw, reviewCount: rc,
-        lastReviewed: now.toISOString(), nextReview: nextDate.toISOString(),
-      };
+      break;
     }
   }
+
+  return {
+    lastReviewed: now.toISOString(),
+    nextReview: nextDate.toISOString(),
+    memoryState: {
+      algorithm: 'three_state',
+      data: { progressScore: score, reviewCount: rc, consecutiveCorrect: cc, consecutiveWrong: cw },
+      lastReviewed: now.toISOString(),
+      nextReview: nextDate.toISOString(),
+    },
+  };
 }
 
 // ============== 状态辅助函数（被多个模块引用） ==============

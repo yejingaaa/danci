@@ -1,33 +1,28 @@
 /**
  * 学习模块 - 学习流程、卡片渲染、TTS、滑动手势
+ * 通用记忆工具：不假设任何语言
  */
 
 // ============== 学习状态 ==============
 let lastRenderedIndex = -1;
 let sessionStats = { total: 0, mastered: 0, struggled: 0, forgot: 0 };
 let reviewSource = 'selected';
-let intensiveMode = false;
-let spellInputHandler = null;
 let touchStartX = 0, touchStartY = 0, touchDiffX = 0;
 let swipeAbortController = null;
 
 // ============== 学习入口 ==============
 function startStudy(mode) {
   WordApp.state.studyMode = mode;
-  intensiveMode = false;
-  // 拼写模式仅支持 basic 卡片，过滤其他类型
-  if (mode === 'spell' && WordApp.state.wordQueue.length > 0) {
-    WordApp.state.wordQueue = WordApp.state.wordQueue.filter(item => {
-      const w = item.word || item;
-      return !w.cardType || w.cardType === 'basic';
-    });
-    if (WordApp.state.wordQueue.length === 0) {
-      showToast('拼写模式仅支持基础卡片');
-      return;
-    }
-    WordApp.state.currentWordIndex = 0;
-  }
   showFullscreenPage('study');
+}
+
+/** 获取当前单词的熟练分（从 memoryState 读取） */
+function getProgressScore(item) {
+  return item.memoryState?.data?.progressScore ?? 0;
+}
+/** 获取下次复习时间 */
+function getNextReview(item) {
+  return item.memoryState?.nextReview ?? null;
 }
 
 // 今日学习：自动混合新词+复习
@@ -37,8 +32,8 @@ async function startDailyStudy() {
   for (const b of books) {
     const words = await appDB.getWordsByBook(b.id);
     for (const w of words) {
-      if ((w.progressScore || 0) === 0) newWords.push(w);
-      else if (w.nextReview && w.nextReview.substring(0, 10) <= new Date().toISOString().substring(0, 10)) {
+      if (getProgressScore(w) === 0) newWords.push(w);
+      else if (getNextReview(w) && getNextReview(w).substring(0, 10) <= new Date().toISOString().substring(0, 10)) {
         dueWords.push(w);
       }
     }
@@ -81,7 +76,7 @@ async function startDailyStudy() {
 /**
  * 根据当前算法渲染评价按钮
  * @param {string} containerId - DOM 容器 ID
- * @param {string} handlerName - onclick 处理函数名（'handleAction' | 'handleRecallAction'）
+ * @param {string} handlerName - onclick 处理函数名（'handleAction'）
  */
 function renderRatingButtons(containerId, handlerName) {
   const algo = WordApp.algorithms[WordApp.state.algorithmName];
@@ -150,131 +145,23 @@ function formatRelativeTime(date) {
   return `${Math.round(diffDay / 365)} 年后`;
 }
 
-// ============== 卡片内容渲染（按类型分发） ==============
+// ============== 卡片内容渲染（通用 front/back） ==============
 
-function renderCardContent(word, mode) {
-  const cardType = WordApp.cardTypes[word.cardType] || WordApp.cardTypes['basic'];
-  const direction = WordApp.state.studyDirection;
-  const rendered = cardType.renderFront(word, direction);
-  const displayDiv = document.querySelector('.word-display');
-  if (!displayDiv) return;
-
-  // 清除之前的卡片类型扩展内容
-  const oldExtras = displayDiv.querySelector('.card-extras');
-  if (oldExtras) oldExtras.remove();
-
-  if (word.cardType === 'basic') {
-    document.getElementById('word-english').textContent = rendered.front;
-    document.getElementById('word-chinese').textContent = rendered.back;
-  } else if (word.cardType === 'cloze') {
-    document.getElementById('word-english').innerHTML = rendered.front;
-    document.getElementById('word-chinese').textContent = mode === 'recall' ? '输入空白处的答案' : '';
-    // 添加输入框
-    const extras = document.createElement('div');
-    extras.className = 'card-extras';
-    extras.innerHTML = `<input class="spell-input cloze-input" id="cloze-input" placeholder="输入空白处的答案..." autocomplete="off">`;
-    displayDiv.appendChild(extras);
-    // 绑定回车
-    const input = extras.querySelector('.cloze-input');
-    input.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') {
-        e.preventDefault();
-        checkClozeAnswer(word);
-      }
-    });
-  } else if (word.cardType === 'multiple_choice') {
-    document.getElementById('word-english').textContent = rendered.front;
-    document.getElementById('word-chinese').textContent = '请选择一个答案';
-    const extras = document.createElement('div');
-    extras.className = 'card-extras mc-options';
-    extras.innerHTML = rendered.options.map(o =>
-      `<button class="mc-option" data-value="${escapeHtml(o.value)}" data-correct="${o.isCorrect}">${o.label}</button>`
-    ).join('');
-    displayDiv.appendChild(extras);
-    // 绑定点击事件
-    extras.querySelectorAll('.mc-option').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const selected = btn.dataset.value;
-        const isCorrect = btn.dataset.correct === 'true';
-        selectMCAction(word, selected, isCorrect);
-      });
-    });
-  } else if (word.cardType === 'image_card') {
-    document.getElementById('word-english').innerHTML = ''
-      + (rendered.imageUrl ? `<img src="${escapeHtml(rendered.imageUrl)}" style="max-width:100%;max-height:200px;border-radius:8px;object-fit:contain;display:block;margin:0 auto;" alt="卡片图片" onerror="this.style.display='none'">` : '')
-      + `<div style="margin-top:8px;font-size:14px;color:var(--btn-gray);">点击下方按钮查看答案</div>`;
-    document.getElementById('word-chinese').textContent = '';
-  }
+/** 在卡片中显示正面和反面内容 */
+function renderCardContent(word) {
+  const front = word.fields?.front || '';
+  const back = word.fields?.back || '';
+  document.getElementById('word-english').textContent = front;
+  document.getElementById('word-chinese').textContent = '';
 }
 
-async function checkClozeAnswer(word) {
-  const input = document.getElementById('cloze-input');
-  if (!input || !input.value.trim()) return;
-  const cardType = WordApp.cardTypes['cloze'];
-  const correct = cardType.checkAnswer(word, input.value.trim());
-  if (correct) {
-    input.className = 'spell-input correct';
-    input.disabled = true;
-    // 自动记为熟练
-    sessionStats.total++; sessionStats.mastered++;
-    const upd = await applyAlgorithm(word, 'mastered', WordApp.state.algorithmName);
-    await appDB.updateWord({ ...word, ...upd });
-    await appDB.insertRecord({ wordId: word.id, action: 'mastered' });
-    nextWord();
-  } else {
-    input.className = 'spell-input wrong';
-    // 显示答案
-    showCardAnswer(word);
-  }
-}
-
-let selectedMCAnswer = false;
-
-async function selectMCAction(word, selected, isCorrect) {
-  if (selectedMCAnswer) return; // 防止重复点击
-  selectedMCAnswer = true;
-
-  const cardType = WordApp.cardTypes['multiple_choice'];
-  // 高亮选中
-  document.querySelectorAll('.mc-option').forEach(btn => {
-    btn.disabled = true;
-    if (btn.dataset.correct === 'true') btn.classList.add('mc-correct');
-    if (btn.dataset.value === selected && !isCorrect) btn.classList.add('mc-wrong');
-  });
-
-  if (isCorrect) {
-    sessionStats.total++; sessionStats.mastered++;
-    const upd = await applyAlgorithm(word, 'mastered', WordApp.state.algorithmName);
-    await appDB.updateWord({ ...word, ...upd });
-    await appDB.insertRecord({ wordId: word.id, action: 'mastered' });
-    setTimeout(() => { selectedMCAnswer = false; nextWord(); }, 600);
-  } else {
-    sessionStats.total++; sessionStats.forgot++;
-    const upd = await applyAlgorithm(word, 0, WordApp.state.algorithmName);
-    await appDB.updateWord({ ...word, ...upd });
-    await appDB.insertRecord({ wordId: word.id, action: 'forgot' });
-    showCardAnswer(word);
-  }
-}
-
-function showCardAnswer(word) {
+/** 在答案区域显示反面内容 */
+function showAnswer(word) {
   WordApp.state.showingAnswer = true;
-  const cardType = WordApp.cardTypes[word.cardType] || WordApp.cardTypes['basic'];
-  const rendered = cardType.renderAnswer(word, WordApp.state.studyDirection);
-  const answerArea = document.getElementById('answer-area');
-
-  if (word.cardType === 'basic') {
-    document.getElementById('answer-english').textContent = word.english;
-    document.getElementById('answer-chinese').textContent = word.chinese;
-  } else {
-    document.getElementById('answer-english').innerHTML = rendered.text;
-    document.getElementById('answer-chinese').textContent = '';
-  }
-  answerArea.style.display = 'block';
-  if (WordApp.state.studyMode === 'spell' || WordApp.state.studyMode === 'quiz') {
-    document.getElementById('spell-input').disabled = true;
-  }
-  selectedMCAnswer = false;
+  const back = word.fields?.back || '';
+  document.getElementById('answer-english').textContent = back;
+  document.getElementById('answer-chinese').textContent = '';
+  document.getElementById('answer-area').style.display = 'block';
 }
 
 // ============== 学习页面渲染 ==============
@@ -303,45 +190,16 @@ function renderCurrentWord() {
   if (fill) fill.style.width = `${((idx + 1) / queue.length) * 100}%`;
   answerArea.style.display = 'none';
   WordApp.state.showingAnswer = false;
-  selectedMCAnswer = false; // 重置 MC 选择状态
-
-  const spellInput = document.getElementById('spell-input');
-  if (spellInput) { spellInput.value = ''; spellInput.className = 'spell-input'; spellInput.disabled = false; }
 
   const studyMode = WordApp.state.studyMode;
-  const effectiveMode = studyMode === 'daily' ? (isReview ? 'recall' : 'learn') : studyMode;
-  const modeLabelMap = { learn: '学习', spell: '拼写', recall: '复习', daily: isReview ? '复习' : '新词', freereview: '自由复习' };
-  const mode = effectiveMode;
-  const dirLabel = WordApp.state.studyDirection === 'en2cn' ? '英→中' : '中→英';
-  document.getElementById('study-mode-label').textContent = `${modeLabelMap[studyMode] || ''} · ${dirLabel}${intensiveMode ? ' 🔥密集' : ''}`;
+  const modeLabelMap = { learn: '学习', daily: isReview ? '复习' : '新词', freereview: '自由复习' };
+  document.getElementById('study-mode-label').textContent = modeLabelMap[studyMode] || '学习';
 
-  if (mode === 'learn' || studyMode === 'freereview') {
-    display.style.display = 'block';
-    actions.style.display = 'flex';
-    spellArea.style.display = 'none';
-    renderRatingButtons('study-actions', 'handleAction');
-    renderCardContent(word, 'learn');
-  } else if (studyMode === 'spell') {
-    display.style.display = 'block';
-    actions.style.display = 'none';
-    spellArea.style.display = 'block';
-    if (WordApp.state.studyDirection === 'cn2en') {
-      document.getElementById('word-english').textContent = word.chinese;
-      document.getElementById('word-chinese').textContent = '';
-      document.getElementById('spell-input').placeholder = '输入对应的英文单词...';
-    } else {
-      document.getElementById('word-english').textContent = word.english;
-      document.getElementById('word-chinese').textContent = '';
-      document.getElementById('spell-input').placeholder = '输入对应的中文释义...';
-    }
-    setupSpellInputListener();
-  } else if (mode === 'recall') {
-    display.style.display = 'block';
-    actions.style.display = 'flex';
-    spellArea.style.display = 'none';
-    renderRatingButtons('study-actions', 'handleRecallAction');
-    renderCardContent(word, 'recall');
-  }
+  // 所有模式都使用统一的 front→answer→rate 流程
+  display.style.display = 'block';
+  actions.style.display = 'flex';
+  renderRatingButtons('study-actions', 'handleAction');
+  renderCardContent(word);
   setupSwipeGesture();
 
   // 仅向前翻时播放滑入动画
@@ -381,102 +239,14 @@ async function handleAction(action) {
   }
 }
 
-// 拼写模式：实时输入检测
-function setupSpellInputListener() {
-  const input = document.getElementById('spell-input');
-  if (!input) return;
-  // 移除旧监听器
-  if (spellInputHandler) {
-    input.removeEventListener('input', spellInputHandler);
-  }
-  const handler = function(e) { onSpellInput(e); };
-  spellInputHandler = handler;
-  input.addEventListener('input', handler);
-  input.onkeydown = function(e) {
-    if (e.key === 'Enter') { e.preventDefault(); if (WordApp.state.showingAnswer) nextWord(); }
-  };
-}
-
-function onSpellInput() {
-  const queue = WordApp.state.wordQueue;
-  const idx = WordApp.state.currentWordIndex;
-  const item = queue[idx];
-  const word = item.word || item;
-  if (!word || WordApp.state.showingAnswer) return;
-  const input = document.getElementById('spell-input');
-  const answer = WordApp.state.studyDirection === 'en2cn' ? word.chinese : word.english;
-  const raw = input.value;
-  if (!raw) { input.className = 'spell-input'; return; }
-
-  const cu = raw.trim().toLowerCase().replace(/\s+/g,' ').replace(/[^一-龥a-zA-Z\s]/g,'');
-  const ca = answer.trim().toLowerCase().replace(/\s+/g,' ').replace(/[^一-龥a-zA-Z\s]/g,'');
-
-  if (cu === ca) {
-    input.className = 'spell-input correct';
-    input.disabled = true;
-    sessionStats.total++; sessionStats.mastered++;
-    setTimeout(async () => {
-      const upd = await applyAlgorithm(word, 'mastered', WordApp.state.algorithmName);
-      await appDB.updateWord({ ...word, ...upd });
-      await appDB.insertRecord({ wordId: word.id, action: 'mastered' });
-      nextWord();
-    }, 300);
-    return;
-  }
-
-  let ok = true;
-  for (let i = 0; i < cu.length; i++) { if (i >= ca.length || cu[i] !== ca[i]) { ok = false; break; } }
-  input.className = ok ? 'spell-input' : 'spell-input wrong';
-}
-
-async function handleSpellAction(action) {
-  const queue = WordApp.state.wordQueue;
-  const idx = WordApp.state.currentWordIndex;
-  const item = queue[idx];
-  const word = item.word || item;
-  if (!word) return;
-  const updated = await applyAlgorithm(word, action, WordApp.state.algorithmName);
-  await appDB.updateWord({ ...word, ...updated });
-  await appDB.insertRecord({ wordId: word.id, action });
-  sessionStats.total++;
-  if (action === 'forgot') sessionStats.forgot++; else sessionStats.struggled++;
-  showAnswer(word);
-}
-
-async function handleRecallAction(action) {
-  const queue = WordApp.state.wordQueue;
-  const idx = WordApp.state.currentWordIndex;
-  const item = queue[idx];
-  const word = item.word || item;
-  if (!word) return;
-  const updated = await applyAlgorithm(word, action, WordApp.state.algorithmName);
-  await appDB.updateWord({ ...word, ...updated });
-  await appDB.insertRecord({ wordId: word.id, action: String(action) });
-  sessionStats.total++;
-  // 宽松比较：onclick 传入字符串
-  const num = parseInt(action);
-  if (action === 'forgot' || num === 0 || action === 'forgotten') { sessionStats.forgot++; showAnswer(word); }
-  else if (action === 'struggled' || num === 1 || num === 2) { sessionStats.struggled++; showAnswer(word); }
-  else { sessionStats.mastered++; nextWord(); }
-}
+// ============== 答案展示 ==============
 
 function showAnswer(word) {
   WordApp.state.showingAnswer = true;
-  const cardType = WordApp.cardTypes[word.cardType] || WordApp.cardTypes['basic'];
-  const rendered = cardType.renderAnswer(word, WordApp.state.studyDirection);
-  const answerArea = document.getElementById('answer-area');
-
-  if (word.cardType === 'basic') {
-    document.getElementById('answer-english').textContent = word.english;
-    document.getElementById('answer-chinese').textContent = word.chinese;
-  } else {
-    document.getElementById('answer-english').innerHTML = rendered.text;
-    document.getElementById('answer-chinese').textContent = '';
-  }
-  answerArea.style.display = 'block';
-  if (WordApp.state.studyMode === 'spell' || WordApp.state.studyMode === 'quiz') {
-    document.getElementById('spell-input').disabled = true;
-  }
+  const back = word.fields?.back || '';
+  document.getElementById('answer-english').textContent = back;
+  document.getElementById('answer-chinese').textContent = '';
+  document.getElementById('answer-area').style.display = 'block';
 }
 
 async function nextWord() {
@@ -514,7 +284,7 @@ async function appendMoreDailyWords() {
   for (const b of books) {
     const words = await appDB.getWordsByBook(b.id);
     for (const w of words) {
-      if ((w.progressScore || 0) === 0) newWords.push(w);
+      if (getProgressScore(w) === 0) newWords.push(w);
     }
   }
   const seen = new Set(WordApp.state.wordQueue.map(q => (q.word || q).id));
@@ -562,55 +332,13 @@ function handleSwipeLeft() {
 }
 
 // ============== TTS ==============
-function speak(text, lang = 'en') {
-  if (!('speechSynthesis' in window)) {
-    return speakGoogleTTS(text, lang);
-  }
+function speak(text) {
+  if (!text) return;
+  if (!('speechSynthesis' in window)) return;
   speechSynthesis.cancel();
-
   const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = lang === 'en' ? 'en-US' : 'zh-CN';
   utterance.rate = 0.85;
-
-  let played = false;
-
-  utterance.onend = () => { played = true; };
-  utterance.onerror = () => {
-    if (!played) speakGoogleTTS(text, lang);
-  };
-
-  if (speechSynthesis.getVoices().length > 0) {
-    const voices = speechSynthesis.getVoices();
-    const preferred = voices.find(v => v.lang.startsWith(lang === 'en' ? 'en-US' : 'zh'));
-    if (preferred) utterance.voice = preferred;
-    speechSynthesis.speak(utterance);
-    setTimeout(() => {
-      if (!played && speechSynthesis.speaking === false) speakGoogleTTS(text, lang);
-    }, 500);
-  } else {
-    speechSynthesis.addEventListener('voiceschanged', () => {
-      const voices = speechSynthesis.getVoices();
-      const preferred = voices.find(v => v.lang.startsWith(lang === 'en' ? 'en-US' : 'zh'));
-      if (preferred) utterance.voice = preferred;
-      speechSynthesis.speak(utterance);
-    }, { once: true });
-    speechSynthesis.speak(utterance);
-    setTimeout(() => {
-      if (!played && speechSynthesis.speaking === false) speakGoogleTTS(text, lang);
-    }, 500);
-  }
-}
-
-function speakGoogleTTS(text, lang) {
-  try {
-    const langCode = lang === 'en' ? 'en' : 'zh-CN';
-    const url = 'https://translate.google.com/translate_tts?ie=UTF-8&q='
-      + encodeURIComponent(text.substring(0, 200))
-      + '&tl=' + langCode + '&client=tw-ob';
-    const audio = new Audio(url);
-    audio.volume = 1.0;
-    audio.play().catch(() => {});
-  } catch(_) {}
+  speechSynthesis.speak(utterance);
 }
 
 function speakCurrentWord() {
@@ -618,8 +346,8 @@ function speakCurrentWord() {
   const idx = WordApp.state.currentWordIndex;
   const word = queue[idx];
   if (!word) return;
-  speak(word.english, 'en');
-  setTimeout(() => speak(word.chinese, 'zh'), 800);
+  const text = word.fields?.front || word.english || '';
+  speak(text);
 }
 
 // ============== 错题本 & 收藏本 ==============
@@ -630,15 +358,17 @@ async function refreshMistake() {
     list.innerHTML = '<div class="empty-state"><span class="empty-state-icon">✅</span><div class="empty-state-text">还没有错题，继续学习吧！</div></div>';
     return;
   }
-  list.innerHTML = words.map(w => `
-    <div class="word-item">
+  list.innerHTML = words.map(w => {
+    const front = w.fields?.front || w.english || '';
+    const back = w.fields?.back || w.chinese || '';
+    return `<div class="word-item">
       <div class="word-info">
-        <div class="word-en">${escapeHtml(w.english)}</div>
-        <div class="word-zh">${escapeHtml(w.chinese)}</div>
+        <div class="word-en">${escapeHtml(front)}</div>
+        <div class="word-zh">${escapeHtml(back)}</div>
       </div>
-      <span class="badge badge-red">错${w.reviewCount || 0}次</span>
-    </div>
-  `).join('');
+      <span class="badge badge-red">错${w.memoryState?.data?.reviewCount || 0}次</span>
+    </div>`;
+  }).join('');
 }
 
 async function refreshFavorite() {
@@ -648,17 +378,19 @@ async function refreshFavorite() {
     list.innerHTML = '<div class="empty-state"><span class="empty-state-icon">⭐</span><div class="empty-state-text">还没有收藏的单词</div></div>';
     return;
   }
-  list.innerHTML = words.map(w => `
-    <div class="word-item">
+  list.innerHTML = words.map(w => {
+    const front = w.fields?.front || w.english || '';
+    const back = w.fields?.back || w.chinese || '';
+    return `<div class="word-item">
       <label class="word-checkbox">
         <input type="checkbox" ${w.isSelected ? 'checked' : ''} onchange="toggleWordSelect(${w.id}, this.checked)">
       </label>
       <div class="word-info">
-        <div class="word-en">${escapeHtml(w.english)}</div>
-        <div class="word-zh">${escapeHtml(w.chinese)}</div>
+        <div class="word-en">${escapeHtml(front)}</div>
+        <div class="word-zh">${escapeHtml(back)}</div>
       </div>
-    </div>
-  `).join('');
+    </div>`;
+  }).join('');
 }
 
 async function toggleFavorite(id) {
@@ -669,18 +401,20 @@ async function toggleFavorite(id) {
 
 // 查看已学习/已掌握单词（全屏页面）
 function renderWordItems(words) {
-  if (words.length === 0) return '<div style="text-align:center;padding:40px;color:var(--btn-gray);">暂无单词</div>';
-  return words.map(w => `
-    <div class="word-item">
-      <div class="word-info"><div class="word-en">${escapeHtml(w.english)}</div><div class="word-zh">${escapeHtml(w.chinese)}</div></div>
-      <span class="badge ${(w.progressScore||0)>=67?'badge-green':(w.progressScore||0)>=34?'badge-orange':'badge-gray'}">${getScoreStateText(w.progressScore||0)}</span>
-    </div>
-  `).join('');
+  if (words.length === 0) return '<div style="text-align:center;padding:40px;color:var(--btn-gray);">暂无内容</div>';
+  return words.map(w => {
+    const front = w.fields?.front || w.english || '';
+    const p = getProgressScore(w);
+    return `<div class="word-item">
+      <div class="word-info"><div class="word-en">${escapeHtml(front)}</div></div>
+      <span class="badge ${p>=67?'badge-green':p>=34?'badge-orange':'badge-gray'}">${getScoreStateText(p)}</span>
+    </div>`;
+  }).join('');
 }
 
 async function showLearnedWords() {
   const all = await appDB.getAllWords();
-  const words = all.filter(w => (w.progressScore||0)>0);
+  const words = all.filter(w => getProgressScore(w) > 0);
   document.getElementById('wordsview-title').textContent = `📝 已学习 (${words.length})`;
   document.getElementById('wordsview-list').innerHTML = renderWordItems(words);
   showFullscreenPage('wordsview');
@@ -688,7 +422,7 @@ async function showLearnedWords() {
 
 async function showMasteredWords() {
   const all = await appDB.getAllWords();
-  const words = all.filter(w => w.progressScore>=67);
+  const words = all.filter(w => getProgressScore(w) >= 67);
   document.getElementById('wordsview-title').textContent = `✅ 已掌握 (${words.length})`;
   document.getElementById('wordsview-list').innerHTML = renderWordItems(words);
   showFullscreenPage('wordsview');
@@ -696,7 +430,7 @@ async function showMasteredWords() {
 
 async function showAllWords() {
   const all = await appDB.getAllWords();
-  document.getElementById('wordsview-title').textContent = `📖 全部单词 (${all.length})`;
+  document.getElementById('wordsview-title').textContent = `📖 全部 (${all.length})`;
   document.getElementById('wordsview-list').innerHTML = renderWordItems(all);
   showFullscreenPage('wordsview');
 }
@@ -704,7 +438,7 @@ async function showAllWords() {
 async function showDueWords() {
   const all = await appDB.getAllWords();
   const today = new Date().toISOString().substring(0,10);
-  const words = all.filter(w => !w.nextReview || w.nextReview.substring(0,10)<=today);
+  const words = all.filter(w => !getNextReview(w) || (getNextReview(w) && getNextReview(w).substring(0,10) <= today));
   document.getElementById('wordsview-title').textContent = `⏰ 待复习 (${words.length})`;
   document.getElementById('wordsview-list').innerHTML = renderWordItems(words);
   showFullscreenPage('wordsview');
@@ -721,10 +455,9 @@ function closeReviewDialog() {
   document.getElementById('review-dialog').style.display = 'none';
 }
 
-async function startReview(mode, intensive) {
+async function startReview(mode) {
   closeReviewDialog();
   WordApp.state.studyMode = mode;
-  intensiveMode = intensive;
   let words;
   if (reviewSource === 'selected') words = await appDB.getSelectedWords();
   else if (reviewSource === 'mistake') words = await appDB.getMistakeWords();
@@ -743,7 +476,6 @@ async function startReview(mode, intensive) {
 async function startFreeReview() {
   closeReviewDialog();
   WordApp.state.studyMode = 'freereview';
-  intensiveMode = false;
   let words;
   if (reviewSource === 'selected') words = await appDB.getSelectedWords();
   else if (reviewSource === 'mistake') words = await appDB.getMistakeWords();

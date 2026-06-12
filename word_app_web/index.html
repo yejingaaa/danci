@@ -52,7 +52,6 @@
         <button class="btn btn-orange" onclick="startDailyStudy()" id="start-daily-btn" style="width:100%;margin-bottom:12px;display:none;">📅 开始今日学习</button>
         <div style="display:flex;flex-direction:column;gap:12px;">
           <button class="btn btn-orange" onclick="startStudy('learn')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> 学习模式</button>
-          <button class="btn btn-secondary" onclick="startStudy('spell')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><polyline points="16,3 21,3 21,8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21,16 21,21 16,21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg> 拼写复习</button>
           <button class="btn btn-secondary" onclick="startStudy('recall')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/><path d="M8.5 8.5v.01"/><path d="M16 15.5v.01"/><path d="M12 12v.01"/><path d="M11 17v.01"/><path d="M7 14v.01"/></svg> 复习模式</button>
         </div>
         <div class="hint" id="home-hint"></div>
@@ -69,7 +68,6 @@
           <input type="text" id="global-search-input" class="spell-input" style="margin-bottom:10px;text-align:left;font-size:14px;display:none;" placeholder="搜索所有词本中的单词..." oninput="onGlobalSearch()">
           <div id="global-search-results" style="display:none;"></div>
           <div id="books-list"></div>
-          <button class="btn btn-outline btn-sm" onclick="showBuiltinBooks()" style="width:100%;margin-top:8px;">📚 导入内置词库</button>
         </div>
         <!-- 单词列表视图（点进词本后显示） -->
         <div id="words-view" style="display:none;flex-direction:column;max-height:calc(100vh - 130px);">
@@ -123,13 +121,6 @@
         <div class="card">
           <div class="card-title">⚙️ 设置</div>
           <div class="settings-item">
-            <span>学习方向</span>
-            <div class="seg-control" id="direction-control">
-              <button class="seg-btn active" data-value="en2cn" onclick="setDirection('en2cn')">英→中</button>
-              <button class="seg-btn" data-value="cn2en" onclick="setDirection('cn2en')">中→英</button>
-            </div>
-          </div>
-          <div class="settings-item">
             <span>记忆算法</span>
             <div class="seg-control" id="algorithm-control"></div>
           </div>
@@ -138,15 +129,6 @@
             <input type="text" id="custom-intervals" class="spell-input" value="1,3,5,10,20" style="text-align:left;" placeholder="1,2,4,7,15,30">
             <div id="interval-preview" style="font-size:13px;color:var(--btn-gray);margin:6px 0;"></div>
             <button class="btn btn-orange btn-sm" onclick="saveCustomIntervals()" style="margin-top:4px;width:100%;">保存</button>
-          </div>
-          <div class="settings-item">
-            <span>默认卡片类型</span>
-            <select id="default-card-type" onchange="setDefaultCardType(this.value)" style="max-width:140px;padding:6px 8px;border-radius:8px;border:1.5px solid rgba(149,165,166,0.2);font-size:14px;background:var(--card);color:var(--text);flex-shrink:0;">
-              <option value="basic">基础卡片</option>
-              <option value="cloze">完形填空</option>
-              <option value="multiple_choice">选择题</option>
-            <option value="image_card">图片卡片</option>
-            </select>
           </div>
           <div class="settings-item">
             <span>每日目标（仅统计）</span>
@@ -194,13 +176,6 @@
           <div class="progress-bar-bg"><div class="progress-bar-fill" id="progress-fill" style="width:0%"></div></div>
           <div class="card" id="word-display">
             <div class="word-display"><div class="word-english" id="word-english">hello</div><div class="word-chinese" id="word-chinese">你好</div></div>
-          </div>
-          <div id="spell-area" style="display:none;">
-            <input type="text" id="spell-input" class="spell-input" placeholder="输入翻译..." autocomplete="off">
-            <div class="btn-group" style="margin-top:12px;">
-              <button class="btn btn-orange" onclick="handleSpellAction('struggled')" style="flex:1;">△ 勉强</button>
-              <button class="btn btn-red" onclick="handleSpellAction('forgot')" style="flex:1;">✕ 忘了</button>
-            </div>
           </div>
           <div id="study-actions">
             <button class="btn btn-red" onclick="handleAction('forgot')"><span class="btn-icon">✕</span> 忘了</button>
@@ -340,16 +315,6 @@
       <div class="card" style="width:100%;max-width:380px;">
         <div class="card-title">📕 新建词本</div>
         <input id="new-book-name" class="spell-input" style="text-align:left;margin-bottom:12px;" placeholder="输入词本名称">
-        <div style="margin-bottom:12px;">
-          <label style="font-size:14px;color:var(--btn-gray);display:block;margin-bottom:4px;">默认卡片类型</label>
-          <select id="new-book-card-type" style="width:100%;padding:8px;border:2px solid var(--btn-gray);border-radius:8px;font-size:14px;background:var(--card);color:var(--text);">
-            <option value="">沿用全局默认</option>
-            <option value="basic">基础卡片</option>
-            <option value="cloze">完形填空</option>
-            <option value="multiple_choice">选择题</option>
-            <option value="image_card">图片卡片</option>
-          </select>
-        </div>
         <div class="btn-group" style="margin-top:12px;">
           <button class="btn btn-gray" onclick="closeCreateBookDialog()">取消</button>
           <button class="btn btn-orange" onclick="createBook()">创建</button>
@@ -360,17 +325,8 @@
     <div id="column-map-dialog" class="dialog-overlay" style="display:none;">
       <div class="card" style="width:100%;max-width:460px;">
         <div class="card-title">📋 选择列映射</div>
-        <p style="font-size:14px;color:var(--btn-gray);margin-bottom:12px;">请选择每列对应的字段，以及这批卡片的类型</p>
+        <p style="font-size:14px;color:var(--btn-gray);margin-bottom:12px;">请选择每列对应的字段</p>
         <div id="column-map-fields"></div>
-        <div style="margin-top:12px;padding-top:12px;border-top:1px solid rgba(149,165,166,0.15);">
-          <label style="font-size:14px;color:var(--btn-gray);display:block;margin-bottom:4px;">卡片类型</label>
-          <select id="column-map-card-type" style="width:100%;padding:10px;border:2px solid var(--btn-gray);border-radius:8px;font-size:15px;background:var(--card);color:var(--text);">
-            <option value="basic">基础卡片（英/中）</option>
-            <option value="cloze">完形填空</option>
-            <option value="multiple_choice">选择题</option>
-            <option value="image_card">图片卡片</option>
-          </select>
-        </div>
         <div class="btn-group" style="margin-top:12px;">
           <button class="btn btn-gray" onclick="closeColumnMapDialog()">取消</button>
           <button class="btn btn-orange" onclick="confirmColumnMap()">确认导入</button>
@@ -382,10 +338,7 @@
       <div class="card" style="width:100%;max-width:440px;">
         <div class="card-title" id="review-dialog-title">选择复习模式</div>
         <div style="display:flex;flex-direction:column;gap:12px;">
-          <button class="btn btn-orange" onclick="startReview('spell', false)">✏️ 拼写复习</button>
-          <button class="btn btn-outline" onclick="startReview('recall', false)">🧠 复习模式</button>
-          <button class="btn btn-outline" onclick="startReview('spell', true)" style="border-color:var(--btn-red);color:var(--btn-red);">🔥 密集拼写</button>
-          <button class="btn btn-outline" onclick="startReview('recall', true)" style="border-color:var(--btn-red);color:var(--btn-red);">🔥 密集复习</button>
+          <button class="btn btn-orange" onclick="startReview('recall')">🧠 复习模式</button>
           <div style="border-top:1px solid rgba(149,165,166,0.15);margin:4px 0;"></div>
           <button class="btn btn-secondary" onclick="startFreeReview()">📖 自由复习（不影响记忆曲线）</button>
         </div>
@@ -395,7 +348,6 @@
   </div>
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/pinyin-pro@3.24.1/dist/index.js" defer></script>
   <script src="js/db.js?v=20260611"></script>
   <script src="js/algorithm.js?v=20260611"></script>
   <script src="js/study.js?v=20260611"></script>

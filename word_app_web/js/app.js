@@ -17,9 +17,6 @@ WordApp.state = {
   algorithmName: 'three_state',
   customIntervals: null,
 
-  // 方向
-  studyDirection: 'en2cn',
-
   // 设置
   dailyGoal: 10,
   isNightMode: false,
@@ -213,12 +210,6 @@ async function init() {
     splash.style.opacity = '0';
     setTimeout(() => splash.style.display = 'none', 400);
   }
-
-  document.getElementById('spell-input').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      if (WordApp.state.showingAnswer) nextWord();
-    }
-  });
 
   // 注册 Service Worker（PWA 离线支持）
   if ('serviceWorker' in navigator) {

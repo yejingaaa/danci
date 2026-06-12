@@ -236,35 +236,28 @@ class AppDatabase {
   // ==================== 通用卡片标准化 ====================
 
   /**
-   * 将单词对象标准化为通用卡片格式（向后兼容）
-   * - 旧格式（english/chinese/progressScore）→ 添加 cardType/fields/memoryState
-   * - 新格式 → 确保 flat 字段 (english/chinese/progressScore) 同步
+   * 将记忆项标准化（向后兼容旧格式）
+   * 旧格式（english/chinese/cardType）→ 转换为 fields/memoryState
+   * 新格式 → 原样返回
    */
   _normalizeWord(word) {
     if (!word) return word;
-
-    if (word.cardType) {
-      // 新格式：确保向后兼容的 flat 字段存在
-      if (word.english === undefined && word.fields) {
-        word.english = word.fields.front || '';
-        word.chinese = word.fields.back || '';
+    // 已有新格式 → 确保 fields 和 memoryState 存在
+    if (word.fields) {
+      if (!word.memoryState) {
+        word.memoryState = {
+          algorithm: 'three_state',
+          data: { progressScore: word.progressScore ?? 0, reviewCount: word.reviewCount ?? 0, consecutiveCorrect: 0, consecutiveWrong: 0 },
+          lastReviewed: null, nextReview: null,
+        };
       }
-      if (word.progressScore === undefined && word.memoryState?.data) {
-        word.progressScore = word.memoryState.data.progressScore ?? 0;
-        word.reviewCount = word.memoryState.data.reviewCount ?? 0;
-        word.consecutiveCorrect = word.memoryState.data.consecutiveCorrect ?? 0;
-        word.consecutiveWrong = word.memoryState.data.consecutiveWrong ?? 0;
-      }
-      if (word.isSelected === undefined) word.isSelected = true;
       return word;
     }
-
-    // 旧格式：添加新结构（不破坏旧字段）
-    word.cardType = 'basic';
-    word.fields = word.fields || {
-      front: word.english || '',
-      back: word.chinese || '',
-      extra: '',
+    // 旧格式 → 转换为新格式
+    word.fields = {
+      front: word.english || word.fields?.front || '',
+      back: word.chinese || word.fields?.back || '',
+      extra: word.fields?.extra || '',
     };
     word.memoryState = word.memoryState || {
       algorithm: 'three_state',
@@ -278,6 +271,9 @@ class AppDatabase {
       nextReview: word.nextReview ?? null,
     };
     if (word.isSelected === undefined) word.isSelected = true;
+    delete word.english;
+    delete word.chinese;
+    delete word.cardType;
     return word;
   }
 
@@ -286,32 +282,16 @@ class AppDatabase {
   async insertWord(word) {
     const tx = this.db.transaction('words', 'readwrite');
     const store = tx.objectStore('words');
-    // 兼容旧格式（flat english/chinese）和新格式（fields.front/back）
-    const front = word.english || word.fields?.front || '';
-    const back = word.chinese || word.fields?.back || '';
+    const front = word.fields?.front || word.english || '';
+    const back = word.fields?.back || word.chinese || '';
     const data = {
       bookId: word.bookId ?? 1,
-      english: front,
-      chinese: back,
-      cardType: word.cardType || 'basic',
-      fields: word.fields || { front, back, extra: '' },
+      fields: { front, back, extra: word.fields?.extra || '' },
       memoryState: word.memoryState || {
         algorithm: 'three_state',
-        data: {
-          progressScore: word.progressScore ?? 0,
-          reviewCount: word.reviewCount ?? 0,
-          consecutiveCorrect: word.consecutiveCorrect ?? 0,
-          consecutiveWrong: word.consecutiveWrong ?? 0,
-        },
-        lastReviewed: word.lastReviewed ?? null,
-        nextReview: word.nextReview ?? null,
+        data: { progressScore: 0, reviewCount: 0, consecutiveCorrect: 0, consecutiveWrong: 0 },
+        lastReviewed: null, nextReview: null,
       },
-      progressScore: word.progressScore ?? 0,
-      reviewCount: word.reviewCount ?? 0,
-      consecutiveCorrect: word.consecutiveCorrect ?? 0,
-      consecutiveWrong: word.consecutiveWrong ?? 0,
-      lastReviewed: word.lastReviewed ?? null,
-      nextReview: word.nextReview ?? null,
       isFavorited: word.isFavorited ?? false,
       isSelected: word.isSelected ?? false,
       createdAt: word.createdAt ?? new Date().toISOString(),
@@ -329,18 +309,17 @@ class AppDatabase {
     }
   }
 
-  /** 批量插入单词，自动跳过同词本中已存在的（按英文/正面去重） */
+  /** 批量插入，自动跳过同词本中已存在的（按正面去重） */
   async insertWordsUnique(words) {
     const existing = await this.getWordsByBook(words[0]?.bookId || 1);
-    // 兼容旧格式 english 和新格式 fields.front
-    const existingMap = new Set(existing.map(w => (w.english || w.fields?.front || '').toLowerCase().trim()));
+    const existingMap = new Set(existing.map(w => (w.fields?.front || '').toLowerCase().trim()));
     let count = 0;
     for (const word of words) {
-      const front = (word.english || word.fields?.front || '').toLowerCase().trim();
-      if (!existingMap.has(front)) {
+      const front = (word.fields?.front || word.english || '').toLowerCase().trim();
+      if (front && !existingMap.has(front)) {
         await this.insertWord(word);
         count++;
-        existingMap.add(front); // 去重集合也更新，避免同批重复
+        existingMap.add(front);
       }
     }
     return count;
@@ -398,21 +377,10 @@ class AppDatabase {
   }
 
   async updateWord(word) {
-    // 同步 flat 字段 → memoryState（确保两种表示一致）
-    if (word.memoryState?.data) {
-      word.memoryState.data.progressScore = word.progressScore ?? 0;
-      word.memoryState.data.reviewCount = word.reviewCount ?? 0;
-      word.memoryState.data.consecutiveCorrect = word.consecutiveCorrect ?? 0;
-      word.memoryState.data.consecutiveWrong = word.consecutiveWrong ?? 0;
-    }
+    // 同步 memoryState 头部字段（lastReviewed/nextReview 写入 memoryState 中）
     if (word.memoryState) {
-      word.memoryState.lastReviewed = word.lastReviewed ?? null;
-      word.memoryState.nextReview = word.nextReview ?? null;
-    }
-    // 同步 flat english/chinese ↔ fields.front/back
-    if (word.fields) {
-      word.fields.front = word.english ?? word.fields.front ?? '';
-      word.fields.back = word.chinese ?? word.fields.back ?? '';
+      if (word.lastReviewed !== undefined) word.memoryState.lastReviewed = word.lastReviewed;
+      if (word.nextReview !== undefined) word.memoryState.nextReview = word.nextReview;
     }
     const tx = this.db.transaction('words', 'readwrite');
     const store = tx.objectStore('words');

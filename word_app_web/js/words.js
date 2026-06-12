@@ -72,9 +72,11 @@ function filterWordList() {
     document.getElementById('word-count').textContent = `共 ${allWordsCache.length} 个单词`;
     return;
   }
-  const filtered = allWordsCache.filter(w =>
-    w.english.toLowerCase().includes(q) || w.chinese.includes(q)
-  );
+  const filtered = allWordsCache.filter(w => {
+    const front = (w.fields?.front || w.english || '').toLowerCase();
+    const back = (w.fields?.back || w.chinese || '');
+    return front.includes(q) || back.includes(q);
+  });
   renderWordList(filtered);
   document.getElementById('word-count').textContent = `找到 ${filtered.length} / ${allWordsCache.length} 个单词`;
   document.querySelectorAll('#word-list .word-item').forEach((el, i) => {
@@ -116,22 +118,9 @@ async function onGlobalSearch() {
 
     const matched = [];
     for (const w of allWords) {
-      const enMatch = w.english.toLowerCase().includes(qLower);
-      const zhMatch = w.chinese.includes(q);
-      let pyMatch = false;
-      if (!enMatch && !zhMatch && window.pinyinPro) {
-        try {
-          const py = window.pinyinPro.pinyin(w.chinese, { toneType: 'none' }).toLowerCase().replace(/\s/g, '');
-          const pyInitials = window.pinyinPro.pinyin(w.chinese, { pattern: 'first', toneType: 'none' }).toLowerCase().replace(/\s/g, '');
-          if (py.includes(qLower) || pyInitials.includes(qLower)) pyMatch = true;
-        } catch(_) {}
-      }
-      let initialMatch = false;
-      if (!enMatch && !zhMatch && !pyMatch) {
-        const initials = w.english.split(/\s+/).map(s => s[0] || '').join('').toLowerCase();
-        if (initials.includes(qLower)) initialMatch = true;
-      }
-      if (enMatch || zhMatch || pyMatch || initialMatch) {
+      const front = (w.fields?.front || w.english || '').toLowerCase();
+      const back = (w.fields?.back || w.chinese || '');
+      if (front.includes(qLower) || back.includes(q)) {
         matched.push(w);
       }
     }
@@ -149,8 +138,10 @@ async function onGlobalSearch() {
       for (const [bookName, words] of Object.entries(groups)) {
         html += `<div style="font-size:14px;font-weight:600;color:var(--btn-orange);margin:8px 0 4px;">📕 ${escapeHtml(bookName)}</div>`;
         for (const w of words) {
+          const f = w.fields?.front || w.english || '';
+          const b = w.fields?.back || w.chinese || '';
           html += `<div class="word-item" style="cursor:pointer;" onclick="openBook(${w.bookId})">
-            <div class="word-info"><div class="word-en">${highlightText(escapeHtml(w.english), q)}</div><div class="word-zh">${highlightText(escapeHtml(w.chinese), q)}</div></div>
+            <div class="word-info"><div class="word-en">${highlightText(escapeHtml(f), q)}</div><div class="word-zh">${highlightText(escapeHtml(b), q)}</div></div>
           </div>`;
         }
       }
@@ -169,20 +160,9 @@ function highlightText(text, query) {
 
 // ============== 单词列表渲染 ==============
 function getWordDisplay(w) {
-  if (w.cardType === 'basic' || !w.cardType) {
-    return { en: w.english || '', zh: w.chinese || '' };
-  }
-  if (w.cardType === 'cloze') {
-    const text = w.fields?.text || '';
-    return { en: text.substring(0, 40) + (text.length > 40 ? '...' : ''), zh: '完形填空' };
-  }
-  if (w.cardType === 'multiple_choice') {
-    return { en: w.fields?.question || '', zh: '选择题' };
-  }
-  if (w.cardType === 'image_card') {
-    return { en: w.fields?.back || w.fields?.front || '', zh: '图片卡片' };
-  }
-  return { en: w.english || '', zh: w.chinese || '' };
+  const front = w.fields?.front || w.english || '';
+  const back = w.fields?.back || w.chinese || '';
+  return { en: front, zh: back };
 }
 
 function renderWordItemHtml(w) {
@@ -294,49 +274,6 @@ async function batchDeleteSelected() {
   refreshWordList(currentBookId);
 }
 
-// ============== 内置词库导入 ==============
-const BUILTIN_BOOKS = [
-  { file: 'wordbooks/elementary.json', name: '小学词汇 (~1170词)', level: '小学' },
-  { file: 'wordbooks/middle.json', name: '初中词汇 (~1340词)', level: '初中' },
-  { file: 'wordbooks/high.json', name: '高中词汇 (~2330词)', level: '高中' },
-  { file: 'wordbooks/cet4.json', name: '四级词汇 (~1750词)', level: '四级' },
-  { file: 'wordbooks/cet6.json', name: '六级词汇 (~1110词)', level: '六级' },
-];
-
-function showBuiltinBooks() {
-  const list = document.getElementById('books-list');
-  let html = '<div style="margin:12px 0;font-size:14px;font-weight:600;color:var(--text);">📚 内置词库</div>';
-  for (const book of BUILTIN_BOOKS) {
-    html += `<div class="word-item" style="cursor:pointer;" onclick="importBuiltinBook('${book.file}','${book.level}')">
-      <div class="word-info"><div class="word-en">${book.name}</div><div class="word-zh">点击导入为新词本</div></div>
-    </div>`;
-  }
-  html += '<button class="btn btn-gray btn-sm" onclick="refreshManage()" style="width:100%;margin-top:8px;">← 返回</button>';
-  list.innerHTML = html;
-}
-
-async function importBuiltinBook(file, level) {
-  if (!confirm(`确定导入「${level}词汇」？将创建新词本并导入所有单词。`)) return;
-  try {
-    const resp = await fetch(file);
-    const words = await resp.json();
-    if (!words || !words.length) { showToast('词库文件为空'); return; }
-    const bookName = `${level}词汇`;
-    const books = await appDB.getAllBooks();
-    let book = books.find(b => b.name === bookName);
-    if (!book) {
-      const bookId = await appDB.createBook(bookName);
-      book = { id: bookId, name: bookName };
-    }
-    const wordData = words.map(w => ({ english: w.english, chinese: w.chinese, bookId: book.id, isSelected: true, createdAt: new Date().toISOString() }));
-    const inserted = await appDB.insertWordsUnique(wordData);
-    showToast(`成功导入 ${inserted} 个单词到「${bookName}」`);
-    refreshManage();
-  } catch (err) {
-    showToast('导入失败：' + (err.message || '请检查网络'));
-  }
-}
-
 function batchMoveSelected() {
   const selected = allWordsCache.filter(w => w.isSelected);
   if (!selected.length) { showToast('请先勾选要移动的单词'); return; }
@@ -381,9 +318,7 @@ function closeCreateBookDialog() {
 async function createBook() {
   const name = document.getElementById('new-book-name').value.trim();
   if (!name) { showToast('请输入词本名称'); return; }
-  const cardTypeSelect = document.getElementById('new-book-card-type');
-  const cardType = cardTypeSelect ? cardTypeSelect.value : '';
-  await appDB.createBook(name, cardType);
+  await appDB.createBook(name);
   closeCreateBookDialog();
   refreshManage();
   showToast(`词本「${name}」已创建`);
@@ -414,35 +349,14 @@ async function showWordDetail(id) {
     }).join('');
   }
 
-  // 按卡片类型显示不同的内容
-  const typeName = (WordApp.cardTypes[word.cardType] || {}).name || word.cardType || '基础';
-  document.getElementById('detail-english').innerHTML = ''
-    + `<span style="font-size:12px;color:var(--btn-gray);font-weight:400;">[${typeName}]</span> `
-    + (word.cardType === 'basic' ? escapeHtml(word.english)
-      : word.cardType === 'cloze' ? escapeHtml(word.fields?.text || '').replace(/\{\{c\d::(.*?)\}\}/g, '<mark>$1</mark>')
-      : word.cardType === 'multiple_choice' ? escapeHtml(word.fields?.question || '')
-      : escapeHtml(word.english || word.fields?.front || ''));
-  document.getElementById('detail-chinese').textContent = word.cardType === 'basic' ? word.chinese : '';
+  const front = word.fields?.front || word.english || '';
+  const back = word.fields?.back || word.chinese || '';
+  document.getElementById('detail-english').innerHTML = escapeHtml(front);
+  document.getElementById('detail-chinese').textContent = '';
 
-  // 选择题额外显示选项
-  const extraInfo = document.getElementById('detail-extra-info');
-  if (word.cardType === 'multiple_choice' && word.fields?.options) {
-    if (!extraInfo) {
-      const infoDiv = document.createElement('div');
-      infoDiv.id = 'detail-extra-info';
-      infoDiv.style.cssText = 'margin:8px 0;font-size:14px;color:var(--btn-gray);';
-      document.getElementById('detail-chinese').after(infoDiv);
-    }
-    document.getElementById('detail-extra-info').innerHTML = word.fields.options.map((o, i) =>
-      `<div style="padding:4px 0;${o === word.fields.answer ? 'color:var(--green);font-weight:600;' : ''}">${String.fromCharCode(65 + i)}. ${escapeHtml(o)}${o === word.fields.answer ? ' ✓' : ''}</div>`
-    ).join('');
-  } else if (extraInfo) {
-    extraInfo.remove();
-  }
-
-  document.getElementById('detail-proficiency').textContent = `${getScoreStateText(word.progressScore || 0)} (${word.progressScore || 0}分)`;
-  document.getElementById('detail-reviewed').textContent = `${word.reviewCount || 0} 次`;
-  document.getElementById('detail-consecutive').textContent = `${word.consecutiveCorrect || 0} 次`;
+  document.getElementById('detail-proficiency').textContent = `${getScoreStateText(getProgressScore(word))} (${getProgressScore(word)}分)`;
+  document.getElementById('detail-reviewed').textContent = `${(word.memoryState?.data?.reviewCount || 0)} 次`;
+  document.getElementById('detail-consecutive').textContent = `${(word.memoryState?.data?.consecutiveCorrect || 0)} 次`;
   document.getElementById('detail-forgot').textContent = `${forgotCount} 次`;
   document.getElementById('detail-correct-rate').textContent = (rememberedCount + forgotCount) > 0
     ? Math.round(rememberedCount / (rememberedCount + forgotCount) * 100) + '%' : '暂无';
@@ -452,18 +366,16 @@ async function showWordDetail(id) {
 
 function closeDetailDialog() {
   document.getElementById('detail-dialog').style.display = 'none';
-  const extraInfo = document.getElementById('detail-extra-info');
-  if (extraInfo) extraInfo.remove();
 }
 
 
-// ============== 编辑单词 ==============
+// ============== 编辑 ==============
 function showEditWord(id) {
   editingWordId = id;
   appDB.getWord(id).then(w => {
     if (!w) return;
-    document.getElementById('edit-english').value = w.english;
-    document.getElementById('edit-chinese').value = w.chinese;
+    document.getElementById('edit-english').value = w.fields?.front || w.english || '';
+    document.getElementById('edit-chinese').value = w.fields?.back || w.chinese || '';
     document.getElementById('edit-dialog').style.display = 'flex';
   });
 }
@@ -474,14 +386,15 @@ function closeEditDialog() {
 }
 
 async function saveEditWord() {
-  const english = document.getElementById('edit-english').value.trim();
-  const chinese = document.getElementById('edit-chinese').value.trim();
-  if (!english || !chinese) { showToast('请输入英文和中文'); return; }
+  const frontVal = document.getElementById('edit-english').value.trim();
+  const backVal = document.getElementById('edit-chinese').value.trim();
+  if (!frontVal || !backVal) { showToast('请填写正面和反面内容'); return; }
 
   const word = await appDB.getWord(editingWordId);
   if (!word) return;
-  word.english = english;
-  word.chinese = chinese;
+  word.fields = word.fields || {};
+  word.fields.front = frontVal;
+  word.fields.back = backVal;
   await appDB.updateWord(word);
   showToast('已更新');
   closeEditDialog();
@@ -579,10 +492,7 @@ async function confirmColumnMap() {
 
     if (front) {
       words.push({
-        cardType,
         fields: { front, back, extra: extraEntries.join(' | ') },
-        english: front,
-        chinese: back,
         bookId,
         isSelected: true,
         createdAt: new Date().toISOString(),
@@ -818,7 +728,7 @@ async function exportData() {
     showToast('CSV 导出成功 📤');
   } else {
     const records = await appDB.getAllRecords();
-    const settingKeys = ['studyDirection', 'algorithm', 'customIntervals', 'nightMode', 'dailyGoal', 'defaultCardType', 'learningDate', 'dailyNewCount'];
+    const settingKeys = ['algorithm', 'customIntervals', 'nightMode', 'dailyGoal', 'learningDate', 'dailyNewCount'];
     const settings = {};
     for (const key of settingKeys) {
       settings[key] = await appDB.getSetting(key);
@@ -906,7 +816,7 @@ async function resetAllData() {
 
   await appDB.clearAllData();
 
-  for (const key of ['studyDirection', 'algorithm', 'customIntervals', 'nightMode']) {
+  for (const key of ['algorithm', 'customIntervals', 'nightMode']) {
     await appDB.setSetting(key, null);
   }
 

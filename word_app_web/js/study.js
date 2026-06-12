@@ -87,13 +87,37 @@ function renderRatingButtons(containerId, handlerName) {
   const algo = WordApp.algorithms[WordApp.state.algorithmName];
   const options = algo ? algo.getRatingOptions() : [];
   if (options.length === 0) return;
+
+  // 获取当前单词（用于模拟算法算出下次复习时间）
+  const queue = WordApp.state.wordQueue;
+  const idx = WordApp.state.currentWordIndex;
+  const item = queue[idx];
+  const word = item?.word || item;
+
   const container = document.getElementById(containerId);
   container.innerHTML = options.map(opt => {
     const btnClass = (opt.value === 'forgot' || opt.value === 0 || opt.value === 'forgotten') ? 'btn btn-red'
       : (opt.value === 'struggled' || opt.value === 1) ? 'btn btn-orange'
       : (opt.value === 2) ? 'btn btn-orange'
       : 'btn btn-green';
-    return `<button class="${btnClass}" onclick="${handlerName}('${opt.value}')"><span class="btn-icon">${getRatingIcon(opt.value)}</span> ${opt.label}</button>`;
+
+    // 模拟算法算出下次复习时间
+    let nextTimeText = '';
+    if (word && word.memoryState && algo && typeof algo.schedule === 'function') {
+      try {
+        const result = algo.schedule(word, opt.value, new Date());
+        const dueDate = result.dueDate instanceof Date ? result.dueDate : new Date(result.dueDate);
+        if (!isNaN(dueDate.getTime())) {
+          nextTimeText = formatRelativeTime(dueDate);
+        }
+      } catch (_) { /* 模拟失败不显示 */ }
+    }
+
+    return `<button class="${btnClass}" onclick="${handlerName}('${opt.value}')">
+      <span class="btn-icon">${getRatingIcon(opt.value)}</span>
+      <span class="btn-label">${opt.label}</span>
+      ${nextTimeText ? `<span class="btn-sub">${nextTimeText}</span>` : ''}
+    </button>`;
   }).join('');
 }
 
@@ -104,6 +128,26 @@ function getRatingIcon(value) {
   if (value === 3 || value === 'remembered') return '✓';
   if (value === 4 || value === 'mastered') return '★';
   return '★';
+}
+
+/**
+ * 将日期格式化为相对时间描述（"10分钟后" / "1天后" / "4天后"）
+ */
+function formatRelativeTime(date) {
+  const now = new Date();
+  const diffMs = date.getTime() - now.getTime();
+  const diffMin = Math.round(diffMs / 60000);
+  const diffHour = Math.round(diffMs / 3600000);
+  const diffDay = Math.round(diffMs / 86400000);
+
+  if (diffMin < 0) return '已到期';
+  if (diffMin < 1) return '立即';
+  if (diffMin < 60) return `${diffMin} 分钟后`;
+  if (diffHour < 24) return `${diffHour} 小时后`;
+  if (diffDay === 1) return '明天';
+  if (diffDay < 30) return `${diffDay} 天后`;
+  if (diffDay < 365) return `${Math.round(diffDay / 30)} 个月后`;
+  return `${Math.round(diffDay / 365)} 年后`;
 }
 
 // ============== 卡片内容渲染（按类型分发） ==============
@@ -266,12 +310,12 @@ function renderCurrentWord() {
 
   const studyMode = WordApp.state.studyMode;
   const effectiveMode = studyMode === 'daily' ? (isReview ? 'recall' : 'learn') : studyMode;
-  const modeLabelMap = { learn: '学习', spell: '拼写', recall: '复习', daily: isReview ? '复习' : '新词' };
+  const modeLabelMap = { learn: '学习', spell: '拼写', recall: '复习', daily: isReview ? '复习' : '新词', freereview: '自由复习' };
   const mode = effectiveMode;
   const dirLabel = WordApp.state.studyDirection === 'en2cn' ? '英→中' : '中→英';
   document.getElementById('study-mode-label').textContent = `${modeLabelMap[studyMode] || ''} · ${dirLabel}${intensiveMode ? ' 🔥密集' : ''}`;
 
-  if (mode === 'learn') {
+  if (mode === 'learn' || studyMode === 'freereview') {
     display.style.display = 'block';
     actions.style.display = 'flex';
     spellArea.style.display = 'none';
@@ -316,9 +360,14 @@ async function handleAction(action) {
   const item = queue[idx];
   const word = item.word || item;
   if (!word) return;
-  const updated = await applyAlgorithm(word, action, WordApp.state.algorithmName);
-  await appDB.updateWord({ ...word, ...updated });
-  await appDB.insertRecord({ wordId: word.id, action: String(action) });
+
+  // 自由复习模式：不更新算法，不写记录
+  if (WordApp.state.studyMode !== 'freereview') {
+    const updated = await applyAlgorithm(word, action, WordApp.state.algorithmName);
+    await appDB.updateWord({ ...word, ...updated });
+    await appDB.insertRecord({ wordId: word.id, action: String(action) });
+  }
+
   sessionStats.total++;
   // 宽松比较：onclick 传入字符串，但算法内部可能使用数字
   const num = parseInt(action);
@@ -690,6 +739,25 @@ async function startReview(mode, intensive) {
   showFullscreenPage('study');
 }
 
+/** 自由复习：评价不影响算法调度，纯用户自检 */
+async function startFreeReview() {
+  closeReviewDialog();
+  WordApp.state.studyMode = 'freereview';
+  intensiveMode = false;
+  let words;
+  if (reviewSource === 'selected') words = await appDB.getSelectedWords();
+  else if (reviewSource === 'mistake') words = await appDB.getMistakeWords();
+  else words = await appDB.getFavoritedWords();
+  if (words.length === 0) { showToast('没有可复习的单词'); return; }
+  const seen = new Set();
+  words = words.filter(w => { if (seen.has(w.id)) return false; seen.add(w.id); return true; });
+  WordApp.state.wordQueue = [...words];
+  WordApp.state.currentWordIndex = 0;
+  WordApp.state.showingAnswer = false;
+  sessionStats = { total: 0, mastered: 0, struggled: 0, forgot: 0 };
+  showFullscreenPage('study');
+}
+
 async function refreshStudy() {
   const container = document.getElementById('study-container');
   const emptyHint = document.getElementById('study-empty');
@@ -701,7 +769,7 @@ async function refreshStudy() {
       emptyHint.innerHTML = '<div class="empty-state"><span class="empty-state-icon">📭</span><div class="empty-state-text">还没有勾选的单词</div></div>';
       return;
     }
-    if (WordApp.state.studyMode === 'learn') { WordApp.state.wordQueue = [...allSelected]; }
+    if (WordApp.state.studyMode === 'learn' || WordApp.state.studyMode === 'freereview') { WordApp.state.wordQueue = [...allSelected]; }
     else {
       const due = await appDB.getDueWords();
       if (due.length === 0) {

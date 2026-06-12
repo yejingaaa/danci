@@ -52,6 +52,7 @@
         <button class="btn btn-orange" onclick="startDailyStudy()" id="start-daily-btn" style="width:100%;margin-bottom:12px;display:none;">📅 开始今日学习</button>
         <div style="display:flex;flex-direction:column;gap:12px;">
           <button class="btn btn-orange" onclick="startStudy('learn')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> 学习模式</button>
+          <button class="btn btn-secondary" onclick="startStudy('spell')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><polyline points="16,3 21,3 21,8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21,16 21,21 16,21"/><line x1="15" y1="15" x2="21" y2="21"/><line x1="4" y1="4" x2="9" y2="9"/></svg> 拼写模式</button>
           <button class="btn btn-secondary" onclick="startStudy('recall')"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin-right:4px;"><path d="M12 2a10 10 0 1 0 10 10 4 4 0 0 1-5-5 4 4 0 0 1-5-5"/><path d="M8.5 8.5v.01"/><path d="M16 15.5v.01"/><path d="M12 12v.01"/><path d="M11 17v.01"/><path d="M7 14v.01"/></svg> 复习模式</button>
         </div>
         <div class="hint" id="home-hint"></div>
@@ -121,6 +122,13 @@
         <div class="card">
           <div class="card-title">⚙️ 设置</div>
           <div class="settings-item">
+            <span>学习方向</span>
+            <div class="seg-control" id="direction-control">
+              <button class="seg-btn" data-value="front2back" onclick="setDirection('front2back')">正面→反面</button>
+              <button class="seg-btn" data-value="back2front" onclick="setDirection('back2front')">反面→正面</button>
+            </div>
+          </div>
+          <div class="settings-item">
             <span>记忆算法</span>
             <div class="seg-control" id="algorithm-control"></div>
           </div>
@@ -183,8 +191,8 @@
             <button class="btn btn-green" onclick="handleAction('3')"><span class="btn-icon">✓</span> <span class="btn-label">良好</span></button>
             <button class="btn btn-green" onclick="handleAction('4')"><span class="btn-icon">★</span> <span class="btn-label">简单</span></button>
           </div>
-          <div id="answer-area" class="card" style="display:none;">
-            <div class="answer-display"><div class="word-english" id="answer-english"></div><div class="word-chinese" id="answer-chinese"></div></div>
+          <div id="spell-area" style="display:none;">
+            <input type="text" id="spell-input" class="spell-input" placeholder="输入答案..." autocomplete="off">
           </div>
         </div>
       </div>

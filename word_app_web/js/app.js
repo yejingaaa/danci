@@ -14,8 +14,11 @@ WordApp.state = {
   learningDate: '',
 
   // 算法
-  algorithmName: 'three_state',
+  algorithmName: 'sm2',
   customIntervals: null,
+
+  // 方向（a↔b 互相关系，不限于英语）
+  studyDirection: 'front2back',
 
   // 设置
   dailyGoal: 10,

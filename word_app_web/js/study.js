@@ -16,6 +16,15 @@ function startStudy(mode) {
   showFullscreenPage('study');
 }
 
+/** 根据方向获取当前应显示的正面/反面 */
+function getSides(word) {
+  const a = word.fields?.front || word.english || '';
+  const b = word.fields?.back || word.chinese || '';
+  return WordApp.state.studyDirection === 'front2back'
+    ? { front: a, back: b }
+    : { front: b, back: a };
+}
+
 /** 获取当前单词的熟练分（从 memoryState 读取） */
 function getProgressScore(item) {
   return item.memoryState?.data?.progressScore ?? 0;
@@ -144,23 +153,72 @@ function formatRelativeTime(date) {
   return `${Math.round(diffDay / 365)} 年后`;
 }
 
-// ============== 卡片内容渲染（通用 front/back） ==============
+// ============== 卡片内容渲染 ==============
 
-/** 在卡片中显示正面和反面内容 */
+/** 渲染卡片（含方向支持） */
 function renderCardContent(word) {
-  const front = word.fields?.front || '';
-  const back = word.fields?.back || '';
-  document.getElementById('word-english').textContent = front;
-  document.getElementById('word-chinese').textContent = '';
+  const sides = getSides(word);
+  const frontEl = document.getElementById('word-english');
+  const backEl = document.getElementById('word-chinese');
+
+  frontEl.textContent = sides.front;
+  backEl.textContent = sides.back;
+  backEl.classList.remove('visible');
+  backEl.style.display = 'none';
 }
 
-/** 在答案区域显示反面内容 */
-function showAnswer(word) {
-  WordApp.state.showingAnswer = true;
-  const back = word.fields?.back || '';
-  document.getElementById('answer-english').textContent = back;
-  document.getElementById('answer-chinese').textContent = '';
-  document.getElementById('answer-area').style.display = 'block';
+/** 绑定卡片点击显示背面 */
+let _cardClickBound = false;
+function setupCardClick() {
+  const card = document.getElementById('word-display');
+  if (!card) return;
+  // 移除旧监听器（用新卡替换实现）
+  if (_cardClickBound) {
+    const clone = card.cloneNode(true);
+    card.parentNode.replaceChild(clone, card);
+  }
+  const newCard = document.getElementById('word-display');
+  newCard.addEventListener('click', function onClick() {
+    if (WordApp.state.showingAnswer) return;
+    WordApp.state.showingAnswer = true;
+    const be = document.getElementById('word-chinese');
+    if (be) {
+      be.style.display = 'block';
+      setTimeout(() => be.classList.add('visible'), 10);
+    }
+  });
+  _cardClickBound = true;
+}
+
+// ============== 拼写模式 ==============
+
+function setupSpellChecker(word) {
+  const sides = getSides(word);
+  const input = document.getElementById('spell-input');
+  if (!input) return;
+  input.value = '';
+  input.className = 'spell-input';
+  input.disabled = false;
+  input.placeholder = `输入「${sides.back}」...`;
+  input.oninput = function() {
+    const target = sides.back.toLowerCase().trim();
+    const typed = this.value.toLowerCase().trim();
+    if (!typed) { this.className = 'spell-input'; return; }
+    if (typed === target) {
+      this.className = 'spell-input correct';
+      this.disabled = true;
+      setTimeout(() => handleAction('3'), 400);
+    } else {
+      let match = true;
+      for (let i = 0; i < typed.length; i++) {
+        if (i >= target.length || typed[i] !== target[i]) { match = false; break; }
+      }
+      this.className = match ? 'spell-input' : 'spell-input wrong';
+    }
+  };
+  input.onkeydown = function(e) {
+    if (e.key === 'Enter' && WordApp.state.showingAnswer) nextWord();
+  };
 }
 
 // ============== 学习页面渲染 ==============
@@ -175,37 +233,45 @@ function renderCurrentWord() {
   }
 
   const item = queue[idx];
-  // 支持 daily 模式：{word, type}，普通模式：直接是 word 对象
   const word = item.word || item;
   const isReview = item.type === 'review';
   const display = document.getElementById('word-display');
   const actions = document.getElementById('study-actions');
   const spellArea = document.getElementById('spell-area');
-  const answerArea = document.getElementById('answer-area');
   const progress = document.getElementById('study-progress');
+  const modeLabel = document.getElementById('study-mode-label');
 
   progress.textContent = `${idx + 1} / ${queue.length}`;
   const fill = document.getElementById('progress-fill');
   if (fill) fill.style.width = `${((idx + 1) / queue.length) * 100}%`;
-  answerArea.style.display = 'none';
+
   WordApp.state.showingAnswer = false;
 
   const studyMode = WordApp.state.studyMode;
-  const modeLabelMap = { learn: '学习', daily: isReview ? '复习' : '新词', freereview: '自由复习' };
-  document.getElementById('study-mode-label').textContent = modeLabelMap[studyMode] || '学习';
+  const dirLabel = WordApp.state.studyDirection === 'front2back' ? '正面→反面' : '反面→正面';
+  const modeLabelMap = { learn: '学习', spell: '拼写', daily: isReview ? '复习' : '新词', freereview: '自由复习' };
+  modeLabel.textContent = `${modeLabelMap[studyMode] || '学习'} · ${dirLabel}`;
 
-  // 所有模式都使用统一的 front→answer→rate 流程
   display.style.display = 'block';
-  actions.style.display = 'flex';
-  renderRatingButtons('study-actions', 'handleAction');
-  renderCardContent(word);
+  if (studyMode === 'spell') {
+    actions.style.display = 'none';
+    spellArea.style.display = 'block';
+    renderCardContent(word);
+    setupSpellChecker(word);
+  } else {
+    actions.style.display = 'flex';
+    spellArea.style.display = 'none';
+    renderCardContent(word);
+    renderRatingButtons('study-actions', 'handleAction');
+  }
+  setupCardClick();
   setupSwipeGesture();
 
-  // 仅向前翻时播放滑入动画
-  const wordDisplay = document.getElementById('word-display');
-  wordDisplay.classList.remove('slide-in');
+  // 滑入动画
+  const wd = document.getElementById('word-display');
+  wd.classList.remove('slide-in');
   if (idx > lastRenderedIndex) {
-    wordDisplay.classList.add('slide-in');
+    wd.classList.add('slide-in');
   }
   lastRenderedIndex = idx;
 }
@@ -232,19 +298,25 @@ async function handleAction(action) {
   else if (num === 3) sessionStats.struggled++;
   else sessionStats.mastered++;
 
-  // 显示答案 → 自动跳转下一张
-  showAnswer(word);
-  setTimeout(() => nextWord(), 1200);
+  // 如果背面还没显示，先显示再跳转
+  if (!WordApp.state.showingAnswer) showAnswer(word);
+
+  // 立即跳转下一张（评价即跳转）
+  nextWord();
 }
 
 // ============== 答案展示 ==============
 
 function showAnswer(word) {
+  if (WordApp.state.showingAnswer) return;
   WordApp.state.showingAnswer = true;
-  const back = word.fields?.back || '';
-  document.getElementById('answer-english').textContent = back;
-  document.getElementById('answer-chinese').textContent = '';
-  document.getElementById('answer-area').style.display = 'block';
+  const sides = getSides(word);
+  const backEl = document.getElementById('word-chinese');
+  if (backEl) {
+    backEl.textContent = sides.back;
+    backEl.style.display = 'block';
+    setTimeout(() => backEl.classList.add('visible'), 10);
+  }
 }
 
 async function nextWord() {
@@ -499,7 +571,7 @@ async function refreshStudy() {
       emptyHint.innerHTML = '<div class="empty-state"><span class="empty-state-icon">📭</span><div class="empty-state-text">还没有勾选的单词</div></div>';
       return;
     }
-    if (WordApp.state.studyMode === 'learn' || WordApp.state.studyMode === 'freereview') { WordApp.state.wordQueue = [...allSelected]; }
+    if (WordApp.state.studyMode === 'learn' || WordApp.state.studyMode === 'freereview' || WordApp.state.studyMode === 'spell') { WordApp.state.wordQueue = [...allSelected]; }
     else {
       const due = await appDB.getDueWords();
       if (due.length === 0) {

@@ -32,6 +32,15 @@ async function setDailyGoal(val) {
   showToast(`每日目标已设为 ${WordApp.state.dailyGoal}`);
 }
 
+async function setDirection(dir) {
+  WordApp.state.studyDirection = dir;
+  document.querySelectorAll('#direction-control .seg-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.value === dir);
+  });
+  await appDB.setSetting('studyDirection', dir);
+  showToast(dir === 'front2back' ? '已切换为正面→反面' : '已切换为反面→正面');
+}
+
 async function setAlgorithm(algo) {
   const oldAlgo = WordApp.state.algorithmName;
   WordApp.state.algorithmName = ALGORITHM_MAP[algo] || algo;
@@ -102,6 +111,12 @@ async function loadSettings() {
   if (document.getElementById('night-toggle')) {
     document.getElementById('night-toggle').checked = WordApp.state.isNightMode;
   }
+
+  // 方向
+  WordApp.state.studyDirection = await appDB.getSetting('studyDirection') || 'front2back';
+  document.querySelectorAll('#direction-control .seg-btn').forEach(b => {
+    b.classList.toggle('active', b.dataset.value === WordApp.state.studyDirection);
+  });
 
   // 算法
   let algo = await appDB.getSetting('algorithm') || 'sm2';

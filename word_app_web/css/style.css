@@ -590,9 +590,8 @@ body.night-mode #answer-area.card {
 }
 
 .seg-control {
-  display: flex; border-radius: 10px; overflow: hidden;
+  display: flex; flex-wrap: wrap; border-radius: 10px; overflow: hidden;
   border: 1.5px solid rgba(149,165,166,0.15);
-  flex-shrink: 0;
 }
 .seg-btn {
   padding: 6px 14px; font-size: 13px; font-weight: 600;

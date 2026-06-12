@@ -178,17 +178,13 @@
             <div class="word-display"><div class="word-english" id="word-english">hello</div><div class="word-chinese" id="word-chinese">你好</div></div>
           </div>
           <div id="study-actions">
-            <button class="btn btn-red" onclick="handleAction('forgot')"><span class="btn-icon">✕</span> 忘了</button>
-            <button class="btn btn-orange" onclick="handleAction('struggled')"><span class="btn-icon">△</span> 勉强</button>
-            <button class="btn btn-green" onclick="handleAction('mastered')"><span class="btn-icon">★</span> 熟练</button>
+            <button class="btn btn-red" onclick="handleAction('0')"><span class="btn-icon">✕</span> <span class="btn-label">忘记</span></button>
+            <button class="btn btn-orange" onclick="handleAction('1')"><span class="btn-icon">△</span> <span class="btn-label">困难</span></button>
+            <button class="btn btn-green" onclick="handleAction('3')"><span class="btn-icon">✓</span> <span class="btn-label">良好</span></button>
+            <button class="btn btn-green" onclick="handleAction('4')"><span class="btn-icon">★</span> <span class="btn-label">简单</span></button>
           </div>
           <div id="answer-area" class="card" style="display:none;">
             <div class="answer-display"><div class="word-english" id="answer-english"></div><div class="word-chinese" id="answer-chinese"></div></div>
-            <button class="btn btn-orange" onclick="nextWord()" style="width:100%;border-radius:0 0 16px 16px;">继续 →</button>
-          </div>
-          <div class="study-nav-row">
-            <button class="btn" onclick="handleSwipeLeft()">← 上一个</button>
-            <button class="btn" onclick="handleSwipeRight()">跳过 →</button>
           </div>
         </div>
       </div>

@@ -32,8 +32,8 @@ function registerAlgorithm(name, impl) {
 async function applyAlgorithm(item, action, algorithmName) {
   const algo = WordApp.algorithms[algorithmName];
   if (!algo) {
-    console.warn('未知算法:', algorithmName, '，使用三态算法');
-    return applyThreeStateFallback(item, action);
+    console.warn('未知算法:', algorithmName, '，使用 SM-2');
+    return WordApp.algorithms['sm2'].schedule(item, action, new Date());
   }
   const now = new Date();
   const result = algo.schedule(item, action, now);
@@ -47,86 +47,7 @@ async function applyAlgorithm(item, action, algorithmName) {
   };
 }
 
-// ============== 三态算法（默认） ==============
-registerAlgorithm('three_state', {
-  name: '三态算法',
-  description: '基于进度分 0~100 的三态记忆算法',
-
-  getRatingOptions() {
-    return [
-      { value: 'forgot', label: '忘了', color: '#E74C3C' },
-      { value: 'struggled', label: '勉强', color: '#FFA500' },
-      { value: 'mastered', label: '熟练', color: '#2ECC71' },
-    ];
-  },
-
-  schedule(word, action, now) {
-    const ms = word.memoryState?.data || {};
-    let score = ms.progressScore ?? 0;
-    let cc = ms.consecutiveCorrect ?? 0; // consecutiveCorrect
-    let cw = ms.consecutiveWrong ?? 0;   // consecutiveWrong
-    const rc = (ms.reviewCount ?? 0) + 1;
-
-    switch (action) {
-      case 'forgot': {
-        score = Math.max(0, score - 25);
-        cc = 0;
-        cw = (cw || 0) + 1;
-        const hours = cw >= 3 ? 2 : 4;
-        const nextDate = new Date(now);
-        nextDate.setHours(nextDate.getHours() + hours);
-        return {
-          memoryState: {
-            algorithm: 'three_state',
-            data: { progressScore: score, reviewCount: rc, consecutiveCorrect: cc, consecutiveWrong: cw },
-            lastReviewed: now.toISOString(),
-            nextReview: nextDate.toISOString(),
-          },
-          dueDate: nextDate,
-        };
-      }
-
-      case 'struggled': {
-        score = Math.max(0, score - 5);
-        cc = 0;
-        cw = 0;
-        const nextDate = new Date(now);
-        nextDate.setDate(nextDate.getDate() + 1);
-        return {
-          memoryState: {
-            algorithm: 'three_state',
-            data: { progressScore: score, reviewCount: rc, consecutiveCorrect: cc, consecutiveWrong: cw },
-            lastReviewed: now.toISOString(),
-            nextReview: nextDate.toISOString(),
-          },
-          dueDate: nextDate,
-        };
-      }
-
-      case 'mastered': {
-        const bonuses = [10, 8, 6, 5, 4, 3, 2, 2, 1, 1];
-        const bonusIdx = Math.min(cc, bonuses.length - 1);
-        score = Math.min(100, score + bonuses[bonusIdx]);
-        cc = Math.min((cc || 0) + 1, 10);
-        cw = 0;
-        const days = score >= 81 ? 14 : score >= 61 ? 7 : score >= 41 ? 3 : score >= 21 ? 1 : 0.17;
-        const nextDate = new Date(now);
-        nextDate.setDate(nextDate.getDate() + days);
-        return {
-          memoryState: {
-            algorithm: 'three_state',
-            data: { progressScore: score, reviewCount: rc, consecutiveCorrect: cc, consecutiveWrong: cw },
-            lastReviewed: now.toISOString(),
-            nextReview: nextDate.toISOString(),
-          },
-          dueDate: nextDate,
-        };
-      }
-    }
-  },
-});
-
-// ============== SM-2 标准算法 ==============
+// ============== SM-2 标准算法（默认） ==============
 /**
  * 标准 SM-2 算法
  * 评价等级：0=完全不记得, 1=困难, 2=勉强, 3=良好, 4=完美
@@ -138,11 +59,10 @@ registerAlgorithm('sm2', {
 
   getRatingOptions() {
     return [
-      { value: 0, label: '完全不记得', color: '#E74C3C' },
+      { value: 0, label: '忘记', color: '#E74C3C' },
       { value: 1, label: '困难', color: '#E67E22' },
-      { value: 2, label: '勉强', color: '#FFA500' },
       { value: 3, label: '良好', color: '#2ECC71' },
-      { value: 4, label: '完美', color: '#27AE60' },
+      { value: 4, label: '简单', color: '#27AE60' },
     ];
   },
 
@@ -173,6 +93,8 @@ registerAlgorithm('sm2', {
     const dueDate = new Date(now);
     dueDate.setDate(dueDate.getDate() + interval);
 
+    const pScore = quality >= 3 ? 100 : quality === 1 ? 34 : 10;
+
     return {
       memoryState: {
         algorithm: 'sm2',
@@ -180,7 +102,7 @@ registerAlgorithm('sm2', {
           ef,
           interval,
           repetition,
-          progressScore: Math.min(100, quality * 25),
+          progressScore: pScore,
           reviewCount: rc,
           consecutiveCorrect: quality >= 2 ? repetition : 0,
           consecutiveWrong: quality < 2 ? (ms.consecutiveWrong ?? 0) + 1 : 0,
@@ -265,11 +187,10 @@ registerAlgorithm('fsrs', {
 
   getRatingOptions() {
     return [
-      { value: 0, label: '完全忘记', color: '#E74C3C' },
+      { value: 0, label: '忘记', color: '#E74C3C' },
       { value: 1, label: '困难', color: '#E67E22' },
-      { value: 2, label: '勉强', color: '#FFA500' },
       { value: 3, label: '良好', color: '#2ECC71' },
-      { value: 4, label: '完美', color: '#27AE60' },
+      { value: 4, label: '简单', color: '#27AE60' },
     ];
   },
 
@@ -279,7 +200,7 @@ registerAlgorithm('fsrs', {
     let D = ms.difficulty ?? 5.0;
     const rc = (ms.reviewCount || 0) + 1;
     const q = parseInt(rating) || 0;
-    const grade = q + 1; // 0-4 → 1-5
+    const grade = q + 1; // 0,1,3,4 → 1,2,4,5
 
     if (rc === 1) {
       S = Math.max(0.1, this.w[15] * Math.exp(this.w[16] * (grade - 1)));
@@ -300,7 +221,7 @@ registerAlgorithm('fsrs', {
     const dueDate = new Date(now);
     dueDate.setDate(dueDate.getDate() + interval);
 
-    const progressScore = q >= 3 ? 100 : q === 2 ? 67 : q === 1 ? 34 : 10;
+    const progressScore = q >= 3 ? 100 : q === 1 ? 34 : 10;
 
     return {
       memoryState: {
@@ -321,56 +242,7 @@ registerAlgorithm('fsrs', {
   },
 });
 
-// ============== 回退方案（算法未找到时用三态逻辑） ==============
-function applyThreeStateFallback(item, action) {
-  const now = new Date();
-  const ms = item.memoryState?.data || {};
-  let score = ms.progressScore ?? 0;
-  let cc = ms.consecutiveCorrect ?? 0;
-  let cw = ms.consecutiveWrong ?? 0;
-  const rc = (ms.reviewCount ?? 0) + 1;
-
-  let nextDate;
-  switch (action) {
-    case 'forgot':
-      score = Math.max(0, score - 25);
-      cc = 0; cw = (cw || 0) + 1;
-      nextDate = new Date(now);
-      nextDate.setHours(nextDate.getHours() + (cw >= 3 ? 2 : 4));
-      break;
-    case 'struggled':
-      score = Math.max(0, score - 5);
-      cc = 0; cw = 0;
-      nextDate = new Date(now);
-      nextDate.setDate(nextDate.getDate() + 1);
-      break;
-    default:
-    case 'mastered': {
-      const bonuses = [10, 8, 6, 5, 4, 3, 2, 2, 1, 1];
-      const bonusIdx = Math.min(cc, bonuses.length - 1);
-      score = Math.min(100, score + bonuses[bonusIdx]);
-      cc = Math.min((cc || 0) + 1, 10);
-      cw = 0;
-      const days = score >= 81 ? 14 : score >= 61 ? 7 : score >= 41 ? 3 : score >= 21 ? 1 : 0.17;
-      nextDate = new Date(now);
-      nextDate.setDate(nextDate.getDate() + days);
-      break;
-    }
-  }
-
-  return {
-    lastReviewed: now.toISOString(),
-    nextReview: nextDate.toISOString(),
-    memoryState: {
-      algorithm: 'three_state',
-      data: { progressScore: score, reviewCount: rc, consecutiveCorrect: cc, consecutiveWrong: cw },
-      lastReviewed: now.toISOString(),
-      nextReview: nextDate.toISOString(),
-    },
-  };
-}
-
-// ============== 状态辅助函数（被多个模块引用） ==============
+// ============== 状态辅助函数 ==============
 
 function getScoreState(score) {
   if (score >= 67) return 'mastered';

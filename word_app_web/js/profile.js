@@ -4,7 +4,6 @@
 
 // 算法名称映射（兼容旧版存储的算法名）
 const ALGORITHM_MAP = {
-  'three_state': 'three_state',
   'sm2': 'sm2',
   'fixed': 'custom_interval',
 };
@@ -34,15 +33,34 @@ async function setDailyGoal(val) {
 }
 
 async function setAlgorithm(algo) {
+  const oldAlgo = WordApp.state.algorithmName;
   WordApp.state.algorithmName = ALGORITHM_MAP[algo] || algo;
   document.querySelectorAll('#algorithm-control .seg-btn').forEach(b => {
     b.classList.toggle('active', b.dataset.value === WordApp.state.algorithmName);
   });
   document.getElementById('custom-interval-area').style.display =
     WordApp.state.algorithmName === 'custom_interval' ? 'block' : 'none';
+
+  // 切换算法时清理所有已存在项的 memoryState.data，防止数据污染
+  if (oldAlgo !== WordApp.state.algorithmName) {
+    const allWords = await appDB.getAllWords();
+    for (const w of allWords) {
+      const oldRc = w.memoryState?.data?.reviewCount || 0;
+      w.memoryState = {
+        algorithm: WordApp.state.algorithmName,
+        data: { reviewCount: oldRc },
+        lastReviewed: null,
+        nextReview: null,
+      };
+      w.lastReviewed = null;
+      w.nextReview = null;
+      await appDB.updateWord(w);
+    }
+  }
+
   await appDB.setSetting('algorithm', WordApp.state.algorithmName);
   const name = (WordApp.algorithms[WordApp.state.algorithmName] || {}).name || WordApp.state.algorithmName;
-  showToast(`已切换为 ${name}`);
+  showToast(`已切换为 ${name}，旧数据已清理`);
 }
 
 async function saveCustomIntervals() {
@@ -86,7 +104,7 @@ async function loadSettings() {
   }
 
   // 算法
-  let algo = await appDB.getSetting('algorithm') || 'three_state';
+  let algo = await appDB.getSetting('algorithm') || 'sm2';
   WordApp.state.algorithmName = ALGORITHM_MAP[algo] || algo;
 
   // 动态渲染算法按钮（此时 WordApp.algorithms 已可用）

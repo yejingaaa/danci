@@ -477,28 +477,6 @@ body, .card, .word-item, .word-en, .word-zh, .stat-label, .stat-value,
   font-weight: 600;
 }
 
-/* ========== 底部操作行（上一个 / 跳过） ========== */
-#study-container > .study-nav-row {
-  display: flex;
-  gap: 10px;
-  margin-top: 16px;
-}
-#study-container > .study-nav-row .btn {
-  flex: 1;
-  height: 44px;
-  border-radius: 12px;
-  font-size: 14px;
-  font-weight: 500;
-  background: var(--card);
-  color: var(--btn-gray);
-  border: 1px solid rgba(149,165,166,0.12);
-  box-shadow: none;
-}
-#study-container > .study-nav-row .btn:active {
-  background: rgba(149,165,166,0.08);
-  transform: scale(0.96);
-}
-
 /* ========== 学习完成状态 ========== */
 .study-complete {
   text-align: center;
@@ -552,14 +530,6 @@ body.night-mode #study-actions .btn-green {
 }
 body.night-mode #study-actions .btn-green:active {
   background: rgba(5,150,105,0.15);
-}
-body.night-mode #study-container > .study-nav-row .btn {
-  background: rgba(255,255,255,0.04);
-  border-color: rgba(255,255,255,0.06);
-  color: #9CA3AF;
-}
-body.night-mode #study-container > .study-nav-row .btn:active {
-  background: rgba(255,255,255,0.08);
 }
 body.night-mode #answer-area.card {
   border-color: rgba(255,255,255,0.04);

@@ -91,9 +91,9 @@ function renderRatingButtons(containerId, handlerName) {
 
   const container = document.getElementById(containerId);
   container.innerHTML = options.map(opt => {
-    const btnClass = (opt.value === 'forgot' || opt.value === 0 || opt.value === 'forgotten') ? 'btn btn-red'
-      : (opt.value === 'struggled' || opt.value === 1) ? 'btn btn-orange'
-      : (opt.value === 2) ? 'btn btn-orange'
+    const nv = parseInt(opt.value);
+    const btnClass = (nv <= 1) ? 'btn btn-red'
+      : (nv === 3) ? 'btn btn-orange'
       : 'btn btn-green';
 
     // 模拟算法算出下次复习时间
@@ -117,11 +117,10 @@ function renderRatingButtons(containerId, handlerName) {
 }
 
 function getRatingIcon(value) {
-  if (value === 'forgot' || value === 0 || value === 'forgotten') return '✕';
-  if (value === 'struggled' || value === 1) return '△';
-  if (value === 2) return '△';
-  if (value === 3 || value === 'remembered') return '✓';
-  if (value === 4 || value === 'mastered') return '★';
+  const n = parseInt(value);
+  if (n <= 1) return '✕';
+  if (n === 3) return '✓';
+  if (n === 4) return '★';
   return '★';
 }
 
@@ -218,6 +217,7 @@ async function handleAction(action) {
   const item = queue[idx];
   const word = item.word || item;
   if (!word) return;
+  const num = parseInt(action);
 
   // 自由复习模式：不更新算法，不写记录
   if (WordApp.state.studyMode !== 'freereview') {
@@ -226,17 +226,15 @@ async function handleAction(action) {
     await appDB.insertRecord({ wordId: word.id, action: String(action) });
   }
 
+  // 统计
   sessionStats.total++;
-  // 宽松比较：onclick 传入字符串，但算法内部可能使用数字
-  const num = parseInt(action);
-  if (action === 'forgot' || num === 0 || action === 'forgotten') sessionStats.forgot++;
-  else if (action === 'struggled' || num === 1 || num === 2) sessionStats.struggled++;
+  if (num <= 1) sessionStats.forgot++;
+  else if (num === 3) sessionStats.struggled++;
   else sessionStats.mastered++;
-  if (action === 'forgot' || action === 'struggled' || num === 0 || num === 1 || action === 'forgotten') {
-    showAnswer(word);
-  } else {
-    nextWord();
-  }
+
+  // 显示答案 → 自动跳转下一张
+  showAnswer(word);
+  setTimeout(() => nextWord(), 1200);
 }
 
 // ============== 答案展示 ==============

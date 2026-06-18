@@ -158,7 +158,20 @@ window.addEventListener('beforeinstallprompt', (e) => {
 
 // ============== 初始化 ==============
 async function init() {
-  await appDB.open();
+  try {
+    await appDB.open();
+  } catch (e) {
+    document.getElementById('loading-splash').innerHTML =
+      '<div style="font-size:48px;margin-bottom:16px;">⚠️</div>' +
+      '<div style="font-size:16px;font-weight:600;color:#2C3E50;text-align:center;padding:0 20px;">' +
+      '无法访问本地数据库<br>' +
+      '<span style="font-size:13px;color:#95A5A6;">' +
+      'Chrome/Edge 不支持直接打开本地文件<br>' +
+      '请用 <b>Firefox</b> 打开，或用本地服务器：<br>' +
+      '<code style="background:#f0f0f0;padding:2px 8px;border-radius:4px;">npx serve .</code>' +
+      '</span></div>';
+    return;
+  }
   // 确保有默认词本
   const books = await appDB.getAllBooks();
   if (books.length === 0) {

@@ -243,6 +243,14 @@ function setupSpellChecker(word) {
 
 // ============== 学习页面渲染 ==============
 function renderCurrentWord() {
+  // 每次渲染前统一清理卡片的旧点击监听器（防止拼写模式泄露答案）
+  const c = document.getElementById('word-display');
+  if (c && _cardClickBound) {
+    const clone = c.cloneNode(true);
+    c.parentNode.replaceChild(clone, c);
+    _cardClickBound = false;
+  }
+
   const queue = WordApp.state.wordQueue;
   const idx = WordApp.state.currentWordIndex;
   if (queue.length === 0 || idx >= queue.length) {

@@ -234,8 +234,6 @@ function renderWordList(words) {
   }
 
   list.innerHTML = words.map(w => renderWordItemHtml(w)).join('');
-  list.style.overflowY = '';
-  list.style.maxHeight = '';
   list.onscroll = null;
 }
 

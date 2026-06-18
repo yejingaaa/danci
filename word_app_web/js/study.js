@@ -219,7 +219,7 @@ function setupSpellChecker(word) {
   input.value = '';
   input.className = 'spell-input';
   input.disabled = false;
-  input.placeholder = `输入「${sides.back}」...`;
+  input.placeholder = '请输入对应的内容...';
   input.oninput = function() {
     const target = sides.back.toLowerCase().trim();
     const typed = this.value.toLowerCase().trim();

@@ -101,9 +101,9 @@ function renderRatingButtons(containerId, handlerName) {
   const container = document.getElementById(containerId);
   container.innerHTML = options.map(opt => {
     const nv = parseInt(opt.value);
-    const btnClass = (nv <= 1) ? 'btn btn-red'
-      : (nv === 3) ? 'btn btn-orange'
-      : 'btn btn-green';
+    const btnClass = nv === 0 ? 'btn btn-red'
+      : nv === 1 ? 'btn btn-orange'
+      : nv === 3 ? 'btn btn-blue' : 'btn btn-green';
 
     // 模拟算法算出下次复习时间
     let nextTimeText = '';
@@ -118,7 +118,6 @@ function renderRatingButtons(containerId, handlerName) {
     }
 
     return `<button class="${btnClass}" onclick="${handlerName}('${opt.value}')">
-      <span class="btn-icon">${getRatingIcon(opt.value)}</span>
       <span class="btn-label">${opt.label}</span>
       ${nextTimeText ? `<span class="btn-sub">${nextTimeText}</span>` : ''}
     </button>`;

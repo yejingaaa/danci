@@ -100,10 +100,11 @@ function renderRatingButtons(containerId, handlerName) {
 
   const container = document.getElementById(containerId);
   container.innerHTML = options.map(opt => {
-    const nv = parseInt(opt.value);
-    const btnClass = nv === 0 ? 'btn btn-red'
-      : nv === 1 ? 'btn btn-orange'
-      : nv === 3 ? 'btn btn-blue' : 'btn btn-green';
+    const v = opt.value;
+    const btnClass = (v === 0 || v === 'forgotten') ? 'btn btn-red'
+      : (v === 1) ? 'btn btn-orange'
+      : (v === 3 || v === 'remembered') ? 'btn btn-blue'
+      : 'btn btn-green';
 
     // 模拟算法算出下次复习时间
     let nextTimeText = '';
@@ -164,6 +165,23 @@ function renderCardContent(word) {
   backEl.textContent = sides.back;
   backEl.classList.remove('visible');
   backEl.style.display = 'none';
+
+  // 添加点击提示（仅非拼写模式）
+  const display = document.getElementById('word-display');
+  const wordDisplay = display.querySelector('.word-display');
+  let hint = wordDisplay.querySelector('.word-tap-hint');
+  if (WordApp.state.studyMode !== 'spell') {
+    if (!hint) {
+      hint = document.createElement('div');
+      hint.className = 'word-tap-hint';
+      hint.textContent = '点击显示答案';
+      wordDisplay.appendChild(hint);
+    } else {
+      hint.classList.remove('hidden');
+    }
+  } else if (hint) {
+    hint.classList.add('hidden');
+  }
 }
 
 /** 绑定卡片点击显示背面 */
@@ -185,6 +203,9 @@ function setupCardClick() {
       be.style.display = 'block';
       setTimeout(() => be.classList.add('visible'), 10);
     }
+    // 隐藏点击提示
+    const hint = newCard.querySelector('.word-tap-hint');
+    if (hint) hint.classList.add('hidden');
   });
   _cardClickBound = true;
 }
@@ -258,13 +279,13 @@ function renderCurrentWord() {
     renderCardContent(word);
     setupSpellChecker(word);
   } else {
-    actions.style.display = 'flex';
+    actions.style.display = 'grid';
     spellArea.style.display = 'none';
     renderCardContent(word);
     renderRatingButtons('study-actions', 'handleAction');
+    setupCardClick();
+    setupSwipeGesture();
   }
-  setupCardClick();
-  setupSwipeGesture();
 
   // 滑入动画
   const wd = document.getElementById('word-display');

@@ -310,6 +310,26 @@ body, .card, .word-item, .word-en, .word-zh, .stat-label, .stat-value,
   user-select: none;
 }
 
+/* 卡片点击提示（呼吸动画） */
+.word-tap-hint {
+  font-size: 13px;
+  color: var(--btn-gray);
+  opacity: 0.45;
+  text-align: center;
+  margin-top: 20px;
+  pointer-events: none;
+  animation: hintPulse 2.5s ease-in-out infinite;
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+.word-tap-hint.hidden {
+  opacity: 0;
+  transform: translateY(-8px);
+}
+@keyframes hintPulse {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.65; }
+}
+
 /* 单词切换滑入动画 */
 @keyframes slideIn {
   from { opacity: 0; transform: translateX(40px) scale(0.97); }
@@ -1101,6 +1121,7 @@ body.night-mode .nav-item:active { background: rgba(255,255,255,0.04); }
 @media (max-width: 480px) {
   #app { padding: 12px; overflow-x: hidden; }
   #main-content { overflow-x: hidden; }
+  #fullscreen-pages { overflow-x: hidden; }
   .seg-btn { padding: 6px 8px; font-size: 12px; }
   .settings-item { gap: 8px; }
 }
